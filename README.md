@@ -1,0 +1,1 @@
+# plugin-aws-inven-collector
