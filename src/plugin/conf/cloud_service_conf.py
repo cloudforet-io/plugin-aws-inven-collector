@@ -1,3 +1,4 @@
+
 SUPPORTED_FEATURES = ['garbage_collection']
 SUPPORTED_RESOURCE_TYPE = ['inventory.CloudService', 'inventory.Region', 'inventory.CloudServiceType']
 SUPPORTED_SCHEDULES = ['hours']
@@ -5,6 +6,41 @@ NUMBER_OF_CONCURRENT = 20
 DEFAULT_REGION = 'us-east-1'
 FILTER_FORMAT = []
 BOTO3_HTTPS_VERIFIED = None
+
+# CLOUD_SERVICE_GROUP_MAP = {
+#     'IAM': IAMManager,
+#     'DynamoDB': DynamoDBManager,
+#     'Lambda': LambdaManager,
+#     'CloudFront': CloudFrontManager,
+#     'RDS': RDSManager,
+#     'Route53': Route53Manager,
+#     'S3': S3Manager,
+#     'AutoScalingGroup': AutoScalingManager,
+#     'ElastiCache': ElastiCacheManager,
+#     'APIGateway': APIGatewayManager,
+#     'DirectConnect': DirectConnectManager,
+#     'EFS': EFSManager,
+#     'DocumentDB': DocumentDBManager,
+#     'ECS': ECSManager,
+#     'Redshift': RedshiftManager,
+#     'EKS': EKSManager,
+#     'SQS': SQSManager,
+#     'KMS': KMSManager,
+#     'ECR': ECRManager,
+#     'CloudTrail': CloudTrailManager,
+#     'SNS': SNSManager,
+#     'SecretsManager': SecretsManagerManager,
+#     'ELB': ELBManager,
+#     'EIP': EIPManager,
+#     'EBS': EBSManager,
+#     'VPC': VPCManager,
+#     'EC2': EC2Manager,
+#     'ACM': ACMManager,
+#     'KinesisDataStream': KinesisDataStreamManager,
+#     'MSK': MSKManager,
+#     'KinesisFirehose': KinesisFirehoseManager,
+#     'Lightsail': LightsailManager
+# }
 
 REGION_INFO = {
     'us-east-1': {'name': 'US East (N. Virginia)',
@@ -28,7 +64,7 @@ REGION_INFO = {
     'ap-southeast-1': {'name': 'Asia Pacific (Singapore)',
                        'tags': {'latitude': '1.321259', 'longitude': '103.695942', 'continent': 'asia_pacific'}},
     'ap-southeast-2	': {'name': 'Asia Pacific (Sydney)',
-                        'tags': {'latitude': '-33.921423', 'longitude': '151.188076', 'continent': 'asia_pacific'}},
+                           'tags': {'latitude': '-33.921423', 'longitude': '151.188076', 'continent': 'asia_pacific'}},
     'ap-northeast-1': {'name': 'Asia Pacific (Tokyo)',
                        'tags': {'latitude': '35.648411', 'longitude': '139.792566', 'continent': 'asia_pacific'}},
     'ca-central-1': {'name': 'Canada (Central)',
