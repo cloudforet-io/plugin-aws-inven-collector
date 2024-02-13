@@ -1,5 +1,5 @@
 from .collector_manager import CollectorManager
-from .ec2 import EC2Manager
+from .ec2 import *
 
 
 class CloudServiceManager(CollectorManager):
@@ -30,17 +30,16 @@ class CloudServiceManager(CollectorManager):
         pass
 
     @classmethod
-    def get_service_manager_by_name(cls, service):
+    def get_managers_by_service(cls, service):
         '''
         this function works as a bridge between main.py and each targeted cloud service manager
         '''
-
-        target_manager = CollectorManager.get_target_manager(service)
-        return target_manager()
+        service_type_managers = CollectorManager.get_service_type_managers(service)
+        return service_type_managers
 
     @classmethod
     def get_service_names(cls):
         services_name = []
         for sub_cls in cls.__subclasses__():
-            services_name.append(sub_cls.service)
+            services_name.append(sub_cls.cloud_service_group)
         return services_name

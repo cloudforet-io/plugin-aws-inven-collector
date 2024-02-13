@@ -3,8 +3,12 @@ import logging
 from spaceone.core.service import check_required, transaction
 from spaceone.inventory.plugin.collector.lib.server import CollectorPluginServer
 from .conf.cloud_service_conf import *
+from .connector.base import ResourceConnector
+from .connector.collector_connector import CollectorConnector
+from .manager.base import ResourceManager
 from .manager.cloud_service_manager import CloudServiceManager
 from .manager.collector_manager import CollectorManager
+from .manager.ec2 import EC2Manager
 from .manager.region_manager import RegionManager
 
 _LOGGER = logging.getLogger('cloudforet')
@@ -95,7 +99,7 @@ def collector_init(params: dict) -> dict:
     supported_schedules?
     options_schema 새로 받을 것 (설민님과 상의)
     '''
-    return {'metadata': {}}
+    return _create_init_metadata()
 
 
 @app.route('Collector.verify')
@@ -115,12 +119,11 @@ def collector_verify(params: dict) -> None:
     """
     collector_mgr = CollectorManager()
     secret_data = params['secret_data']
-    collector_mgr.create_session(secret_data)
+    # collector_mgr.create_session(secret_data)
 
 
 @app.route('Collector.collect')
 def collector_collect(params):
-    print("WHWOWOEJFOIWEHFIWE")
     """ Collect external data
 
     Args:
@@ -185,26 +188,56 @@ def collector_collect(params):
 
         Only one of the cloud_service_type, cloud_service and region fields is required.
     """
-    options = params['options']
-    secret_data = params['secret_data']
-    schema = params.get('schema')
+    options = params["options"]
+    secret_data = params["secret_data"]
+    schema = params.get("schema")
+
     task_options = params.get('task_options', {})
-    resource_type = task_options.get('resource_type')
+    resource_type = options.get('resource_type')
 
-    if resource_type == 'inventory.CloudServiceType':
-        cloud_service_type_manager = CloudServiceManager()
-        return cloud_service_type_manager.collect(options, secret_data, schema, task_options)
-
-    elif resource_type == 'inventory.Region':
-        region_manager = RegionManager()
-        return region_manager.collect(options, secret_data, schema, task_options)
-
+    # if services := options.get("cloud_service_types"):
+    #     for service in services:
+    #         resource_mgrs = ResourceManager.get_manager_by_service(service)
+    #         for resource_mgr in resource_mgrs:
+    #             results = resource_mgr().collect_resources(options, secret_data, schema)
+    #             for result in results:
+    #                 yield result
+    # else:
+    #     resource_mgrs = ResourceManager.list_managers()
+    #     for manager in resource_mgrs:
+    #         results = manager().collect_resources(options, secret_data, schema)
+    #
+    #         for result in results:
+    #             yield result
+    if resource_type == 'inventory.Region':
+        return
     elif resource_type == 'inventory.CloudService':
-        cloud_service_manager = CloudServiceManager.get_service_manager_by_name(task_options.get('service'))
-        return cloud_service_manager.collect(options, secret_data, schema, task_options)
-
-    else:
-        raise ValueError('Invalid resource type!')
+        service = options.get('service')
+        region = options.get('region')
+        resource_mgrs = ResourceManager.get_manager_by_service(service)
+        for resource_mgr in resource_mgrs:
+            service_type = resource_mgr.cloud_service_type
+            results = resource_mgr().collect_resources(service, service_type, region, options, secret_data, schema)
+            for result in results:
+                yield result
+    #     service = task_options.get('service')
+    #     region = task_options.get('region')
+    #     print("CONNECTOR HERE IS ")
+    #     # collector_manager.set_connector(service)
+    #     # collector_manager.create_session(secret_data, region)
+    #     # managers = CollectorManager.get_service_type_managers(service)
+    #     print("AM I HERE?")
+    #
+    #     #return collector_manager.collect_resources(options, secret_data, schema, task_options)
+    #     # for manager in managers:
+    #     #     manager_instance = manager()
+    #     #     for resource in manager_instance.collect(options, secret_data, schema, task_options):
+    #     #         print(resource)
+    #     #         #yield resource
+    #
+    #
+    # else:
+    #     raise ValueError('Invalid resource type!')
 
 
 @app.route('Job.get_tasks')
@@ -310,3 +343,17 @@ def _make_task_wrapper(**kwargs) -> dict:
     for key, value in kwargs.items():
         task_options[key] = value
     return task_options
+
+
+def _create_init_metadata():
+    return {
+        "metadata": {
+            "supported_resource_type": [
+                "inventory.CloudService",
+                "inventory.CloudServiceType",
+                "inventory.Region",
+                "inventory.ErrorResource",
+            ],
+            "options_schema": {},
+        }
+    }

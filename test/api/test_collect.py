@@ -68,18 +68,22 @@ class TestCollect(TestCase):
 
     def test_collect(self):
         options = {}
-        task_options = {
+        # task_options = {
+        #     'resource_type': 'inventory.CloudService',
+        #     'region': 'ap-northeast-1',
+        #     'service': 'EC2'
+        # }
+        options = {
             'resource_type': 'inventory.CloudService',
-            'region': 'ap-northeast-1',
+            'region': 'ap-northeast-2',
             'service': 'EC2'
         }
         filter = {}
 
         params = {
             'options': options,
-            'task_options': task_options,
             'secret_data': self.secret_data,
-            'filter': filter,
+            'filter': filter
         }
 
         res_stream = self.inventory.Collector.collect(params)
