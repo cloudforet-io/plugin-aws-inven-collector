@@ -1,9 +1,7 @@
 from spaceone.inventory.plugin.collector.lib import *
 
 from ..base import ResourceManager
-from ...connector.collector_connector import CollectorConnector
-from ...connector.ec2.ami_connector import EC2Connector
-from ...manager.collector_manager import CollectorManager, _LOGGER
+from ...manager.collector_manager import _LOGGER
 
 
 class AMIManager(ResourceManager):
@@ -16,18 +14,18 @@ class AMIManager(ResourceManager):
         self.cloud_service_type = "AMI"
         self.metadata_path = "metadata/ec2/ami.yaml"
 
-    def create_cloud_service_type(self):
-        return make_cloud_service_type(
-            name=self.cloud_service_type,
-            group=self.cloud_service_group,
-            provider=self.provider,
-            metadata_path=self.metadata_path,
-            is_primary=True,
-            is_major=True,
-            service_code="Cloud Pub/Sub",
-            tags={"spaceone:icon": f"{ASSET_URL}/cloud_pubsub.svg"},
-            labels=["Application Integration"],
-        )
+    # def create_cloud_service_type(self):
+    #     return make_cloud_service_type(
+    #         name=self.cloud_service_type,
+    #         group=self.cloud_service_group,
+    #         provider=self.provider,
+    #         metadata_path=self.metadata_path,
+    #         is_primary=True,
+    #         is_major=True,
+    #         service_code="Cloud Pub/Sub",
+    #         tags={"spaceone:icon": f"{ASSET_URL}/cloud_pubsub.svg"},
+    #         labels=["Application Integration"],
+    #     )
 
     def create_cloud_service(self, region, options, secret_data, schema):
         self.cloud_service_type = "AMI"

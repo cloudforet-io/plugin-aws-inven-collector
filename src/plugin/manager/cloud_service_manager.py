@@ -1,5 +1,4 @@
 from .collector_manager import CollectorManager
-from .ec2 import *
 
 
 class CloudServiceManager(CollectorManager):
@@ -7,7 +6,7 @@ class CloudServiceManager(CollectorManager):
     #                  'DynamoDB', 'EBS', 'EC2', 'ECR', 'ECS', 'EFS', 'EIP', 'EKS', 'Elasticache', 'ELB', 'IAM',
     #                  'KinesisDataStream', 'KinesisFirehose', 'KMS', 'Lambda', 'Lightsail', 'MSK', 'RDS', 'Redshift',
     #                  'Route53', 'S3', 'SecretsManager', 'SNS', 'SQS', 'VPC']
-    _all_services = {'EC2': EC2Manager}
+    # _all_services = {'EC2': EC2Manager}
     # _all_services = {'ACM': acm.ACMManager, 'APIGateway': api_gateway.APIGatewayManager,
     #                  'AutoScalingGroup': auto_scaling.AutoScalingManager, 'CloudFront': cloud_front.CloudFrontManager,
     #                  'CloudTrail': cloud_trail.CloudTrailManager, 'DirectConnect': direct_connect.DirectConnectManager,
@@ -23,17 +22,17 @@ class CloudServiceManager(CollectorManager):
     #                  'SQS': sqs.SQSManager, 'VPC': vpc.VPCManager}
 
     def collect(self, options, secret_data, schema, task_options):
-        '''
+        """
         this function should return metadata of cloud service types.
-        '''
+        """
 
         pass
 
     @classmethod
     def get_managers_by_service(cls, service):
-        '''
+        """
         this function works as a bridge between main.py and each targeted cloud service manager
-        '''
+        """
         service_type_managers = CollectorManager.get_service_type_managers(service)
         return service_type_managers
 

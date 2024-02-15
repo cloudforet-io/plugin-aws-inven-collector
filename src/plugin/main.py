@@ -8,10 +8,9 @@ from .connector.collector_connector import CollectorConnector
 from .manager.base import ResourceManager
 from .manager.cloud_service_manager import CloudServiceManager
 from .manager.collector_manager import CollectorManager
-from .manager.ec2 import EC2Manager
 from .manager.region_manager import RegionManager
 
-_LOGGER = logging.getLogger('cloudforet')
+_LOGGER = logging.getLogger("cloudforet")
 
 app = CollectorPluginServer()
 
@@ -78,9 +77,9 @@ app = CollectorPluginServer()
 # }
 
 
-@app.route('Collector.init')
+@app.route("Collector.init")
 def collector_init(params: dict) -> dict:
-    """ init plugin by options
+    """init plugin by options
 
     Args:
         params (CollectorInitRequest): {
@@ -93,18 +92,18 @@ def collector_init(params: dict) -> dict:
             'metadata': 'dict'
         }
     """
-    '''
+    """
     Conf variable 굳이..?
     supported_features? 
     supported_schedules?
     options_schema 새로 받을 것 (설민님과 상의)
-    '''
+    """
     return _create_init_metadata()
 
 
-@app.route('Collector.verify')
+@app.route("Collector.verify")
 def collector_verify(params: dict) -> None:
-    """ Verifying collector plugin
+    """Verifying collector plugin
 
     Args:
         params (CollectorVerifyRequest): {
@@ -118,13 +117,13 @@ def collector_verify(params: dict) -> None:
         None
     """
     collector_mgr = CollectorManager()
-    secret_data = params['secret_data']
+    secret_data = params["secret_data"]
     # collector_mgr.create_session(secret_data)
 
 
-@app.route('Collector.collect')
+@app.route("Collector.collect")
 def collector_collect(params):
-    """ Collect external data
+    """Collect external data
 
     Args:
         params (CollectorCollectRequest): {
@@ -192,8 +191,8 @@ def collector_collect(params):
     secret_data = params["secret_data"]
     schema = params.get("schema")
 
-    task_options = params.get('task_options', {})
-    resource_type = options.get('resource_type')
+    task_options = params.get("task_options", {})
+    resource_type = options.get("resource_type")
 
     # if services := options.get("cloud_service_types"):
     #     for service in services:
@@ -209,15 +208,17 @@ def collector_collect(params):
     #
     #         for result in results:
     #             yield result
-    if resource_type == 'inventory.Region':
+    if resource_type == "inventory.Region":
         return
-    elif resource_type == 'inventory.CloudService':
-        service = options.get('service')
-        region = options.get('region')
+    elif resource_type == "inventory.CloudService":
+        service = options.get("service")
+        region = options.get("region")
         resource_mgrs = ResourceManager.get_manager_by_service(service)
         for resource_mgr in resource_mgrs:
             service_type = resource_mgr.cloud_service_type
-            results = resource_mgr().collect_resources(service, service_type, region, options, secret_data, schema)
+            results = resource_mgr().collect_resources(
+                service, service_type, region, options, secret_data, schema
+            )
             for result in results:
                 yield result
     #     service = task_options.get('service')
@@ -240,10 +241,10 @@ def collector_collect(params):
     #     raise ValueError('Invalid resource type!')
 
 
-@app.route('Job.get_tasks')
-@check_required(['options', 'secret_data'])
+@app.route("Job.get_tasks")
+@check_required(["options", "secret_data"])
 def job_get_tasks(params: dict) -> dict:
-    """ Get job tasks
+    """Get job tasks
 
     Args:
         params (JobGetTaskRequest): {
@@ -259,7 +260,7 @@ def job_get_tasks(params: dict) -> dict:
 
     """
     tasks = []
-    options = params.get('options', {})
+    options = params.get("options", {})
 
     services = _set_service_filter(options)
     regions = _set_region_filter(options, params)
@@ -273,18 +274,18 @@ def job_get_tasks(params: dict) -> dict:
     # create task 3: task for collecting only cloud service group metadata
     tasks.extend(_add_cloud_service_group_tasks(services, regions))
 
-    return {'tasks': tasks}
+    return {"tasks": tasks}
 
 
 def _set_service_filter(options):
-    '''
+    """
     1. service_filter type check (is it an array?)
     2. service_filter 내용물 자체 check (it could have sth that is not valid, like ECD instead of EC2
-    '''
+    """
 
     available_services = CloudServiceManager.get_service_names()
 
-    if service_filter := options.get('service_filter'):
+    if service_filter := options.get("service_filter"):
         _validate_service_filter(service_filter, available_services)
         return service_filter
     else:
@@ -293,17 +294,19 @@ def _set_service_filter(options):
 
 def _validate_service_filter(service_filter, available_services):
     if not isinstance(service_filter, list):
-        raise ValueError(f'Services input is supposed to be a list type! Your input is {service_filter}.')
+        raise ValueError(
+            f"Services input is supposed to be a list type! Your input is {service_filter}."
+        )
     for each_service in service_filter:
         if each_service not in available_services:
-            raise ValueError('Not a valid service!')
+            raise ValueError("Not a valid service!")
 
 
 def _set_region_filter(options, params):
     _manager = RegionManager()
     available_regions = _manager.get_region_names()
 
-    if region_filter := options.get('region_filter'):
+    if region_filter := options.get("region_filter"):
         _validate_region_filter(region_filter, available_regions)
         return region_filter
     else:
@@ -312,29 +315,41 @@ def _set_region_filter(options, params):
 
 def _validate_region_filter(region_filter, available_regions):
     if not isinstance(region_filter, list):
-        raise ValueError(f'Regions input is supposed to be a list type! Your input is {region_filter}.')
+        raise ValueError(
+            f"Regions input is supposed to be a list type! Your input is {region_filter}."
+        )
     for each_region in region_filter:
         if each_region not in available_regions:
-            raise ValueError('Not a valid region!')
+            raise ValueError("Not a valid region!")
 
 
 def _add_cloud_service_type_tasks(services: list) -> list:
-    return [_make_task_wrapper(resource_type='inventory.CloudServiceType', services=services)]
+    return [
+        _make_task_wrapper(
+            resource_type="inventory.CloudServiceType", services=services
+        )
+    ]
 
 
 def _add_cloud_service_region_tasks(regions: list) -> list:
-    return [_make_task_wrapper(resource_type='inventory.Region', regions=regions)]
+    return [_make_task_wrapper(resource_type="inventory.Region", regions=regions)]
 
 
 def _add_cloud_service_group_tasks(services, regions):
     tasks = []
-    '''
+    """
     TODO: Certain services are not available in certain regions.
     
-    '''
+    """
     for service in services:
         for region in regions:
-            tasks.append(_make_task_wrapper(resource_type='inventory.CloudService', service=service, region=region))
+            tasks.append(
+                _make_task_wrapper(
+                    resource_type="inventory.CloudService",
+                    service=service,
+                    region=region,
+                )
+            )
     return tasks
 
 

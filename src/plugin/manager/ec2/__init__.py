@@ -1,9 +1,13 @@
 from ..collector_manager import CollectorManager
-from ...connector.ec2.ami_connector import EC2Connector
-from .ec2_manager import EC2Manager
+from ...connector.ec2.ami_connector import AMIConnector
+from ...connector.ec2.auto_scaling_group_connector import AutoScalingGroupConnector
 from .ami_manager import AMIManager
-
-
+from .auto_scaling_group_manager import AutoScalingGroupManager
+from .eip_manager import EIPManager
+from .instance_manager import InstanceManager
+from .security_group_manager import SecurityGroupManager
+from .snapshot_manager import SnapshotManager
+from .volume_manager import VolumeManager
 
 
 # class EC2Manager(CollectorManager):
@@ -73,5 +77,3 @@ from .ami_manager import AMIManager
 #             resources.append(error_resource_response)
 #
 #         return resources
-
-
