@@ -19,6 +19,7 @@ REGIONS = ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2', 'ap-south-1', 'ap
 
 
 class CollectorConnector(BaseConnector):
+    cloud_service_group = None
     service_name = ''
     _session = None
     _client = None
@@ -49,11 +50,6 @@ class CollectorConnector(BaseConnector):
         self.region_name = region_name
         self._client = None
         self._session = None
-
-    def set_client(self, service_name):
-        self.service_name = service_name
-        self._client = self.session.client(self.service_name, verify=BOTO3_HTTPS_VERIFIED)
-        return self._client
 
     def get_regions(self):
         _session = self.get_session(self.secret_data, DEFAULT_REGION)
@@ -93,9 +89,15 @@ class CollectorConnector(BaseConnector):
             }
             session = Session(**assume_role_params)
         return session
+
     @property
     def session(self):
-        return self.init_property('_session', partial(self.get_session, self.secret_data, self.region_name))
+        return self._session
+
+    @session.setter
+    def session(self, values):
+        secret_data, region_name = values
+        self.init_property('session', partial(self.get_session, secret_data, region_name))
 
     @property
     def init_client(self):
@@ -105,9 +107,12 @@ class CollectorConnector(BaseConnector):
 
     @property
     def client(self):
-        if self._client is None:
-            self._client = self.session.client(self.service_name, verify=BOTO3_HTTPS_VERIFIED)
         return self._client
+
+    @client.setter
+    def client(self, service_name):
+        if self._client is None:
+            self._client = self.session.client(service_name, verify=BOTO3_HTTPS_VERIFIED)
 
     @staticmethod
     def generate_arn(partition=ARN_DEFAULT_PARTITION, service="", region="", account_id="", resource_type="",
@@ -137,12 +142,17 @@ class CollectorConnector(BaseConnector):
     #     return [CLOUD_SERVICE_GROUP_MAP[_cloud_service_group] for _cloud_service_group in cloud_service_groups
     #             if _cloud_service_group in CLOUD_SERVICE_GROUP_MAP]
 
-    def get_account_id(self, secret_data, region=DEFAULT_REGION):
-        _session = self.get_session(secret_data, region)
-        sts_client = _session.client('sts', verify=BOTO3_HTTPS_VERIFIED)
-        return sts_client.get_caller_identity()['Account']
+    # def get_account_id(self, secret_data, region=DEFAULT_REGION):
+    #     _session = self.get_session(secret_data, region)
+    #     sts_client = _session.client('sts', verify=BOTO3_HTTPS_VERIFIED)
+    #     return sts_client.get_caller_identity()['Account']
 
-    # @staticmethod
+    @classmethod
+    def get_connector_by_service(cls, service):
+        for sub_cls in cls.__subclasses__():
+            if sub_cls.cloud_service_group == service:
+                return sub_cls
+
     # def get_regions(secret_data):
     #     _session = get_session(secret_data, DEFAULT_REGION)
     #     ec2_client = _session.client('ec2', verify=BOTO3_HTTPS_VERIFIED)
@@ -158,7 +168,5 @@ class CollectorConnector(BaseConnector):
             region_info.update({
                 'region_code': region_name
             })
-
             return region_info
-
         return None

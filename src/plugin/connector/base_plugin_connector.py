@@ -1,5 +1,6 @@
 import json
 import logging
+from boto3.session import Session
 from spaceone.core.connector import BaseConnector
 from ..conf.cloud_service_conf import *
 

@@ -1,10 +1,14 @@
+import os
 import json
 import logging
 import abc
 import datetime
 
+from spaceone.core.utils import dump_yaml, load_yaml_from_file
 from spaceone.core.manager import BaseManager
+from spaceone.core import config
 from ..conf.cloud_service_conf import *
+from ..connector.collector_connector import CollectorConnector
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -17,52 +21,129 @@ class CollectorManager(BaseManager):
     '''
 
     cloud_service_types = []
-
     cloud_service_group = ''
     cloud_service_type = ''
+    # _session = None
+    connector = None
 
-    def __init__(self, session=None, *args, **kwargs):
+    def __init__(self, session=None, service=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._session = session
-        self.connector = None
+        self.connector = CollectorConnector.get_connector_by_service(service)()
+
 
     @abc.abstractmethod
     def collect(self, options, secret_data, schema, task_options):
         raise NotImplementedError()
 
-    @property
-    def session(self):
-        return self._session
+    # @property
+    # def session(self):
+    #     return self._session
 
-    def create_session(self, secret_data, region):
-        '''
-        secret_data를 받아서, connector를 생성하는 함수        '''
-        if not self.connector:
-            raise ValueError('Connector is not set!')
-        self._session = self.connector.get_session(secret_data, region)
+    def set_connector(self, service):
+        # if cls._connector is None:
+        #     print("HOW MANY TIMES AM I GETTING PRINTED?")
+        self.connector = CollectorConnector.get_connector_by_service(service)()
+
+    # def create_session(self, secret_data, region):
+    #     '''
+    #     secret_data를 받아서, connector를 생성하는 함수        '''
+    #     if not self.connector:
+    #         raise ValueError('Connector is not set!')
+    #     self._session = self.connector.get_session(secret_data, region)
+
+    def collect_resources(self, options, secret_data, schema, task_options):
+        print("CONNECTOR IS ")
+        print(self.connector)
+        service = task_options.get('service')
+        region = task_options.get('region')
+        service_type_managers = self.get_service_type_managers(service)
+        # for service_type_manager in service_type_managers:
+        #     yield from service_type_manager().collect_resources(options, secret_data, schema, task_options)
+        resources = []
+        additional_data = ['name', 'type', 'size', 'launched_at']
+        region = task_options.get('region')
+        service = task_options.get('service')
+        collector_connector = CollectorConnector()
+        values = (secret_data, region)
+        collector_connector.session(values)
+        collector_connector.client(service)
+        for mgr in service_type_managers:
+            mgr_instance = mgr(collector_connector.client())
+            print(mgr_instance.connector)
+            try:
+                for collected_dict in mgr_instance.collect(options, secret_data, schema, task_options):
+                    resources.append(collected_dict)
+            # for collected_dict in mgr.collect(options, secret_data, schema, task_options):
+            #     data = collected_dict['data']
+            #     if getattr(data, 'resource_type', None) and data.resource_type == 'inventory.ErrorResource':
+            #         # Error Resource
+            #         resources.append(data)
+            #     else:
+            #         # Cloud Service Resource
+            #         if getattr(data, 'set_cloudwatch', None):
+            #             data.cloudwatch = data.set_cloudwatch(region)
+            #
+            #         resource_dict = {
+            #             'data': data,
+            #             'account': collected_dict.get('account'),
+            #             'instance_size': float(collected_dict.get('instance_size', 0)),
+            #             'instance_type': collected_dict.get('instance_type', ''),
+            #             'launched_at': str(collected_dict.get('launched_at', '')),
+            #             'tags': collected_dict.get('tags', {}),
+            #             'region_code': region,
+            #             'reference': data.reference(region)
+            #         }
+            #
+            #         for add_field in additional_data:
+            #             if add_field in collected_dict:
+            #                 resource_dict.update({add_field: collected_dict[add_field]})
+            #         resource_dict.update({'cloud_service_group': self.cloud_service_group})
+            #         resources.append({'resource': resource_dict})
+            except Exception as e:
+                resource_id = ''
+                error_resource_response = self.generate_error("ec2", region, resource_id, "EC2", mgr_instance.cloud_service_type, e)
+                resources.append(error_resource_response)
+        print('--------------------------------------------------------------------')
+        print(resources)
+        return resources
 
     def generate_error(self, service_name, region_name, resource_id, cloud_service_group, cloud_service_type,
                        error_message):
         _LOGGER.error(f'[generate_error] [{service_name}] [{region_name}] {error_message}', exc_info=True)
 
+        error_resource_response = {
+            'state': 'FAILURE',
+            'resource_type': 'inventory.ErrorResource'
+        }
         if type(error_message) is dict:
-            error_resource_response = {'message': json.dumps(error_message),
+            error_resource_response.update({'message': json.dumps(error_message),
                                        'resource': {'resource_id': resource_id,
+                                                    'resource_type': 'inventory.CloudService',
+                                                    'provider': 'aws',
                                                     'cloud_service_group': cloud_service_group,
-                                                    'cloud_service_type': cloud_service_type}}
+                                                    'cloud_service_type': cloud_service_type}})
         else:
-            error_resource_response = {'message': str(error_message),
+            error_resource_response.update({'message': str(error_message),
                                        'resource': {'resource_id': resource_id,
+                                                    'resource_type': 'inventory.CloudService',
+                                                    'provider': 'aws',
                                                     'cloud_service_group': cloud_service_group,
-                                                    'cloud_service_type': cloud_service_type}}
+                                                    'cloud_service_type': cloud_service_type}})
 
         return error_resource_response
 
     @classmethod
-    def get_target_manager(cls, service):
+    def get_all_managers_in_service(cls):
+        return cls.__subclasses__()
+
+    @classmethod
+    def get_service_type_managers(cls, service):
+        service_type_managers = []
         for sub_cls in cls.__subclasses__():
-            if sub_cls.service_type == service:
-                return sub_cls
+            print(sub_cls.cloud_service_group)
+            if sub_cls.cloud_service_group == service:
+                service_type_managers.append(sub_cls)
+        return service_type_managers
 
 
     # def set_cloud_service_types(self):
@@ -145,6 +226,27 @@ class CollectorManager(BaseManager):
         }
 
         return [dimension]
+
+    # @staticmethod
+    # def set_data_and_yaml(field, folder_name):
+    #     project_path = __import__(config.get_package()).__path__[0]
+    #     file_path = os.path.join(
+    #         project_path, "metadata", "dynamic_ui", f"{folder_name}"
+    #     )
+    #
+    #     for file in os.listdir(file_path):
+    #         if file.endswith(".yaml") or file.endswith(".yml"):
+    #             field_type, _ = file.rsplit("_", 1)
+    #
+    #             field[f"{field_type}_example"] = {
+    #                 "data": {
+    #                     "data": {f"{field_type}": field.get(field_type, {})},
+    #                 },
+    #                 "yaml": dump_yaml(
+    #                     load_yaml_from_file(os.path.join(file_path, file))
+    #                 ),
+    #             }
+    #     return field
 
     @staticmethod
     def convert_tags_to_dict_type(tags, key='Key', value='Value'):
