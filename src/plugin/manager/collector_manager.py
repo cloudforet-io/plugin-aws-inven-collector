@@ -14,22 +14,21 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class CollectorManager(BaseManager):
-    '''
+    """
     이 collect()함수를 cloud_service_type_manager 와 region_manager, 그리고 cloud_service_manager가 implement한다
     필요하면, 공통적으로 들어가는 util functions 들이 여기 들어가면 된다 (예를 들어, generate_error_response())
 
-    '''
+    """
 
     cloud_service_types = []
-    cloud_service_group = ''
-    cloud_service_type = ''
+    cloud_service_group = ""
+    cloud_service_type = ""
     # _session = None
     connector = None
 
     def __init__(self, session=None, service=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.connector = CollectorConnector.get_connector_by_service(service)()
-
 
     @abc.abstractmethod
     def collect(self, options, secret_data, schema, task_options):
@@ -54,15 +53,15 @@ class CollectorManager(BaseManager):
     def collect_resources(self, options, secret_data, schema, task_options):
         print("CONNECTOR IS ")
         print(self.connector)
-        service = task_options.get('service')
-        region = task_options.get('region')
+        service = task_options.get("service")
+        region = task_options.get("region")
         service_type_managers = self.get_service_type_managers(service)
         # for service_type_manager in service_type_managers:
         #     yield from service_type_manager().collect_resources(options, secret_data, schema, task_options)
         resources = []
-        additional_data = ['name', 'type', 'size', 'launched_at']
-        region = task_options.get('region')
-        service = task_options.get('service')
+        additional_data = ["name", "type", "size", "launched_at"]
+        region = task_options.get("region")
+        service = task_options.get("service")
         collector_connector = CollectorConnector()
         values = (secret_data, region)
         collector_connector.session(values)
@@ -71,7 +70,9 @@ class CollectorManager(BaseManager):
             mgr_instance = mgr(collector_connector.client())
             print(mgr_instance.connector)
             try:
-                for collected_dict in mgr_instance.collect(options, secret_data, schema, task_options):
+                for collected_dict in mgr_instance.collect(
+                    options, secret_data, schema, task_options
+                ):
                     resources.append(collected_dict)
             # for collected_dict in mgr.collect(options, secret_data, schema, task_options):
             #     data = collected_dict['data']
@@ -100,35 +101,62 @@ class CollectorManager(BaseManager):
             #         resource_dict.update({'cloud_service_group': self.cloud_service_group})
             #         resources.append({'resource': resource_dict})
             except Exception as e:
-                resource_id = ''
-                error_resource_response = self.generate_error("ec2", region, resource_id, "EC2", mgr_instance.cloud_service_type, e)
+                resource_id = ""
+                error_resource_response = self.generate_error(
+                    "ec2",
+                    region,
+                    resource_id,
+                    "EC2",
+                    mgr_instance.cloud_service_type,
+                    e,
+                )
                 resources.append(error_resource_response)
-        print('--------------------------------------------------------------------')
-        print(resources)
         return resources
 
-    def generate_error(self, service_name, region_name, resource_id, cloud_service_group, cloud_service_type,
-                       error_message):
-        _LOGGER.error(f'[generate_error] [{service_name}] [{region_name}] {error_message}', exc_info=True)
+    def generate_error(
+        self,
+        service_name,
+        region_name,
+        resource_id,
+        cloud_service_group,
+        cloud_service_type,
+        error_message,
+    ):
+        _LOGGER.error(
+            f"[generate_error] [{service_name}] [{region_name}] {error_message}",
+            exc_info=True,
+        )
 
         error_resource_response = {
-            'state': 'FAILURE',
-            'resource_type': 'inventory.ErrorResource'
+            "state": "FAILURE",
+            "resource_type": "inventory.ErrorResource",
         }
         if type(error_message) is dict:
-            error_resource_response.update({'message': json.dumps(error_message),
-                                       'resource': {'resource_id': resource_id,
-                                                    'resource_type': 'inventory.CloudService',
-                                                    'provider': 'aws',
-                                                    'cloud_service_group': cloud_service_group,
-                                                    'cloud_service_type': cloud_service_type}})
+            error_resource_response.update(
+                {
+                    "message": json.dumps(error_message),
+                    "resource": {
+                        "resource_id": resource_id,
+                        "resource_type": "inventory.CloudService",
+                        "provider": "aws",
+                        "cloud_service_group": cloud_service_group,
+                        "cloud_service_type": cloud_service_type,
+                    },
+                }
+            )
         else:
-            error_resource_response.update({'message': str(error_message),
-                                       'resource': {'resource_id': resource_id,
-                                                    'resource_type': 'inventory.CloudService',
-                                                    'provider': 'aws',
-                                                    'cloud_service_group': cloud_service_group,
-                                                    'cloud_service_type': cloud_service_type}})
+            error_resource_response.update(
+                {
+                    "message": str(error_message),
+                    "resource": {
+                        "resource_id": resource_id,
+                        "resource_type": "inventory.CloudService",
+                        "provider": "aws",
+                        "cloud_service_group": cloud_service_group,
+                        "cloud_service_type": cloud_service_type,
+                    },
+                }
+            )
 
         return error_resource_response
 
@@ -144,7 +172,6 @@ class CollectorManager(BaseManager):
             if sub_cls.cloud_service_group == service:
                 service_type_managers.append(sub_cls)
         return service_type_managers
-
 
     # def set_cloud_service_types(self):
     #     if 'service_code_mappers' in self.options:
@@ -173,20 +200,20 @@ class CollectorManager(BaseManager):
     @staticmethod
     def set_cloudtrail(region_name, resource_type, resource_name):
         cloudtrail = {
-            'LookupAttributes': [
+            "LookupAttributes": [
                 {
                     "AttributeKey": "ResourceName",
                     "AttributeValue": resource_name,
                 }
             ],
-            'region_name': region_name,
-            'resource_type': resource_type
+            "region_name": region_name,
+            "resource_type": resource_type,
         }
 
         return cloudtrail
 
     def set_cloudwatch(self, namespace, dimension_name, resource_id, region_name):
-        '''
+        """
         data.cloudwatch: {
             "metrics_info": [
                 {
@@ -201,29 +228,30 @@ class CollectorManager(BaseManager):
             ]
             "region_name": region_name
         }
-        '''
+        """
 
         cloudwatch_data = {
-            'region_name': region_name,
-            'metrics_info': self.set_metrics_info(namespace, dimension_name, resource_id)
+            "region_name": region_name,
+            "metrics_info": self.set_metrics_info(
+                namespace, dimension_name, resource_id
+            ),
         }
 
         return cloudwatch_data
 
     def set_metrics_info(self, namespace, dimension_name, resource_id):
-        metric_info = {'Namespace': namespace}
+        metric_info = {"Namespace": namespace}
 
         if dimension_name:
-            metric_info.update({'Dimensions': self.set_dimensions(dimension_name, resource_id)})
+            metric_info.update(
+                {"Dimensions": self.set_dimensions(dimension_name, resource_id)}
+            )
 
         return [metric_info]
 
     @staticmethod
     def set_dimensions(dimension_name, resource_id):
-        dimension = {
-            'Name': dimension_name,
-            'Value': resource_id
-        }
+        dimension = {"Name": dimension_name, "Value": resource_id}
 
         return [dimension]
 
@@ -249,7 +277,7 @@ class CollectorManager(BaseManager):
     #     return field
 
     @staticmethod
-    def convert_tags_to_dict_type(tags, key='Key', value='Value'):
+    def convert_tags_to_dict_type(tags, key="Key", value="Value"):
         dict_tags = {}
 
         for _tag in tags:

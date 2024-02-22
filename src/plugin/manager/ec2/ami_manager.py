@@ -30,8 +30,6 @@ class AMIManager(ResourceManager):
     def create_cloud_service(self, region, options, secret_data, schema):
         self.cloud_service_type = "AMI"
         cloudtrail_resource_type = "AWS::EC2::Ami"
-        print("HERERERER!!!!!!!!")
-        print(self.connector)
         results = self.connector.get_ami_images()
         account_id = self.connector.get_account_id()
         # print(account_id)
@@ -40,34 +38,44 @@ class AMIManager(ResourceManager):
                 try:
                     permission_info = self.connector.get_ami_image_attributes(image)
                     if permission_info:
-                        image.update({
-                            "launch_permissions": [_permission for _permission in
-                                                   permission_info.get("LaunchPermissions", [])]
-                        })
+                        image.update(
+                            {
+                                "launch_permissions": [
+                                    _permission
+                                    for _permission in permission_info.get(
+                                        "LaunchPermissions", []
+                                    )
+                                ]
+                            }
+                        )
 
                 except Exception as e:
                     _LOGGER.debug(f"[ami][request_ami_data] SKIP: {e}")
 
                 platform = image.get("Platform", "")
-                image.update({
-                    "Platform": platform if platform else "Other Linux",
-                    "Cloudtrail": self.set_cloudtrail(region, cloudtrail_resource_type, image["ImageId"])
-                })
+                image.update(
+                    {
+                        "Platform": platform if platform else "Other Linux",
+                        "Cloudtrail": self.set_cloudtrail(
+                            region, cloudtrail_resource_type, image["ImageId"]
+                        ),
+                    }
+                )
 
-                reference = self._get_reference(region, image.get('ImageId', ''))
+                reference = self._get_reference(region, image.get("ImageId", ""))
 
                 image_vo = image
                 cloud_service = make_cloud_service(
-                    name=image_vo.get('Name', ''),
+                    name=image_vo.get("Name", ""),
                     cloud_service_type=self.cloud_service_type,
                     cloud_service_group=self.cloud_service_group,
                     provider=self.provider,
                     data=image_vo,
-                    instance_type=image_vo.get('ImageType', ''),
+                    instance_type=image_vo.get("ImageType", ""),
                     account=account_id,
-                    tags=self.convert_tags_to_dict_type(image.get('Tags', [])),
+                    tags=self.convert_tags_to_dict_type(image.get("Tags", [])),
                     reference=reference,
-                    region_code=region
+                    region_code=region,
                 )
                 yield cloud_service
                 # yield {
@@ -84,12 +92,12 @@ class AMIManager(ResourceManager):
                     provider=self.provider,
                     cloud_service_group=self.cloud_service_group,
                     cloud_service_type=self.cloud_service_type,
-                    region_name=region
+                    region_name=region,
                 )
 
     @staticmethod
     def _get_reference(region, image_id):
         return {
             "resource_id": image_id,
-            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={region}#Images:visibility=public-images;imageId={image_id};sort=name"
+            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={region}#Images:visibility=public-images;imageId={image_id};sort=name",
         }

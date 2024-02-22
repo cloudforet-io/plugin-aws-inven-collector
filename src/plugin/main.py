@@ -242,7 +242,7 @@ def collector_collect(params):
 
 
 @app.route("Job.get_tasks")
-@check_required(["options", "secret_data"])
+# @check_required(["options", "secret_data"])
 def job_get_tasks(params: dict) -> dict:
     """Get job tasks
 
@@ -259,22 +259,23 @@ def job_get_tasks(params: dict) -> dict:
         }
 
     """
-    tasks = []
-    options = params.get("options", {})
-
-    services = _set_service_filter(options)
-    regions = _set_region_filter(options, params)
-
-    # create task 1: task for collecting only cloud service type metadata
-    tasks.extend(_add_cloud_service_type_tasks(services))
-
-    # create task 2: task for collecting only cloud service region metadata
-    tasks.extend(_add_cloud_service_region_tasks(regions))
-
-    # create task 3: task for collecting only cloud service group metadata
-    tasks.extend(_add_cloud_service_group_tasks(services, regions))
-
-    return {"tasks": tasks}
+    pass
+    # tasks = []
+    # options = params.get("options", {})
+    #
+    # services = _set_service_filter(options)
+    # regions = _set_region_filter(options, params)
+    #
+    # # create task 1: task for collecting only cloud service type metadata
+    # tasks.extend(_add_cloud_service_type_tasks(services))
+    #
+    # # create task 2: task for collecting only cloud service region metadata
+    # tasks.extend(_add_cloud_service_region_tasks(regions))
+    #
+    # # create task 3: task for collecting only cloud service group metadata
+    # tasks.extend(_add_cloud_service_group_tasks(services, regions))
+    #
+    # return {"tasks": tasks}
 
 
 def _set_service_filter(options):

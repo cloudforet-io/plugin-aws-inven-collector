@@ -73,7 +73,7 @@ class TestCollect(TestCase):
         options = {
             "resource_type": "inventory.CloudService",
             "region": "ap-northeast-2",
-            "service": "CertificateManager",
+            "service": "DynamoDB",
         }
         filter = {}
 
