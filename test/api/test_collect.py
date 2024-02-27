@@ -63,7 +63,60 @@ class TestCollect(TestCase):
         )
         print_json(v_info)
 
-    def test_collect(self):
+    """
+    ========================================================================================================================
+    This test function below is simulating overall collecting process, from generating tasks to collecting resources. 
+    ========================================================================================================================
+    """
+
+    def test_full_collect(self):
+        print(f"Action 1: Generate Tasks!")
+        print(f"=================== start get_tasks! ==========================")
+        options = {
+            "service_filter": None,
+            "region_filter": None,
+        }
+        v_info = self.inventory.Job.get_tasks(
+            {"options": options, "secret_data": self.secret_data}
+        )
+        print(f"=================== end get_tasks! ==========================")
+        all_tasks = MessageToDict(v_info, preserving_proto_field_name=True)
+
+        print(f"Action 2: Collect Resources!")
+        print(
+            f"=================== start collect_resources! =========================="
+        )
+        for task in all_tasks.get("tasks", []):
+            task_options = task["task_options"]
+            filter = {}
+            params = {
+                "options": task_options,
+                "secret_data": self.secret_data,
+                "filter": filter,
+            }
+            res_stream = self.inventory.Collector.collect(params)
+            for res in res_stream:
+                print_json(res)
+        print(f"=================== end collect_resources! ==========================")
+
+    """
+    ========================================================================================================================
+    Test functions below are for individual test purposes. 
+    ========================================================================================================================
+    """
+
+    def test_cloud_service_task(self):
+        services = ["CertificateManager"]
+        regions = ["ap-northeast-1", "ap-northeast-2"]
+        for service in services:
+            for region in regions:
+                self.test_collect_cloud_service(service, region)
+
+    def test_cloud_service_type_task(self):
+        services = ["CertificateManager"]
+        self.test_collect_cloud_service_type(services)
+
+    def test_collect_cloud_service(self, service=None, region=None):
         options = {}
         # task_options = {
         #     'resource_type': 'inventory.CloudService',
@@ -72,37 +125,44 @@ class TestCollect(TestCase):
         # }
         options = {
             "resource_type": "inventory.CloudService",
-            "region": "ap-northeast-2",
-            "service": "DynamoDB",
+            "region": region,
+            "service": service,
+        }
+
+        # options = {
+        #     "resource_type": "inventory.CloudService",
+        #     "region": "ap-northeast-2",
+        #     "service": "CertificateManager",
+        # }
+        filter = {}
+        params = {"options": options, "secret_data": self.secret_data, "filter": filter}
+
+        res_stream = self.inventory.Collector.collect(params)
+        for res in res_stream:
+            print_json(res)
+
+    def test_collect_cloud_service_type(self, services):
+        options = {
+            "resource_type": "inventory.CloudServiceType",
+            "services": services,
         }
         filter = {}
 
         params = {"options": options, "secret_data": self.secret_data, "filter": filter}
 
         res_stream = self.inventory.Collector.collect(params)
-        cnt = 0
         for res in res_stream:
             print_json(res)
-            # d = MessageToDict(res, preserving_proto_field_name=True)
-            # m = 'no cloud svc!\n'
-            # unknown = False
-            # if 'cloud_service_type' in d['resource'].keys():
-            #     unknown = True
-            #     m = "group : " + d['resource']['cloud_service_group'] + " type : " + d['resource']['cloud_service_type'] + '\n'
-            # if unknown == False:
-            #     print("WOW")
-            # with open('changed_unknown_output_{number}.yaml'.format(number=cnt), 'w') as f:
-            #     self.assertIsNotNone(res)
-            #     pprint.pprint(MessageToDict(res, preserving_proto_field_name=True), f)
-            # with open('output_{number}.yaml'.format(number=cnt), 'w') as f:
-            #     self.assertIsNotNone(res)
-            #     pprint.pprint(MessageToDict(res, preserving_proto_field_name=True), f)
-            # cnt += 1
 
     def test_get_tasks(self):
         print(f"=================== start get_tasks! ==========================")
-        options = {"service_filter": ["EC2"], "region_filter": ["ap-northeast-1"]}
+        options = {
+            "service_filter": ["CertificateManager"],
+            "region_filter": ["ap-northeast-2"],
+        }
         v_info = self.inventory.Job.get_tasks(
             {"options": options, "secret_data": self.secret_data}
         )
         print_json(v_info)
+
+        return MessageToDict(v_info, preserving_proto_field_name=True)

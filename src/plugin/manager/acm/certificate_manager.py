@@ -1,6 +1,6 @@
-from spaceone.inventory.plugin.collector.lib import *
 from ..base import ResourceManager
 from ...conf.cloud_service_conf import *
+from spaceone.inventory.plugin.collector.lib import *
 
 
 class CertificateManager(ResourceManager):
@@ -27,7 +27,6 @@ class CertificateManager(ResourceManager):
         )
 
     def create_cloud_service(self, region, options, secret_data, schema):
-        self.cloud_service_type = "Certificate"
         cloudwatch_namespace = "AWS/CertificateManager"
         cloudwatch_dimension_name = "CertificateArn"
         cloudtrail_resource_type = "AWS::ACM::Certificate"
@@ -78,7 +77,10 @@ class CertificateManager(ResourceManager):
                     reference = self.get_reference(
                         certificate_info.get("CertificateArn"), link
                     )
+
+                    # Converting datetime type attributes to ISO8601 format needed to meet protobuf format
                     self._update_times(certificate_info)
+
                     certificate_vo = certificate_info
                     cloud_service = make_cloud_service(
                         name=certificate_vo.get("DomainName", ""),
@@ -92,19 +94,8 @@ class CertificateManager(ResourceManager):
                         region_code=region,
                     )
                     yield cloud_service
-                    # yield {
-                    #     "data": certificate_vo,
-                    #     "name": certificate_vo.domain_name,
-                    #     "instance_type": certificate_vo.type_display,
-                    #     "account": account_id,
-                    #     "tags": self.get_tags(certificate_vo.certificate_arn),
-                    #     "launched_at": self.datetime_to_iso8601(
-                    #         certificate_vo.created_at
-                    #     ),
-                    # }
 
                 except Exception as e:
-                    # resource_id = raw.get("CertificateArn", "")
                     yield make_error_response(
                         error=e,
                         provider=self.provider,
@@ -116,30 +107,6 @@ class CertificateManager(ResourceManager):
     def get_tags(self, arn):
         tag_response = self.connector.list_tags_for_certificate(arn)
         return self.convert_tags_to_dict_type(tag_response.get("Tags", []))
-
-    @staticmethod
-    def get_identifier(certificate_arn):
-        return certificate_arn.split("/")[-1]
-
-    @staticmethod
-    def get_additional_names_display(subject_alternative_names):
-        return subject_alternative_names[1:]
-
-    @staticmethod
-    def get_in_use_display(in_use_by):
-        if in_use_by:
-            return "Yes"
-        else:
-            return "No"
-
-    @staticmethod
-    def get_string_title(str):
-        try:
-            display_title = str.replace("_", " ").title()
-        except Exception as e:
-            display_title = str
-
-        return display_title
 
     def _update_times(self, certificate_info):
         certificate_info.update(
@@ -164,3 +131,27 @@ class CertificateManager(ResourceManager):
         renewal_info.update(
             {"UpdatedAt": self.datetime_to_iso8601(renewal_info.get("UpdatedAt"))}
         )
+
+    @staticmethod
+    def get_identifier(certificate_arn):
+        return certificate_arn.split("/")[-1]
+
+    @staticmethod
+    def get_additional_names_display(subject_alternative_names):
+        return subject_alternative_names[1:]
+
+    @staticmethod
+    def get_in_use_display(in_use_by):
+        if in_use_by:
+            return "Yes"
+        else:
+            return "No"
+
+    @staticmethod
+    def get_string_title(str):
+        try:
+            display_title = str.replace("_", " ").title()
+        except Exception as e:
+            display_title = str
+
+        return display_title

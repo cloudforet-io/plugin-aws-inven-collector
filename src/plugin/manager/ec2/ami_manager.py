@@ -1,6 +1,7 @@
 from spaceone.inventory.plugin.collector.lib import *
 
 from ..base import ResourceManager
+from ...conf.cloud_service_conf import ASSET_URL
 from ...manager.collector_manager import _LOGGER
 
 
@@ -14,25 +15,24 @@ class AMIManager(ResourceManager):
         self.cloud_service_type = "AMI"
         self.metadata_path = "metadata/ec2/ami.yaml"
 
-    # def create_cloud_service_type(self):
-    #     return make_cloud_service_type(
-    #         name=self.cloud_service_type,
-    #         group=self.cloud_service_group,
-    #         provider=self.provider,
-    #         metadata_path=self.metadata_path,
-    #         is_primary=True,
-    #         is_major=True,
-    #         service_code="Cloud Pub/Sub",
-    #         tags={"spaceone:icon": f"{ASSET_URL}/cloud_pubsub.svg"},
-    #         labels=["Application Integration"],
-    #     )
+    def create_cloud_service_type(self):
+        return make_cloud_service_type(
+            name=self.cloud_service_type,
+            group=self.cloud_service_group,
+            provider=self.provider,
+            metadata_path=self.metadata_path,
+            is_primary=True,
+            is_major=True,
+            service_code="AmazonEC2",
+            tags={"spaceone:icon": f"{ASSET_URL}/Amazon-AMI.svg"},
+            labels=["Compute"],
+        )
 
     def create_cloud_service(self, region, options, secret_data, schema):
         self.cloud_service_type = "AMI"
         cloudtrail_resource_type = "AWS::EC2::Ami"
         results = self.connector.get_ami_images()
         account_id = self.connector.get_account_id()
-        # print(account_id)
         for image in results.get("Images", []):
             try:
                 try:

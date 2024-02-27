@@ -1,6 +1,8 @@
 import abc
 import logging
 import datetime
+
+from plugin.conf.cloud_service_conf import REGION_INFO
 from plugin.connector.base import ResourceConnector
 from spaceone.core.manager import BaseManager
 from spaceone.inventory.plugin.collector.lib import *
@@ -34,6 +36,34 @@ class ResourceManager(BaseManager):
             if manager.cloud_service_group == service:
                 yield manager
 
+    @classmethod
+    def get_service_names(cls):
+        services_name = set()
+        for sub_cls in cls.__subclasses__():
+            services_name.add(sub_cls.cloud_service_group)
+        return list(services_name)
+
+    @classmethod
+    def collect_region(cls, region):
+        match_region_info = REGION_INFO.get(region, None)
+        if match_region_info is not None:
+            region_info = match_region_info.copy()
+            region_info.update(
+                {
+                    "name": match_region_info.get("name", ""),
+                    "region_code": region,
+                    "provider": "aws",
+                }
+            )
+
+            return make_response(
+                region=region_info,
+                match_keys=[["provider", "region_code"]],
+                resource_type="inventory.Region",
+            )
+
+        return None
+
     def collect_resources(
         self, service, service_type, region, options, secret_data, schema
     ):
@@ -42,7 +72,6 @@ class ResourceManager(BaseManager):
         )
         target_connector = ResourceConnector.get_connector(service, service_type)
         self.connector = target_connector(secret_data=secret_data, region_name=region)
-        print(self.connector)
         self.connector.set_account_id()
         try:
             # yield from self.collect_cloud_service_type()
@@ -91,6 +120,7 @@ class ResourceManager(BaseManager):
                         "account",
                     ]
                 ],
+                resource_type="inventory.CloudService",
             )
 
     @staticmethod
@@ -182,9 +212,7 @@ class ResourceManager(BaseManager):
     def datetime_to_iso8601(value: datetime.datetime):
         if isinstance(value, datetime.datetime):
             value = value.replace(tzinfo=None)
-            # print(f"{value.isoformat()}")
             return f"{value.isoformat()}"
-
         return None
 
     @abc.abstractmethod
@@ -196,3 +224,7 @@ class ResourceManager(BaseManager):
     @abc.abstractmethod
     def create_cloud_service(self, region, options, secret_data, schema):
         raise NotImplementedError("method `create_cloud_service` should be implemented")
+
+    @classmethod
+    def get_region_names(cls):
+        return list(REGION_INFO.keys())

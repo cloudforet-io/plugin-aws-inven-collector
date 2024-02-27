@@ -1,2 +1,1 @@
-from .rest_api_manager import RestApiManager
-from .websocket_manager import WebSocketManager
+from .api_gateway_manager import ApiGatewayManager

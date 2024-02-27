@@ -191,58 +191,38 @@ def collector_collect(params):
     secret_data = params["secret_data"]
     schema = params.get("schema")
 
-    task_options = params.get("task_options", {})
     resource_type = options.get("resource_type")
 
-    # if services := options.get("cloud_service_types"):
-    #     for service in services:
-    #         resource_mgrs = ResourceManager.get_manager_by_service(service)
-    #         for resource_mgr in resource_mgrs:
-    #             results = resource_mgr().collect_resources(options, secret_data, schema)
-    #             for result in results:
-    #                 yield result
-    # else:
-    #     resource_mgrs = ResourceManager.list_managers()
-    #     for manager in resource_mgrs:
-    #         results = manager().collect_resources(options, secret_data, schema)
-    #
-    #         for result in results:
-    #             yield result
-    if resource_type == "inventory.Region":
-        return
+    if resource_type == "inventory.CloudServiceType":
+        services = options.get("services")
+        for service in services:
+            resource_mgrs = ResourceManager.get_manager_by_service(service)
+            for resource_mgr in resource_mgrs:
+                results = resource_mgr().collect_cloud_service_type()
+                for result in results:
+                    yield result
+
     elif resource_type == "inventory.CloudService":
         service = options.get("service")
         region = options.get("region")
         resource_mgrs = ResourceManager.get_manager_by_service(service)
+        resource_exists = False
         for resource_mgr in resource_mgrs:
             service_type = resource_mgr.cloud_service_type
             results = resource_mgr().collect_resources(
                 service, service_type, region, options, secret_data, schema
             )
             for result in results:
+                resource_exists = True
                 yield result
-    #     service = task_options.get('service')
-    #     region = task_options.get('region')
-    #     print("CONNECTOR HERE IS ")
-    #     # collector_manager.set_connector(service)
-    #     # collector_manager.create_session(secret_data, region)
-    #     # managers = CollectorManager.get_service_type_managers(service)
-    #     print("AM I HERE?")
-    #
-    #     #return collector_manager.collect_resources(options, secret_data, schema, task_options)
-    #     # for manager in managers:
-    #     #     manager_instance = manager()
-    #     #     for resource in manager_instance.collect(options, secret_data, schema, task_options):
-    #     #         print(resource)
-    #     #         #yield resource
-    #
-    #
-    # else:
-    #     raise ValueError('Invalid resource type!')
+
+        if resource_exists:
+            yield ResourceManager.collect_region(region)
+    else:
+        raise ValueError("Invalid resource type!")
 
 
 @app.route("Job.get_tasks")
-# @check_required(["options", "secret_data"])
 def job_get_tasks(params: dict) -> dict:
     """Get job tasks
 
@@ -259,23 +239,23 @@ def job_get_tasks(params: dict) -> dict:
         }
 
     """
-    pass
-    # tasks = []
-    # options = params.get("options", {})
-    #
-    # services = _set_service_filter(options)
-    # regions = _set_region_filter(options, params)
-    #
-    # # create task 1: task for collecting only cloud service type metadata
-    # tasks.extend(_add_cloud_service_type_tasks(services))
-    #
-    # # create task 2: task for collecting only cloud service region metadata
+    tasks = []
+    options = params.get("options", {})
+
+    services = _set_service_filter(options)
+    regions = _set_region_filter(options)
+
+    # create task 1: task for collecting only cloud service type metadata
+    tasks.extend(_add_cloud_service_type_tasks(services))
+
+    # create task 2: task for collecting only cloud service region metadata
+    # Commented out for now
     # tasks.extend(_add_cloud_service_region_tasks(regions))
-    #
-    # # create task 3: task for collecting only cloud service group metadata
-    # tasks.extend(_add_cloud_service_group_tasks(services, regions))
-    #
-    # return {"tasks": tasks}
+
+    # create task 3: task for collecting only cloud service group metadata
+    tasks.extend(_add_cloud_service_group_tasks(services, regions))
+
+    return {"tasks": tasks}
 
 
 def _set_service_filter(options):
@@ -284,7 +264,7 @@ def _set_service_filter(options):
     2. service_filter 내용물 자체 check (it could have sth that is not valid, like ECD instead of EC2
     """
 
-    available_services = CloudServiceManager.get_service_names()
+    available_services = ResourceManager.get_service_names()
 
     if service_filter := options.get("service_filter"):
         _validate_service_filter(service_filter, available_services)
@@ -303,9 +283,8 @@ def _validate_service_filter(service_filter, available_services):
             raise ValueError("Not a valid service!")
 
 
-def _set_region_filter(options, params):
-    _manager = RegionManager()
-    available_regions = _manager.get_region_names()
+def _set_region_filter(options):
+    available_regions = ResourceManager.get_region_names()
 
     if region_filter := options.get("region_filter"):
         _validate_region_filter(region_filter, available_regions)
@@ -355,9 +334,9 @@ def _add_cloud_service_group_tasks(services, regions):
 
 
 def _make_task_wrapper(**kwargs) -> dict:
-    task_options = {}
+    task_options = {"task_options": {}}
     for key, value in kwargs.items():
-        task_options[key] = value
+        task_options["task_options"][key] = value
     return task_options
 
 
