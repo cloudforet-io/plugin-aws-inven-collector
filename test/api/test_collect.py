@@ -89,8 +89,6 @@ class TestCollect(TestCase):
         for task in all_tasks.get("tasks", []):
             task_options = task["task_options"]
             filter = {}
-            print("THIS TASK!")
-            print(task_options)
             params = {
                 "options": task_options,
                 "secret_data": self.secret_data,

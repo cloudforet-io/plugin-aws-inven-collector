@@ -24,13 +24,13 @@ class ResourceManager(BaseManager):
         self.cloud_service_type = ""
         self.connector = None
 
-    def collect_resources(
-        self, service, service_type, region, options, secret_data, schema
-    ):
+    def collect_resources(self, region, options, secret_data, schema):
         _LOGGER.debug(
             f"[collect_resources] collect Field resources (options: {options})"
         )
-        target_connector = ResourceConnector.get_connector(service, service_type)
+        target_connector = ResourceConnector.get_connector(
+            self.cloud_service_group, self.cloud_service_type
+        )
         self.connector = target_connector(secret_data=secret_data, region_name=region)
         try:
             yield from self.collect_cloud_service(region, options, secret_data, schema)
@@ -126,8 +126,6 @@ class ResourceManager(BaseManager):
     @classmethod
     def get_manager_by_service(cls, service):
         for manager in cls.list_managers():
-            print(manager)
-            print(manager.cloud_service_group)
             if manager.cloud_service_group == service:
                 yield manager
 

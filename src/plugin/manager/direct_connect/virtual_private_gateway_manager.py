@@ -29,7 +29,6 @@ class VirtualPrivateGatewayManager(ResourceManager):
     def create_cloud_service(self, region, options, secret_data, schema):
         results = self.connector.get_private_virtual_gateways()
         account_id = self.connector.get_account_id()
-        print(results)
         for raw in results.get("virtualGateways", []):
             try:
                 raw.update(

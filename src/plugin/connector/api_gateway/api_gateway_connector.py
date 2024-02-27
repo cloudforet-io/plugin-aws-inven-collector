@@ -1,3 +1,4 @@
+from plugin.conf.cloud_service_conf import BOTO3_HTTPS_VERIFIED
 from plugin.connector.base import ResourceConnector
 
 
@@ -26,7 +27,10 @@ class APIGatewayConnector(ResourceConnector):
 
     def get_apis(self):
         self.rest_service_name = "apigatewayv2"
-        paginator = self.client.get_paginator("get_apis")
+        temp_client = self.session.client(
+            self.rest_service_name, verify=BOTO3_HTTPS_VERIFIED
+        )
+        paginator = temp_client.get_paginator("get_apis")
         response_iterator = paginator.paginate(
             PaginationConfig={
                 "MaxItems": 10000,

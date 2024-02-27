@@ -157,12 +157,6 @@ class ResourceConnector(BaseConnector):
         )
 
     @property
-    def init_client(self):
-        if self._init_client is None:
-            self._init_client = self.session.client("ec2", verify=BOTO3_HTTPS_VERIFIED)
-        return self._init_client
-
-    @property
     def client(self):
         if self._client is None:
             self._client = self.session.client(
