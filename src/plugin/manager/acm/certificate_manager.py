@@ -14,7 +14,7 @@ class CertificateManager(ResourceManager):
         self.metadata_path = "metadata/acm/certificate.yaml"
 
     def create_cloud_service_type(self):
-        return make_cloud_service_type(
+        yield make_cloud_service_type(
             name=self.cloud_service_type,
             group=self.cloud_service_group,
             provider=self.provider,

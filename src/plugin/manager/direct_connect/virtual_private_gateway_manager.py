@@ -14,7 +14,7 @@ class VirtualPrivateGatewayManager(ResourceManager):
         self.metadata_path = "metadata/direct_connect/virtual_private_gateway.yaml"
 
     def create_cloud_service_type(self):
-        return make_cloud_service_type(
+        yield make_cloud_service_type(
             name=self.cloud_service_type,
             group=self.cloud_service_group,
             provider=self.provider,
