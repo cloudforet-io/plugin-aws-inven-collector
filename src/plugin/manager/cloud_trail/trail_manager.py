@@ -29,6 +29,7 @@ class TrailManager(ResourceManager):
     def create_cloud_service(self, region, options, secret_data, schema):
         cloudwatch_namespace = "CloudTrailMetrics"
         cloudtrail_resource_type = "AWS::CloudTrail::Trail"
+        self.connector.set_account_id()
         results = self.connector.get_trails()
         account_id = self.connector.get_account_id()
         trails = results.get("trailList", [])
@@ -60,8 +61,6 @@ class TrailManager(ResourceManager):
                     }
                 )
 
-                # yield Trail(raw, strict=False), self._match_tags(raw['TrailARN'], tags)
-
                 trail_vol = raw
                 trail_arn = trail_vol.get("TrailARN", "")
                 link = f"https://console.aws.amazon.com/cloudtrail/home?region={trail_vol.get('HomeRegion', '')}#/configuration/{trail_arn.replace('/', '@')}"
@@ -80,7 +79,6 @@ class TrailManager(ResourceManager):
                 yield cloud_service
 
             except Exception as e:
-                # resource_id = raw.get("ARN", "")
                 yield make_error_response(
                     error=e,
                     provider=self.provider,
@@ -93,27 +91,6 @@ class TrailManager(ResourceManager):
         response = self.connector.get_event_selectors(trail_arn)
         return response.get("EventSelectors", [])
 
-    # def _get_tags(self, trail, region_name):
-    #     # self.reset_region(region_name)
-    #     response = self.client.list_tags(ResourceIdList=[trail.get('TrailARN')])
-    #     for _resource_tag in response.get('ResourceTagList', []):
-    #         tags_list = _resource_tag.get('TagsList', [])
-    #         print(tags_list)
-    #         return self.convert_tags_to_dict_type(tags_list)
-    #
-    #     return {}
-
-    # def _list_tags(self, trails):
-    #     tags = []
-    #     trails_from_region = self._sort_trail_from_region(trails)
-    #
-    #     for _region in trails_from_region:
-    #         self.reset_region(_region)
-    #         response = self.client.list_tags(ResourceIdList=trails_from_region[_region])
-    #         tags.extend(response.get('ResourceTagList', []))
-    #
-    #     return tags
-
     def _get_insight_selectors(self, trail_name):
         response = self.connector.get_insight_selectors(trail_name)
 
@@ -122,33 +99,3 @@ class TrailManager(ResourceManager):
             return None
         else:
             return insight_selectors[0]
-
-    # def _match_tags(self, trail_arn, tags):
-    #     tag_dict = {}
-    #
-    #     try:
-    #         for tag in tags:
-    #             if tag['ResourceId'] == trail_arn:
-    #                 tag_dict.update(self.convert_tags_to_dict_type(tag['TagsList']))
-    #     except Exception as e:
-    #         _LOGGER.error(e)
-    #
-    #     return tag_dict
-
-    # @staticmethod
-    # def _sort_trail_from_region(trails):
-    #     return_dic = {}
-    #
-    #     for _trail in trails:
-    #         trail_arn = _trail.get('TrailARN', '')
-    #         split_trail = trail_arn.split(':')
-    #         try:
-    #             region = split_trail[3]
-    #             if region in return_dic:
-    #                 return_dic[region].append(trail_arn)
-    #             else:
-    #                 return_dic[region] = [trail_arn]
-    #         except IndexError:
-    #             pass
-    #
-    #     return return_dic

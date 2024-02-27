@@ -30,6 +30,7 @@ class CertificateManager(ResourceManager):
         cloudwatch_namespace = "AWS/CertificateManager"
         cloudwatch_dimension_name = "CertificateArn"
         cloudtrail_resource_type = "AWS::ACM::Certificate"
+        self.connector.set_account_id()
         results = self.connector.get_certificates()
         account_id = self.connector.get_account_id()
         for data in results:

@@ -129,7 +129,7 @@ REGION_INFO = {
             "continent": "asia_pacific",
         },
     },
-    "ap-southeast-2	": {
+    "ap-southeast-2": {
         "name": "Asia Pacific (Sydney)",
         "tags": {
             "latitude": "-33.921423",

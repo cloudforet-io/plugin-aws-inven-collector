@@ -1,5 +1,4 @@
 from ..base import ResourceManager
-from ...manager.collector_manager import CollectorManager
 
 
 class InstanceManager(ResourceManager):
@@ -13,11 +12,12 @@ class InstanceManager(ResourceManager):
         ec2_connector = self.connector
         # meta_manager: MetadataManager = MetadataManager()
         region_name = region
-        cloudtrail_resource_type = 'AWS::EC2::Instance'
+        cloudtrail_resource_type = "AWS::EC2::Instance"
 
         instance_filter = {}
         pass
         # Instance list and account ID
+
     #     if 'instance_ids' in params and len(params['instance_ids']) > 0:
     #         instance_filter.update({'Filters': [{'Name': 'instance-id', 'Values': params['instance_ids']}]})
     #

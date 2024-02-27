@@ -1,12 +1,7 @@
-import time
-
-from spaceone.inventory.plugin.collector.lib import (
-    make_cloud_service_type,
-    make_cloud_service,
-    make_error_response,
-)
-
 from ..base import ResourceManager, _LOGGER
+from ...conf.cloud_service_conf import ASSET_URL
+from spaceone.inventory.plugin.collector.lib import *
+
 
 EXCLUDE_REGION = [
     "us-west-1",
@@ -35,28 +30,26 @@ class ClusterManager(ResourceManager):
         self._raw_instances = []
         self._raw_snapshots = []
 
-    # def create_cloud_service_type(self):
-    #     self._create_parameter_group_type()
-    #     metadata_path = "metadata/documentdb/parameter.yaml"
-    #     self._create_subnet_group_type()
-    #     metadata_path = "metadata/documentdb/subnet.yaml"
-    #
-    #     return make_cloud_service_type(
-    #         name=self.cloud_service_type,
-    #         group=self.cloud_service_group,
-    #         provider=self.provider,
-    #         metadata_path=self.metadata_path,
-    #         is_primary=True,
-    #         is_major=True,
-    #         service_code="AmazonDocDB",
-    #         tags={"spaceone:icon": f"{ASSET_URL}/Amazon-DocumentDB.svg"},
-    #         labels=["Database"],
-    #     )
+    def create_cloud_service_type(self):
+        yield from self._create_parameter_group_type()
+        yield from self._create_subnet_group_type()
+
+        yield make_cloud_service_type(
+            name=self.cloud_service_type,
+            group=self.cloud_service_group,
+            provider=self.provider,
+            metadata_path=self.metadata_path,
+            is_primary=True,
+            is_major=True,
+            service_code="AmazonDocDB",
+            tags={"spaceone:icon": f"{ASSET_URL}/Amazon-DocumentDB.svg"},
+            labels=["Database"],
+        )
 
     def create_cloud_service(self, region, options, secret_data, schema):
         if region in EXCLUDE_REGION:
-            return []
-
+            return {}
+        self.connector.set_account_id()
         self.cloud_service_type = "Cluster"
         cloudwatch_namespace = "AWS/DocDB"
         cloudwatch_dimension_name = "DBClusterIdentifier"
@@ -70,7 +63,7 @@ class ClusterManager(ResourceManager):
             self._create_subnet_groups,
         ]
         for pre_collect in pre_collect_list:
-            yield from pre_collect(secret_data, region)
+            yield from pre_collect(region)
 
         results = self.connector.get_db_clusters()
         account_id = self.connector.get_account_id()
@@ -124,14 +117,7 @@ class ClusterManager(ResourceManager):
                     cluster_identifier = cluster_vo.get("DBClusterIdentifier", "")
                     link = f"https://console.aws.amazon.com/docdb/home?region={region}#cluster-details/{cluster_identifier}"
                     reference = self.get_reference(cluster_arn, link)
-                    # yield {
-                    #     "data": cluster_vo,
-                    #     "name": cluster_vo.db_cluster_identifier,
-                    #     "instance_type": cluster_vo.engine_version,
-                    #     "instance_size": float(cluster_vo.instance_count),
-                    #     "account": self.account_id,
-                    #     "tags": self.request_tags(cluster_vo.db_cluster_arn),
-                    # }
+
                     cloud_service = make_cloud_service(
                         name=cluster_vo.get("DBClusterIdentifier", ""),
                         cloud_service_type=self.cloud_service_type,
@@ -148,16 +134,48 @@ class ClusterManager(ResourceManager):
                     yield cloud_service
 
                 except Exception as e:
-                    # resource_id = raw.get('AutoScalingGroupARN', '')
                     yield make_error_response(
                         error=e,
                         provider=self.provider,
                         cloud_service_group=self.cloud_service_group,
                         cloud_service_type=self.cloud_service_type,
                         region_name=region,
+                        resource_type="inventory.CloudService",
                     )
 
-    def _create_parameter_groups(self, secret_data, region):
+    def _create_parameter_group_type(self):
+        cloud_service_type = "ParameterGroup"
+        metadata_path = "metadata/documentdb/parameter.yaml"
+
+        yield make_cloud_service_type(
+            name=cloud_service_type,
+            group=self.cloud_service_group,
+            provider=self.provider,
+            metadata_path=metadata_path,
+            is_primary=True,
+            is_major=True,
+            service_code="AmazonDocDB",
+            tags={"spaceone:icon": f"{ASSET_URL}/Amazon-DocumentDB.svg"},
+            labels=["Database"],
+        )
+
+    def _create_subnet_group_type(self):
+        cloud_service_type = "SubnetGroup"
+        metadata_path = "metadata/documentdb/subnet.yaml"
+
+        yield make_cloud_service_type(
+            name=cloud_service_type,
+            group=self.cloud_service_group,
+            provider=self.provider,
+            metadata_path=metadata_path,
+            is_primary=True,
+            is_major=True,
+            service_code="AmazonDocDB",
+            tags={"spaceone:icon": f"{ASSET_URL}/Amazon-DocumentDB.svg"},
+            labels=["Database"],
+        )
+
+    def _create_parameter_groups(self, region):
         cloud_service_type = "ParameterGroup"
         cloudtrail_resource_type = "AWS::RDS::DBClusterParameterGroup"
 
@@ -199,25 +217,18 @@ class ClusterManager(ResourceManager):
                     region_code=region,
                 )
                 yield cloud_service
-                # yield {
-                #     'data': param_group_vo,
-                #     'name': param_group_vo.db_cluster_parameter_group_name,
-                #     'instance_type': param_group_vo.db_parameter_group_family,
-                #     'account': self.account_id,
-                #     'tags': self.request_tags(param_group_vo.db_cluster_parameter_group_arn)
-                # }
 
             except Exception as e:
-                # resource_id = raw.get('LaunchConfigurationARN', '')
                 yield make_error_response(
                     error=e,
                     provider=self.provider,
                     cloud_service_group=self.cloud_service_group,
                     cloud_service_type=cloud_service_type,
                     region_name=region,
+                    resource_type="inventory.CloudService",
                 )
 
-    def _create_subnet_groups(self, secret_data, region):
+    def _create_subnet_groups(self, region):
         cloud_service_type = "SubnetGroup"
         cloudtrail_resource_type = "AWS::RDS::DBSubnetGroup"
 
@@ -240,12 +251,6 @@ class ClusterManager(ResourceManager):
                     subnet_name = subnet_grp_vo.get("DBClusterParameterGroupName", "")
                     link = f"https://console.aws.amazon.com/docdb/home?region={region}#subnetGroup-details/{subnet_name}"
                     reference = self.get_reference(subnet_arn, link)
-                    # yield {
-                    #     "data": subnet_grp_vo,
-                    #     "name": subnet_grp_vo.db_subnet_group_name,
-                    #     "account": self.account_id,
-                    #     "tags": self.request_tags(subnet_grp_vo.db_subnet_group_arn),
-                    # }
 
                     cloud_service = make_cloud_service(
                         name=subnet_grp_vo.get("DBSubnetGroupName", ""),
@@ -261,22 +266,15 @@ class ClusterManager(ResourceManager):
                         region_code=region,
                     )
                     yield cloud_service
-                    # yield {
-                    #     'data': launch_template_vo,
-                    #     'name': launch_template_vo.launch_template_name,
-                    #     'account': self.account_id,
-                    #     'tags': self.convert_tags_to_dict_type(raw.get('Tags', [])),
-                    #     'launched_at': self.datetime_to_iso8601(launch_template_vo.create_time)
-                    # }
 
                 except Exception as e:
-                    # resource_id = raw.get('LaunchConfigurationARN', '')
                     yield make_error_response(
                         error=e,
                         provider=self.provider,
                         cloud_service_group=self.cloud_service_group,
                         cloud_service_type=cloud_service_type,
                         region_name=region,
+                        resource_type="inventory.CloudService",
                     )
 
     def request_tags(self, resource_arn):
@@ -291,20 +289,6 @@ class ClusterManager(ResourceManager):
                 res_params.get("Parameters", []),
             )
         )
-
-    @staticmethod
-    def _match_instances(raw_instances, cluster_name):
-        return [
-            _ins
-            for _ins in raw_instances
-            if _ins["DBClusterIdentifier"] == cluster_name
-        ]
-
-    @staticmethod
-    def _match_snapshots(raw_snapshots, cluster_name):
-        return [
-            _ss for _ss in raw_snapshots if _ss["DBClusterIdentifier"] == cluster_name
-        ]
 
     def _match_subnet_group(self, subnet_group):
         for _sg in self._subnet_groups:
@@ -364,10 +348,19 @@ class ClusterManager(ResourceManager):
                         instance_info.get("InstanceCreateTime")
                     ),
                     "LastRestorableTime": self.datetime_to_iso8601(
-                        instance_info.get("InstanceCreateTime")
+                        instance_info.get("LastRestorableTime")
                     ),
                 }
             )
+            certificate_details = instance_info.get("CertificateDetails", {})
+            if certificate_details:
+                certificate_details.update(
+                    {
+                        "ValidTill": self.datetime_to_iso8601(
+                            instance_info.get("ValidTill")
+                        )
+                    }
+                )
 
         snapshots_info = raw.get("snapshots", {})
         for snapshot_info in snapshots_info:
@@ -381,3 +374,17 @@ class ClusterManager(ResourceManager):
                     ),
                 }
             )
+
+    @staticmethod
+    def _match_instances(raw_instances, cluster_name):
+        return [
+            _ins
+            for _ins in raw_instances
+            if _ins["DBClusterIdentifier"] == cluster_name
+        ]
+
+    @staticmethod
+    def _match_snapshots(raw_snapshots, cluster_name):
+        return [
+            _ss for _ss in raw_snapshots if _ss["DBClusterIdentifier"] == cluster_name
+        ]

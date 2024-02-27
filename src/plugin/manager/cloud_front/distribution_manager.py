@@ -30,6 +30,7 @@ class DistributionManager(ResourceManager):
         cloudwatch_namespace = "AWS/CloudFront"
         cloudwatch_dimension_name = "DistributionId"
         cloudtrail_resource_type = "AWS::CloudFront::Distribution"
+        self.connector.set_account_id()
         results = self.connector.get_distributions()
         account_id = self.connector.get_account_id()
         for data in results:
@@ -51,6 +52,8 @@ class DistributionManager(ResourceManager):
                     )
                     link = f"https://console.aws.amazon.com/cloudfront/home?#distribution-settings:{raw.get('Id', '')}"
                     reference = self.get_reference(raw.get("ARN", ""), link)
+
+                    # Converting datetime type attributes to ISO8601 format needed to meet protobuf format
                     self._update_times(raw)
 
                     distribution_vo = raw
@@ -70,7 +73,6 @@ class DistributionManager(ResourceManager):
                     yield cloud_service
 
                 except Exception as e:
-                    # resource_id = raw.get("ARN", "")
                     yield make_error_response(
                         error=e,
                         provider=self.provider,
@@ -82,6 +84,15 @@ class DistributionManager(ResourceManager):
     def list_tags_for_resource(self, arn):
         response = self.connector.list_tags_for_resource(arn)
         return self.convert_tags_to_dict_type(response.get("Tags", {}).get("Items", []))
+
+    def _update_times(self, raw):
+        raw.update(
+            {
+                "LastModifiedTime": self.datetime_to_iso8601(
+                    raw.get("LastModifiedTime")
+                ),
+            }
+        )
 
     @staticmethod
     def get_state_display(enabled):
@@ -96,12 +107,3 @@ class DistributionManager(ResourceManager):
             "resource_id": distribution_arn,
             "external_link": f"https://console.aws.amazon.com/cloudfront/home?#distribution-settings:{distribution_id}",
         }
-
-    def _update_times(self, raw):
-        raw.update(
-            {
-                "LastModifiedTime": self.datetime_to_iso8601(
-                    raw.get("LastModifiedTime")
-                ),
-            }
-        )

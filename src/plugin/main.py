@@ -1,14 +1,6 @@
-import json
 import logging
-from spaceone.core.service import check_required, transaction
 from spaceone.inventory.plugin.collector.lib.server import CollectorPluginServer
-from .conf.cloud_service_conf import *
-from .connector.base import ResourceConnector
-from .connector.collector_connector import CollectorConnector
 from .manager.base import ResourceManager
-from .manager.cloud_service_manager import CloudServiceManager
-from .manager.collector_manager import CollectorManager
-from .manager.region_manager import RegionManager
 
 _LOGGER = logging.getLogger("cloudforet")
 
@@ -116,9 +108,7 @@ def collector_verify(params: dict) -> None:
     Returns:
         None
     """
-    collector_mgr = CollectorManager()
-    secret_data = params["secret_data"]
-    # collector_mgr.create_session(secret_data)
+    pass
 
 
 @app.route("Collector.collect")
@@ -198,7 +188,7 @@ def collector_collect(params):
         for service in services:
             resource_mgrs = ResourceManager.get_manager_by_service(service)
             for resource_mgr in resource_mgrs:
-                results = resource_mgr().collect_cloud_service_type()
+                results = resource_mgr().collect_cloud_service_types()
                 for result in results:
                     yield result
 
@@ -241,9 +231,9 @@ def job_get_tasks(params: dict) -> dict:
     """
     tasks = []
     options = params.get("options", {})
-
+    secret_data = params.get("secret_data", {})
     services = _set_service_filter(options)
-    regions = _set_region_filter(options)
+    regions = _set_region_filter(options, secret_data)
 
     # create task 1: task for collecting only cloud service type metadata
     tasks.extend(_add_cloud_service_type_tasks(services))
@@ -283,8 +273,8 @@ def _validate_service_filter(service_filter, available_services):
             raise ValueError("Not a valid service!")
 
 
-def _set_region_filter(options):
-    available_regions = ResourceManager.get_region_names()
+def _set_region_filter(options, secret_data):
+    available_regions = ResourceManager.get_region_names(secret_data)
 
     if region_filter := options.get("region_filter"):
         _validate_region_filter(region_filter, available_regions)

@@ -31,7 +31,7 @@ class TableManager(ResourceManager):
         cloudwatch_namespace = "AWS/DynamoDB"
         cloudwatch_dimension_name = "TableName"
         cloudtrail_resource_type = "AWS::DynamoDB::Table"
-
+        self.connector.set_account_id()
         results = self.connector.get_tables()
         account_id = self.connector.get_account_id()
         for data in results:
@@ -90,18 +90,15 @@ class TableManager(ResourceManager):
                         }
                     )
                     table_vo = table
+
+                    # Converting datetime type attributes to ISO8601 format needed to meet protobuf format
                     self._update_times(table_vo)
+
                     table_arn = table_vo.get("TableArn", "")
                     table_name = table_vo.get("TableName", "")
                     link = f"https://console.aws.amazon.com/dynamodb/home?region={region}#tables:selected={table_name};tab=overview"
                     reference = self.get_reference(table_arn, link)
-                    # yield {
-                    #     "data": table_vo,
-                    #     "name": table_vo.table_name,
-                    #     "instance_size": float(table_vo.table_size_bytes),
-                    #     "account": self.account_id,
-                    #     "tags": self.request_tags(table_vo.table_arn),
-                    # }
+
                     cloud_service = make_cloud_service(
                         name=table_vo.get("TableName", ""),
                         cloud_service_type=self.cloud_service_type,
@@ -117,7 +114,6 @@ class TableManager(ResourceManager):
                     yield cloud_service
 
                 except Exception as e:
-                    # resource_id = raw.get("ARN", "")
                     yield make_error_response(
                         error=e,
                         provider=self.provider,
@@ -127,29 +123,20 @@ class TableManager(ResourceManager):
                     )
 
     def _get_contributor_insights(self, table_name):
-        # response = self.client.describe_contributor_insights(TableName=table_name)
         response = self.connector.describe_contributor_insights(table_name)
         del response["ResponseMetadata"]
 
         return response
 
     def _get_continuous_backup(self, table_name):
-        # response = self.client.describe_continuous_backups(TableName=table_name)
         response = self.connector.describe_continuous_backups(table_name)
         return response.get("ContinuousBackupsDescription")
 
     def _get_time_to_live(self, table_name):
-        # response = self.client.describe_time_to_live(TableName=table_name)
         response = self.connector.describe_time_to_live(table_name)
         return response.get("TimeToLiveDescription")
 
     def describe_scaling_policies(self):
-        # auto_scaling_client = self.session.client(
-        #     "application-autoscaling", verify=BOTO3_HTTPS_VERIFIED
-        # )
-        # response = auto_scaling_client.describe_scaling_policies(
-        #     ServiceNamespace="dynamodb"
-        # )
         response = self.connector.describe_scaling_policies("dynamodb")
         return response.get("ScalingPolicies", [])
 
@@ -165,60 +152,7 @@ class TableManager(ResourceManager):
 
         return partition_key, sort_key
 
-    @staticmethod
-    def _get_auto_scaling(as_policies, table_name):
-        auto_scalings = []
-
-        for asp in as_policies:
-            if asp.get("ResourceId") == f"table/{table_name}":
-                if "ReadCapacityUnits" in asp.get("ScalableDimension"):
-                    auto_scalings.append("READ")
-                if "WriteCapacityUnits" in asp.get("ScalableDimension"):
-                    auto_scalings.append("WRITE")
-
-        return auto_scalings
-
-    @staticmethod
-    def _get_index_info(indexes):
-        read_count = 0
-        write_count = 0
-
-        for _index in indexes:
-            provisioned_throughput = _index.get("ProvisionedThroughput", {})
-
-            if "ReadCapacityUnits" in provisioned_throughput:
-                read_count = read_count + provisioned_throughput.get(
-                    "ReadCapacityUnits"
-                )
-
-            if "WriteCapacityUnits" in provisioned_throughput:
-                write_count = write_count + provisioned_throughput.get(
-                    "WriteCapacityUnits"
-                )
-
-        return len(indexes), read_count, write_count
-
-    @staticmethod
-    def _get_encryption_type(sse_description):
-        if sse_type := sse_description.get("SSEType"):
-            return sse_type
-        else:
-            return "DEFAULT"
-
-    @staticmethod
-    def _search_key(key, key_type, key_attrs):
-        match_key_attr = {"S": "String", "N": "Number", "B": "Binary"}
-
-        if key.get("KeyType") == key_type:
-            key_name = key.get("AttributeName", "")
-
-            for attr in key_attrs:
-                if key_name == attr.get("AttributeName"):
-                    if attr.get("AttributeType") in match_key_attr:
-                        return f'{key_name} ({match_key_attr.get(attr.get("AttributeType"))})'
-
     def request_tags(self, resource_arn):
-        # response = self.client.list_tags_of_resource(ResourceArn=resource_arn)
         response = self.connector.list_tags_of_resource(resource_arn)
         return self.convert_tags_to_dict_type(response.get("Tags", []))
 
@@ -301,3 +235,55 @@ class TableManager(ResourceManager):
                 )
             }
         )
+
+    @staticmethod
+    def _get_auto_scaling(as_policies, table_name):
+        auto_scalings = []
+
+        for asp in as_policies:
+            if asp.get("ResourceId") == f"table/{table_name}":
+                if "ReadCapacityUnits" in asp.get("ScalableDimension"):
+                    auto_scalings.append("READ")
+                if "WriteCapacityUnits" in asp.get("ScalableDimension"):
+                    auto_scalings.append("WRITE")
+
+        return auto_scalings
+
+    @staticmethod
+    def _get_index_info(indexes):
+        read_count = 0
+        write_count = 0
+
+        for _index in indexes:
+            provisioned_throughput = _index.get("ProvisionedThroughput", {})
+
+            if "ReadCapacityUnits" in provisioned_throughput:
+                read_count = read_count + provisioned_throughput.get(
+                    "ReadCapacityUnits"
+                )
+
+            if "WriteCapacityUnits" in provisioned_throughput:
+                write_count = write_count + provisioned_throughput.get(
+                    "WriteCapacityUnits"
+                )
+
+        return len(indexes), read_count, write_count
+
+    @staticmethod
+    def _get_encryption_type(sse_description):
+        if sse_type := sse_description.get("SSEType"):
+            return sse_type
+        else:
+            return "DEFAULT"
+
+    @staticmethod
+    def _search_key(key, key_type, key_attrs):
+        match_key_attr = {"S": "String", "N": "Number", "B": "Binary"}
+
+        if key.get("KeyType") == key_type:
+            key_name = key.get("AttributeName", "")
+
+            for attr in key_attrs:
+                if key_name == attr.get("AttributeName"):
+                    if attr.get("AttributeType") in match_key_attr:
+                        return f'{key_name} ({match_key_attr.get(attr.get("AttributeType"))})'

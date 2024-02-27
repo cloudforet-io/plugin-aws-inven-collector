@@ -100,15 +100,12 @@ class ResourceConnector(BaseConnector):
     ):
         super().__init__(config=config, **kwargs)
         self.options = options
-        ####################################
         self.secret_data = secret_data
         self.region_name = region_name
-        ####################################
         self.region_id = region_id
         self.zone_id = zone_id
         self.pool_id = pool_id
         self.filter = filter
-        # self.account_id = kwargs.get('account_id')
         self.region_names = kwargs.get("regions", [])
 
     def reset_region(self, region_name):
@@ -123,144 +120,12 @@ class ResourceConnector(BaseConnector):
         )
         return self._client
 
-    #######################################################################################################################
-
-    @classmethod
-    def get_connector(cls, service, service_type):
-        for connector in cls.list_services():
-            if (
-                connector.cloud_service_group == service
-                and connector.cloud_service_type == service_type
-            ):
-                return connector
-        raise ERROR_INVALID_PARAMETER(key="service", reason="Not supported service")
-
-    @classmethod
-    def list_services(cls):
-        return cls.__subclasses__()
-
     def get_account_id(self):
         return self.account_id
 
     def set_account_id(self):
         sts_client = self.session.client("sts", verify=BOTO3_HTTPS_VERIFIED)
         self.account_id = sts_client.get_caller_identity()["Account"]
-
-    #######################################################################################################################
-
-    @property
-    def session(self):
-        return self.init_property(
-            "_session", partial(get_session, self.secret_data, self.region_name)
-        )
-
-    @property
-    def init_client(self):
-        if self._init_client is None:
-            self._init_client = self.session.client("ec2", verify=BOTO3_HTTPS_VERIFIED)
-        return self._init_client
-
-    @property
-    def client(self):
-        if self._client is None:
-            self._client = self.session.client(
-                self.rest_service_name, verify=BOTO3_HTTPS_VERIFIED
-            )
-        return self._client
-
-    @staticmethod
-    def generate_arn(
-        partition=ARN_DEFAULT_PARTITION,
-        service="",
-        region="",
-        account_id="",
-        resource_type="",
-        resource_id="",
-    ):
-        return f"arn:{partition}:{service}:{region}:{account_id}:{resource_type}/{resource_id}"
-
-    @staticmethod
-    def divide_to_chunks(resources, n):
-        """
-        For some API parameters, there is a limit to the number that can be described at one time.
-        This method divides the list value of a resource by a certain number and divides it.
-        The "resources" argument is a list value of resources, and divides it into a list of "n" arguments.
-        """
-        for i in range(0, len(resources), n):
-            yield resources[i : i + n]
-
-    def get_resources(self):
-        raise NotImplementedError()
-
-    def collect_data(self):
-        return self.get_resources()
-
-    # def collect_data_by_region(self, service_name, region_name, collect_resource_info):
-    #     '''
-    #     collect_resource_info = {
-    #         'request_method': self.request_something_like_data,
-    #         'resource': ResourceClass,
-    #         'response_schema': ResponseClass,
-    #         'kwargs': {}
-    #     }
-    #     '''
-    #     resources = []
-    #     additional_data = ['name', 'type', 'size', 'launched_at']
-    #
-    #     try:
-    #         for collected_dict in collect_resource_info['request_method'](region_name,
-    #                                                                       **collect_resource_info.get('kwargs', {})):
-    #             data = collected_dict['data']
-    #
-    #             if getattr(data, 'resource_type', None) and data.resource_type == 'inventory.ErrorResource':
-    #                 # Error Resource
-    #                 resources.append(data)
-    #             else:
-    #                 # Cloud Service Resource
-    #                 if getattr(data, 'set_cloudwatch', None):
-    #                     data.cloudwatch = CloudWatchModel(data.set_cloudwatch(region_name))
-    #
-    #                 resource_dict = {
-    #                     'data': data,
-    #                     'account': collected_dict.get('account'),
-    #                     'instance_size': float(collected_dict.get('instance_size', 0)),
-    #                     'instance_type': collected_dict.get('instance_type', ''),
-    #                     'launched_at': str(collected_dict.get('launched_at', '')),
-    #                     'tags': collected_dict.get('tags', {}),
-    #                     'region_code': region_name,
-    #                     'reference': ReferenceModel(data.reference(region_name))
-    #                 }
-    #
-    #                 for add_field in additional_data:
-    #                     if add_field in collected_dict:
-    #                         resource_dict.update({add_field: collected_dict[add_field]})
-    #
-    #                 resources.append(collect_resource_info['response_schema'](
-    #                     {'resource': collect_resource_info['resource'](resource_dict)}))
-    #     except Exception as e:
-    #         resource_id = ''
-    #         error_resource_response = self.generate_error(region_name, resource_id, e)
-    #         resources.append(error_resource_response)
-    #
-    #     return resources
-
-    # def generate_error(self, region_name, resource_id, error_message):
-    #     _LOGGER.error(f'[generate_error] [{self.service_name}] [{region_name}] {error_message}', exc_info=True)
-    #
-    #     if type(error_message) is dict:
-    #         error_resource_response = ErrorResourceResponse(
-    #             {'message': json.dumps(error_message),
-    #              'resource': {'resource_id': resource_id,
-    #                           'cloud_service_group': self.cloud_service_group,
-    #                           'cloud_service_type': self.cloud_service_type}})
-    #     else:
-    #         error_resource_response = ErrorResourceResponse(
-    #             {'message': str(error_message),
-    #              'resource': {'resource_id': resource_id,
-    #                           'cloud_service_group': self.cloud_service_group,
-    #                           'cloud_service_type': self.cloud_service_type}})
-    #
-    #     return error_resource_response
 
     def set_cloud_service_types(self):
         if "service_code_mappers" in self.options:
@@ -285,77 +150,48 @@ class ResourceConnector(BaseConnector):
 
         return self.cloud_service_types
 
-    @staticmethod
-    def datetime_to_iso8601(value: datetime.datetime):
-        if isinstance(value, datetime.datetime):
-            value = value.replace(tzinfo=None)
-            return f"{value.isoformat(timespec='seconds')}TZD"
+    @property
+    def session(self):
+        return self.init_property(
+            "_session", partial(get_session, self.secret_data, self.region_name)
+        )
 
-        return None
+    @property
+    def init_client(self):
+        if self._init_client is None:
+            self._init_client = self.session.client("ec2", verify=BOTO3_HTTPS_VERIFIED)
+        return self._init_client
 
-    @staticmethod
-    def set_cloudtrail(region_name, resource_type, resource_name):
-        cloudtrail = {
-            "LookupAttributes": [
-                {
-                    "AttributeKey": "ResourceName",
-                    "AttributeValue": resource_name,
-                }
-            ],
-            "region_name": region_name,
-            "resource_type": resource_type,
-        }
-        pass
-        # return CloudTrailModel(cloudtrail, strict=False)
-
-    def set_cloudwatch(self, namespace, dimension_name, resource_id, region_name):
-        """
-        data.cloudwatch: {
-            "metrics_info": [
-                {
-                    "Namespace": "AWS/XXXX",
-                    "Dimensions": [
-                        {
-                            "Name": "XXXXX",
-                            "Value": "i-xxxxxx"
-                        }
-                    ]
-                }
-            ]
-            "region_name": region_name
-        }
-        """
-
-        cloudwatch_data = {
-            "region_name": region_name,
-            "metrics_info": self.set_metrics_info(
-                namespace, dimension_name, resource_id
-            ),
-        }
-        pass
-        # return CloudWatchModel(cloudwatch_data, strict=False)
-
-    def set_metrics_info(self, namespace, dimension_name, resource_id):
-        metric_info = {"Namespace": namespace}
-
-        if dimension_name:
-            metric_info.update(
-                {"Dimensions": self.set_dimensions(dimension_name, resource_id)}
+    @property
+    def client(self):
+        if self._client is None:
+            self._client = self.session.client(
+                self.rest_service_name, verify=BOTO3_HTTPS_VERIFIED
             )
-        pass
-        # return [CloudWatchMetricInfo(metric_info, strict=False)]
+        return self._client
 
-    @staticmethod
-    def set_dimensions(dimension_name, resource_id):
-        dimension = {"Name": dimension_name, "Value": resource_id}
-        pass
-        # return [CloudWatchDimension(dimension, strict=False)]
+    @classmethod
+    def get_connector(cls, service, service_type):
+        for connector in cls.list_services():
+            if (
+                connector.cloud_service_group == service
+                and connector.cloud_service_type == service_type
+            ):
+                return connector
+        raise ERROR_INVALID_PARAMETER(key="service", reason="Not supported service")
 
-    @staticmethod
-    def convert_tags_to_dict_type(tags, key="Key", value="Value"):
-        dict_tags = {}
+    @classmethod
+    def list_services(cls):
+        return cls.__subclasses__()
 
-        for _tag in tags:
-            dict_tags[_tag.get(key)] = _tag.get(value)
+    @classmethod
+    def get_regions(cls, secret_data):
+        _session = get_session(secret_data, DEFAULT_REGION)
+        ec2_client = _session.client("ec2", verify=BOTO3_HTTPS_VERIFIED)
 
-        return dict_tags
+        return list(
+            map(
+                lambda region_info: region_info.get("RegionName"),
+                ec2_client.describe_regions().get("Regions"),
+            )
+        )

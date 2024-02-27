@@ -2,7 +2,7 @@ from spaceone.inventory.plugin.collector.lib import *
 
 from ..base import ResourceManager
 from ...conf.cloud_service_conf import ASSET_URL
-from ...manager.collector_manager import _LOGGER
+from ...manager.base import _LOGGER
 
 
 class AMIManager(ResourceManager):

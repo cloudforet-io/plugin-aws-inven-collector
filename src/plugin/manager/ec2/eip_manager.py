@@ -1,8 +1,5 @@
-from spaceone.inventory.plugin.collector.lib import *
-
 from ..base import ResourceManager
-from ...connector.collector_connector import CollectorConnector
-from ...manager.collector_manager import CollectorManager, _LOGGER
+from spaceone.inventory.plugin.collector.lib import *
 
 
 class EIPManager(ResourceManager):

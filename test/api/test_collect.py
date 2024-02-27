@@ -73,7 +73,7 @@ class TestCollect(TestCase):
         print(f"Action 1: Generate Tasks!")
         print(f"=================== start get_tasks! ==========================")
         options = {
-            "service_filter": None,
+            "service_filter": ["DocumentDB"],
             "region_filter": None,
         }
         v_info = self.inventory.Job.get_tasks(
