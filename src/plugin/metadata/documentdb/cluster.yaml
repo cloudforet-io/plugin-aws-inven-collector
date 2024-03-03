@@ -1,0 +1,208 @@
+search:
+  fields:
+    - Cluster Identifier: data.DBClusterIdentifier
+    - ARN: data.DBClusterArn
+    - Status: data.Status
+    - Engine: data.Engine
+    - Version: data.EngineVersion
+    - Cluster Endpoint: data.Endpoint
+    - Cluster Read Endpoint: data.ReaderEndpoint
+    - Port: data.Port
+    - Cluster Parameter Group: data.parameter_group
+    - Deletion Protection: data.DeletionProtection
+    - Availability Zone: data.AvailabilityZones
+    - Security Group ID: data.VpcSecurityGroups.VpcSecurityGroupId
+    - Instance: data.instances.DBInstanceIdentifier
+    - Instance Type: data.instances.DBInstanceClass
+    - VPC ID: data.instances.DBSubnetGroup.VpcId
+    - AWS Account ID: account
+
+table:
+#  sort:
+#    key: data.Id
+#    desc: true
+  fields:
+    - Status: data.Status
+      type: enum
+      enums:
+        - available: green.500
+        - maintenance: yellow.500
+        - backing-up: yellow.500
+        - creating: yellow.500
+        - migrating: yellow.500
+        - modifying: yellow.500
+        - renaming: yellow.500
+        - resetting-master-credentials: yellow.500
+        - upgrading: yellow.500
+        - deleting: red.500
+        - failing-over: red.500
+        - inaccessible-encryption-credentials: red.500
+        - migration-failed: red.500
+    - Engine: data.Engine
+      type: enum
+      enums:
+        - docdb: primary
+          type: badge
+    - Version: data.EngineVersion
+    - Instances: data.instance_count
+    - DB Cluster ARN: data.DBClusterArn
+    - DB Cluster Resource ID: data.DbClusterResourceId
+    - Endpoint: data.Endpoint
+    - Reader Endpoint: data.ReaderEndpoint
+    - Port: data.Port
+    - Multi AZ: data.MultiAZ
+    - Availability Zones: data.AvailabilityZones
+    - Instances ARN: data.instances
+    - Instances Identifier: data.instances
+    - Instances Availability Zone: data.instances
+    - Instances Type: data.instances
+    - DB Cluster Parameter Group: data.parameter_group
+    - Parameter Group: data.DBClusterParameterGroup
+    - Subnet Group: data.subnet_group
+    - DB Subnet Group: data.DBSubnetGroup
+    - Master Username: data.MasterUsername
+    - Storage Encrypted: data.StorageEncrypted
+    - KMS Key ID: data.KmsKeyId
+    - Deletion Protection: data.DeletionProtection
+      type: enum
+      enums:
+        - true: indigo.500
+        - false: coral.600
+    - Preferred Maintenance Window: data.PreferredMaintenanceWindow
+    - Preferred Backup Window: data.PreferredBackupWindow
+    - Backup Retention Period: data.BackupRetentionPeriod
+    - Latest Restorable Time: data.LatestRestorableTime
+    - Hosted Zone ID: data.HostedZoneId
+    - Security Groups: data.VpcSecurityGroups
+    - AWS Account ID: account
+
+tabs.0:
+  name: Clusters
+  items:
+    - name: Clusters
+      type: item
+      fields:
+        - DB Cluster: data.DBClusterIdentifier
+        - ARN: data.DBClusterArn
+        - Status: data.Status
+          type: enum
+          enums:
+            - available: green.500
+            - maintenance: yellow.500
+            - backing-up: yellow.500
+            - creating: yellow.500
+            - migrating: yellow.500
+            - modifying: yellow.500
+            - renaming: yellow.500
+            - resetting-master-credentials: yellow.500
+            - upgrading: yellow.500
+            - deleting: red.500
+            - failing-over: red.500
+            - inaccessible-encryption-credentials: red.500
+            - migration-failed: red.500
+        - Engine: data.engine
+          type: enum
+          enums:
+            - docdb: primary
+              type: badge
+        - Version: data.EngineVersion
+        - Cluster Endpoint: data.Endpoint
+        - Cluster Read Endpoint: data.ReaderEndpoint
+        - Master User Name: data.MasterUsername
+        - Port: data.Port
+        - Cluster Parameter group: data.DBClusterParameterGroup
+        - Deletion Protection: data.DeletionProtection
+          type: enum
+          enums:
+            - true: indigo.500
+            - false: coral.600
+        - Enabled Cloudwatch Logs Exports: data.EnabledCloudwatchLogsExports
+        - Availability Zones: data.AvailabilityZones
+        - Creation Time: data.ClusterCreateTime
+
+tabs.1:
+  name: Security Groups
+  items:
+    - name: Security Groups
+      type: table
+      root_path: data.VpcSecurityGroups
+      fields:
+        - Security Group ID: VpcSecurityGroupId
+        - Status: Status
+          type: enum
+          enums:
+            - active: green.500
+
+tabs.2:
+  name: Instances
+  items:
+    - name: Instances
+      type: table
+      root_path: data.instances
+      fields:
+        - Instance: DBInstanceIdentifier
+        - Status: DBInstanceStatus
+          type: enum
+          enums:
+            - active: green.500
+        - Instance Type: DBInstanceClass
+        - AZ: AvailabilityZone
+        - VPC ID: DBSubnetGroup.VpcId
+        - Security Groups: VpcSecurityGroups
+        - Instance Endpoint: Endpoint.Address
+        - Port: Endpoint.Port
+        - Certificate authority: CACertificateIdentifier
+
+tabs.3:
+  name: Snapshots
+  items:
+    - name: Snapshots
+      type: table
+      root_path: data.snapshots
+      fields:
+        - Snapshot: DBClusterSnapshotIdentifier
+        - Status: Status
+          type: enum
+          enums:
+            - available: green.500
+        - Progress: PercentProgress
+        - Type: SnapshotType
+          type: enum
+          enums:
+            - automated: primary
+            - manual: indigo.500
+            - shared: peacock.500
+            - public: green.500
+        - Encrypted: StorageEncrypted
+          type: enum
+          enums:
+            - true: indigo.500
+            - false: coral.600
+        - Creation Time: SnapshotCreateTime
+
+tabs.4:
+  name: Subnet Groups
+  items:
+    - name: Subnet Groups
+      type: table
+      root_path: data.subnet_group
+      fields:
+        - Name: DBSubnetGroupName
+        - ARN: DBSubnetGroupArn
+        - Status: SubnetGroupStatus
+          type: enum
+          enums:
+            - Complete: green.500
+        - Description: DBSubnetGroupDescription
+        - Subnet: Subnets
+
+tabs.5:
+  name: Parameters
+  items:
+    - name: Parameters
+      type: table
+      root_path: data.parameter_group.parameters
+      fields:
+        - Name: ParameterName
+        - Value: ParameterValue
+        - Description: Description
