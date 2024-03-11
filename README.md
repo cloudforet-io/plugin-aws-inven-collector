@@ -1,14 +1,16 @@
 # plugin-aws-inven-collector
 
 ## Overall Collecting Process Before Refactoring
-![aws_before_refactoring drawio (1)](https://github.com/Sooyoung98/plugin-aws-inven-collector/assets/79274380/fbc539b6-4d84-40bb-9a35-737f56afa32c)
+![aws_before_refactoring_white](https://github.com/Sooyoung98/plugin-aws-inven-collector/assets/79274380/85b9823d-c0fa-406d-8300-15e6054e998e)
+
 
 * 기존 AWS Collector는 Multithreading 기반으로 각 aws service를 기준으로 region별 수집을 수행하였습니다.
 * 수집해온 정보들을 pydantic model을 통해 정형화하여 본래 request의 source인 inventory microservice로 전달하였습니다.
 * 이러한 방식은, pydantic model을 통해 정형화하는 과정 자체도 heavy workload를 발생시켰으며, 이로 인해 수집 시간이 길어지는 문제가 발생하였습니다. 
 
 ## Overall Collecting Process After Refactoring
-![aws_after_refactoring](https://github.com/Sooyoung98/plugin-aws-inven-collector/assets/79274380/0e4cb335-9ec1-4c86-a216-c0954fc4e20a)
+![aws_after_refactoring_white](https://github.com/Sooyoung98/plugin-aws-inven-collector/assets/79274380/e057d207-87b3-4c10-b163-a825c7d7ea1c)
+
 
 * 위에 언급한 문제를 해결함과 동시에 좀 더 세분화된 정보 수집을 실현하기 위해, AWS Collector를 Refactoring하였습니다.
 * 기존의 Multithreading 기반의 수집 방식을 Factory Pattern 을 통해 각 Service & Region 별로 수집을 수행하도록 변경하였습니다.
@@ -37,7 +39,8 @@
       4. Inventory Microservice는 전달받은 task들을 이용해 여러 내부 함수들을 걸쳐서 AWS Collector()의 collector_collect()함수를 호출합니다.
 
 ## Class Hierarchy (Same for ResourceConnector)
-![Factory](https://github.com/Sooyoung98/plugin-aws-inven-collector/assets/79274380/bdc4677a-3bc5-43bb-a0d8-946f8c6b14d5)
+![Factory_white](https://github.com/Sooyoung98/plugin-aws-inven-collector/assets/79274380/610b1f71-83a1-4e14-be42-0b083a9225a8)
+
 
 * 새로운 AWS Collector는 Factory Pattern을 통해 수집을 진행하는데, 이로 인해 생기는 이점은 새로운 service가 추가되어도 손쉽게 추가 및 적용이 가능해집니다.
 * 또한, 하나의 master class로 인해 자식 class 간의 class 중복현상을 방지할 수 있습니다.
