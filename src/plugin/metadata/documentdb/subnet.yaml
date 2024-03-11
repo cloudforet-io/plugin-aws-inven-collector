@@ -1,0 +1,50 @@
+search:
+  fields:
+    - ARN: data.DBSubnetGroupArn
+    - Status: data.SubnetGroupStatus
+    - Subnet ID: data.Subnets.SubnetIdentifier
+    - Availability Zone: data.Subnets.SubnetAvailabilityZone.Name
+    - AWS Account ID: account
+
+table:
+#  sort:
+#    key: data.Id
+#    desc: true
+  fields:
+    - Status: data.SubnetGroupStatus
+      type: enum
+      enums:
+        - Complete: green.500
+    - Description: data.DBSubnetGroupDescription
+    - VPC: data.VpcId
+    - Subnet Group ARN: data.DBSubnetGroupArn
+    - Subnet Identifier: data.Subnets
+    - AWS Account ID: account
+
+tabs.0:
+  name: Subnet Groups
+  items:
+    - name: Subnet Groups
+      type: item
+      fields:
+        - Name: data.DBSubnetGroupName
+        - ARN: data.DBSubnetGroupArn
+        - Status: data.SubnetGroupStatus
+          type: enum
+          enums:
+            - Complete: green.500
+        - Description: data.DBSubnetGroupDescription
+
+tabs.1:
+  name: Subnets
+  items:
+    - name: Subnets
+      type: table
+      root_path: data.Subnets
+      fields:
+        - Availability Zone: SubnetAvailabilityZone.Name
+        - Subnet ID: SubnetIdentifier
+        - Subnet Group Status: SubnetStatus
+          type: enum
+          enums:
+            - Active: green.500
