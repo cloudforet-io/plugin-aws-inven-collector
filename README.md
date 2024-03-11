@@ -27,8 +27,10 @@
      1. 이 type의 task는 각 Region들의 정보들만을 수집합니다. 이 task를 통해 특정 region의 정보수집이 가능합니다.
   
     ### Task Code Flow
-    * 이러한 task들은 아래의 **code flow**를 따라 생성 및 이용되고 있습니다. 
+    * 이러한 task들은 아래의 **code flow**를 따라 생성 및 이용되고 있습니다.
       
+      ![task_creation_use_flow](https://github.com/Sooyoung98/plugin-aws-inven-collector/assets/79274380/8e975572-fde2-4e24-a31a-96db7778b97e)
+
       1. Inventory Microservice에서 AWS Collector내 main.py에 있는 job_get_tasks() 함수를 호출합니다.
       2. job_get_tasks() 함수 내에서는 input을 통해 받은 cloud service이름들이 있거나 region들이 있다면, 해당 input들을 기준으로 inventory.CloudService, inventory.CloudServiceType, inventory.Region task들을 생성합니다.
       3. 생성된 task들을 하나의 list에 담아 다시 Inventory Microservice로 전달합니다.
@@ -41,7 +43,8 @@
 * 또한, 하나의 master class로 인해 자식 class 간의 class 중복현상을 방지할 수 있습니다.
 
 ## Overall Code Flow Example: Collect CloudTrail (Collecting Cloud Service)
-![AWS Refactoring - CloudService Collect Process](https://github.com/Sooyoung98/plugin-aws-inven-collector/assets/79274380/f8533075-ae99-4f8c-bae8-95591db51734)
+![AWS Refactoring - CloudService Collect Process Final](https://github.com/Sooyoung98/plugin-aws-inven-collector/assets/79274380/6b3f12a4-7c9e-4819-8429-976137b49c24)
+
 
 * 해당 그림은 CloudTrail을 수집할 때 내부적으로 어떤 flow로 진행되는지를 보여주고 있습니다. 아래의 절차를 따릅니다.
     1. Inventory Microservice에서 inventory.CloudService Task를 통해 AWS collector의 main.py 내 collector_collect() 함수 호출을 하여 수집 명령이 들어옵니다.
