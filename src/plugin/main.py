@@ -145,8 +145,10 @@ def collector_collect(params):
 
         if resource_exists:
             yield ResourceManager.collect_region(region)
-    else:
-        raise ValueError("Invalid resource type!")
+    elif resource_type == "inventory.Region":
+        regions = options.get("regions")
+        for region in regions:
+            yield ResourceManager.collect_region(region)
 
 
 @app.route("Job.get_tasks")
@@ -176,8 +178,7 @@ def job_get_tasks(params: dict) -> dict:
     tasks.extend(_add_cloud_service_type_tasks(services))
 
     # create task 2: task for collecting only cloud service region metadata
-    # Commented out for now
-    # tasks.extend(_add_cloud_service_region_tasks(regions))
+    tasks.extend(_add_cloud_service_region_tasks(regions))
 
     # create task 3: task for collecting only cloud service group metadata
     tasks.extend(_add_cloud_service_group_tasks(services, regions))
