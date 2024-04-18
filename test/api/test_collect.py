@@ -123,6 +123,8 @@ class TestCollect(TestCase):
         #     'region': 'ap-northeast-1',
         #     'service': 'EC2'
         # }
+        region = "ap-northeast-2"
+        service = "EC2"
         options = {
             "resource_type": "inventory.CloudService",
             "region": region,
@@ -135,7 +137,12 @@ class TestCollect(TestCase):
         #     "service": "CertificateManager",
         # }
         filter = {}
-        params = {"options": options, "secret_data": self.secret_data, "filter": filter}
+        params = {
+            "options": {},
+            "task_options": options,
+            "secret_data": self.secret_data,
+            "filter": filter,
+        }
 
         res_stream = self.inventory.Collector.collect(params)
         for res in res_stream:
@@ -156,10 +163,7 @@ class TestCollect(TestCase):
 
     def test_get_tasks(self):
         print(f"=================== start get_tasks! ==========================")
-        options = {
-            "service_filter": ["CertificateManager"],
-            "region_filter": ["ap-northeast-2"],
-        }
+        options = {}
         v_info = self.inventory.Job.get_tasks(
             {"options": options, "secret_data": self.secret_data}
         )

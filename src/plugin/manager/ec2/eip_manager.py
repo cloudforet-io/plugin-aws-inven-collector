@@ -1,6 +1,8 @@
 from ..base import ResourceManager
 from spaceone.inventory.plugin.collector.lib import *
 
+from ...conf.cloud_service_conf import ASSET_URL
+
 
 class EIPManager(ResourceManager):
     cloud_service_group = "EC2"
@@ -12,22 +14,24 @@ class EIPManager(ResourceManager):
         self.cloud_service_type = "EIP"
         self.metadata_path = "metadata/ec2/eip.yaml"
 
-    # def create_cloud_service_type(self):
-    #     return make_cloud_service_type(
-    #         name=self.cloud_service_type,
-    #         group=self.cloud_service_group,
-    #         provider=self.provider,
-    #         metadata_path=self.metadata_path,
-    #         is_primary=True,
-    #         is_major=True,
-    #         service_code="Cloud Pub/Sub",
-    #         tags={"spaceone:icon": f"{ASSET_URL}/cloud_pubsub.svg"},
-    #         labels=["Application Integration"],
-    #     )
+    def create_cloud_service_type(self):
+        yield make_cloud_service_type(
+            name=self.cloud_service_type,
+            group=self.cloud_service_group,
+            provider=self.provider,
+            metadata_path=self.metadata_path,
+            is_primary=True,
+            is_major=True,
+            service_code="AmazonEC2",
+            tags={
+                "spaceone:icon": f"{ASSET_URL}/Amazon-EC2_Elastic-IP-Address_light-bg.svg"
+            },
+            labels=["Networking", "Compute"],
+        )
 
     def create_cloud_service(self, region, options, secret_data, schema):
         cloudtrail_resource_type = "AWS::EC2::EIP"
-        results = self.connector.get_addressess()
+        results = self.connector.get_addresses()
         account_id = self.connector.get_account_id()
         nat_gateways = None
         network_interfaces = None

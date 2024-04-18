@@ -12,6 +12,23 @@ BOTO3_HTTPS_VERIFIED = None
 
 ASSET_URL = "https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws"
 
+RESOURCES = [
+    "cloudformation",
+    "cloudwatch",
+    "dynamodb",
+    "ec2",
+    "glacier",
+    "iam",
+    "opsworks",
+    "s3",
+    "sns",
+    "sqs",
+]
+
+PAGINATOR_MAX_ITEMS = 10000
+PAGINATOR_PAGE_SIZE = 50
+
+DEFAULT_API_RETRIES = 10
 
 # CLOUD_SERVICE_GROUP_MAP = {
 #     'IAM': IAMManager,

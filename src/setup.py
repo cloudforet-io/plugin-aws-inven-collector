@@ -16,24 +16,32 @@
 
 from setuptools import setup, find_packages
 
-with open('VERSION', 'r') as f:
+with open("VERSION", "r") as f:
     VERSION = f.read().strip()
     f.close()
 
 setup(
-    name='plugin-aws-inven-collector',
+    name="plugin-aws-inven-collector",
     version=VERSION,
-    description='Collector plugin for AWS Combined',
-    long_description='',
-    url='https://www.spaceone.dev/',
-    author='MEGAZONE SpaceONE Team',
-    author_email='admin@spaceone.dev',
-    license='Apache License 2.0',
+    description="Collector plugin for AWS Combined",
+    long_description="",
+    url="https://www.spaceone.dev/",
+    author="MEGAZONE SpaceONE Team",
+    author_email="admin@spaceone.dev",
+    license="Apache License 2.0",
     packages=find_packages(),
-    install_requires=[
-        'spaceone-core',
-        'spaceone-api',
-        'spaceone-inventory'
-    ],
+    install_requires=["spaceone-core", "spaceone-api", "spaceone-inventory"],
+    package_data={
+        "plugin": [
+            "metadata/acm/*.yaml",
+            "metadata/api_gateway/*.yaml",
+            "metadata/cloudfront/*.yaml",
+            "metadata/cloudtrail/*.yaml",
+            "metadata/direct_connect/*.yaml",
+            "metadata/documentdb/*.yaml",
+            "metadata/dynamodb/*.yaml",
+            "metadata/ec2/*.yaml",
+        ]
+    },
     zip_safe=False,
 )

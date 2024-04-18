@@ -1,5 +1,6 @@
 from spaceone.inventory.plugin.collector.lib import *
 from ..base import ResourceManager
+from ...conf.cloud_service_conf import ASSET_URL
 
 
 class SecurityGroupManager(ResourceManager):
@@ -14,18 +15,18 @@ class SecurityGroupManager(ResourceManager):
         self.metadata_path = "metadata/ec2/sg.yaml"
         self.include_vpc_default = False
 
-    # def create_cloud_service_type(self):
-    #     return make_cloud_service_type(
-    #         name=self.cloud_service_type,
-    #         group=self.cloud_service_group,
-    #         provider=self.provider,
-    #         metadata_path=self.metadata_path,
-    #         is_primary=True,
-    #         is_major=True,
-    #         service_code="Cloud Pub/Sub",
-    #         tags={"spaceone:icon": f"{ASSET_URL}/cloud_pubsub.svg"},
-    #         labels=["Application Integration"],
-    #     )
+    def create_cloud_service_type(self):
+        yield make_cloud_service_type(
+            name=self.cloud_service_type,
+            group=self.cloud_service_group,
+            provider=self.provider,
+            metadata_path=self.metadata_path,
+            is_primary=True,
+            is_major=True,
+            service_code="AmazonEC2",
+            tags={"spaceone:icon": f"{ASSET_URL}/Amazon-VPC_VPN-Gateway_dark-bg.svg"},
+            labels=["Compute", "Security"],
+        )
 
     def create_cloud_service(self, region, options, secret_data, schema):
         cloudtrail_resource_type = "AWS::EC2::SecurityGroup"

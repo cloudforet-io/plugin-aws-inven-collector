@@ -1,3 +1,4 @@
+from typing import List
 from ..base import ResourceManager
 from ...conf.cloud_service_conf import *
 from spaceone.inventory.plugin.collector.lib import *
@@ -13,7 +14,7 @@ class CertificateManager(ResourceManager):
         self.cloud_service_type = "Certificate"
         self.metadata_path = "metadata/acm/certificate.yaml"
 
-    def create_cloud_service_type(self):
+    def create_cloud_service_type(self) -> List[dict]:
         yield make_cloud_service_type(
             name=self.cloud_service_type,
             group=self.cloud_service_group,
@@ -26,7 +27,9 @@ class CertificateManager(ResourceManager):
             labels=["Security"],
         )
 
-    def create_cloud_service(self, region, options, secret_data, schema):
+    def create_cloud_service(
+        self, region: str, options: dict, secret_data: dict, schema: str
+    ) -> List[dict]:
         cloudwatch_namespace = "AWS/CertificateManager"
         cloudwatch_dimension_name = "CertificateArn"
         cloudtrail_resource_type = "AWS::ACM::Certificate"
@@ -105,11 +108,11 @@ class CertificateManager(ResourceManager):
                         region_name=region,
                     )
 
-    def get_tags(self, arn):
+    def get_tags(self, arn: str) -> dict:
         tag_response = self.connector.list_tags_for_certificate(arn)
         return self.convert_tags_to_dict_type(tag_response.get("Tags", []))
 
-    def _update_times(self, certificate_info):
+    def _update_times(self, certificate_info: dict) -> None:
         certificate_info.update(
             {
                 "CreatedAt": self.datetime_to_iso8601(
@@ -134,25 +137,25 @@ class CertificateManager(ResourceManager):
         )
 
     @staticmethod
-    def get_identifier(certificate_arn):
+    def get_identifier(certificate_arn: str) -> str:
         return certificate_arn.split("/")[-1]
 
     @staticmethod
-    def get_additional_names_display(subject_alternative_names):
+    def get_additional_names_display(subject_alternative_names: List[str]) -> List[str]:
         return subject_alternative_names[1:]
 
     @staticmethod
-    def get_in_use_display(in_use_by):
+    def get_in_use_display(in_use_by: List[str]) -> str:
         if in_use_by:
             return "Yes"
         else:
             return "No"
 
     @staticmethod
-    def get_string_title(str):
+    def get_string_title(s: str) -> str:
         try:
-            display_title = str.replace("_", " ").title()
+            display_title = s.replace("_", " ").title()
         except Exception as e:
-            display_title = str
+            display_title = s
 
         return display_title
