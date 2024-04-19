@@ -106,7 +106,7 @@ class TestCollect(TestCase):
     """
 
     def test_cloud_service_task(self):
-        services = ["CertificateManager"]
+        services = ["EC2"]
         regions = ["ap-northeast-1", "ap-northeast-2"]
         for service in services:
             for region in regions:

@@ -1,6 +1,6 @@
 from spaceone.inventory.plugin.collector.lib import *
 from ..base import ResourceManager
-from ...conf.cloud_service_conf import ASSET_URL
+from ...conf.cloud_service_conf import ASSET_URL, INSTANCE_FILTERS
 
 
 class SecurityGroupManager(ResourceManager):
@@ -196,7 +196,13 @@ class SecurityGroupManager(ResourceManager):
                     instance["instance_name"] = self.get_instance_name_from_tags(
                         instance
                     )
-                    sg_map_instances.append(instance)
+                    needed_instance = {}
+                    for key in INSTANCE_FILTERS:
+                        if key in instance:
+                            needed_instance[key] = instance[key]
+                        else:
+                            needed_instance[key] = None
+                    sg_map_instances.append(needed_instance)
 
         return [sg_map_instance for sg_map_instance in sg_map_instances]
 

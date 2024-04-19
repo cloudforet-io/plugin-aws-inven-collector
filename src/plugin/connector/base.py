@@ -159,7 +159,6 @@ class ResourceConnector(BaseConnector):
     @property
     def client(self):
         if self._client is None:
-            print(self.rest_service_name)
             self._client = self.session.client(
                 self.rest_service_name, verify=BOTO3_HTTPS_VERIFIED
             )
@@ -168,7 +167,6 @@ class ResourceConnector(BaseConnector):
     @classmethod
     def get_connector(cls, service, service_type):
         for connector in cls.list_services():
-            print(connector)
             if (
                 connector.cloud_service_group == service
                 and connector.cloud_service_type == service_type

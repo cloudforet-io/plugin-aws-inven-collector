@@ -260,3 +260,18 @@ REGION_INFO = {
     },
     "global": {"name": "Global"},
 }
+
+INSTANCE_FILTERS = [
+    "InstanceId",
+    "instance_name",
+    "State",
+    "SubnetId",
+    "VpcId",
+    "PrivateIpAddress",
+    "PrivateDnsName",
+    "PublicIpAddress",
+    "PublicDnsName",
+    "Architecture",
+    "SecurityGroups",
+    "Tags",
+]

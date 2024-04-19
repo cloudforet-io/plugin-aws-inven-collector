@@ -22,6 +22,7 @@ class DiskManager(BaseManager):
             }
         }
         """
+        print("yo!")
         disks = []
         match_volumes = self.get_volumes_from_ids(volume_ids, volumes)
 
