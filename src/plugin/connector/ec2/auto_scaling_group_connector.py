@@ -50,7 +50,7 @@ class AutoScalingGroupConnector(ResourceConnector):
         lt_versions = lt_client.describe_launch_template_versions(LaunchTemplateId=lt)
         return lt_versions
 
-    def describe_instance(self, instance_ids):
+    def describe_instances(self, instance_ids):
         res = self.client.describe_instances(InstanceIds=instance_ids)
         return res
 

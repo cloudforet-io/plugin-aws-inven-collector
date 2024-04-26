@@ -1,11 +1,8 @@
-from abc import ABC
-
+from ..base import ResourceManager
 from spaceone.core.manager import BaseManager
 
-from plugin.manager.base import ResourceManager
 
-
-class EC2InstanceManager(ResourceManager, ABC):
+class EC2InstanceManager(BaseManager):
 
     def __init__(self, ec2_connector, region, **kwargs):
         super().__init__(**kwargs)
@@ -291,7 +288,7 @@ class EC2InstanceManager(ResourceManager, ABC):
         aws_data, compute_data = data_list
         aws_data.update(
             {
-                "usage_operation_update_time": self.datetime_to_iso8601(
+                "usage_operation_update_time": ResourceManager.datetime_to_iso8601(
                     aws_data.get("usage_operation_update_time")
                 )
             }
@@ -300,7 +297,7 @@ class EC2InstanceManager(ResourceManager, ABC):
         for elastic_gpu in elastic_gpu_associations:
             elastic_gpu.update(
                 {
-                    "ElasticGpuAssociationTime": self.datetime_to_iso8601(
+                    "ElasticGpuAssociationTime": ResourceManager.datetime_to_iso8601(
                         elastic_gpu.get("ElasticGpuAssociationTime")
                     )
                 }
@@ -311,7 +308,7 @@ class EC2InstanceManager(ResourceManager, ABC):
         for elastic_inference_accelerator in elastic_inference_accelerator_associations:
             elastic_inference_accelerator.update(
                 {
-                    "ElasticInferenceAcceleratorAssociationTime": self.datetime_to_iso8601(
+                    "ElasticInferenceAcceleratorAssociationTime": ResourceManager.datetime_to_iso8601(
                         elastic_inference_accelerator.get(
                             "ElasticInferenceAcceleratorAssociationTime"
                         )
@@ -320,5 +317,9 @@ class EC2InstanceManager(ResourceManager, ABC):
             )
 
         compute_data.update(
-            {"launched_at": self.datetime_to_iso8601(compute_data.get("launched_at"))}
+            {
+                "launched_at": ResourceManager.datetime_to_iso8601(
+                    compute_data.get("launched_at")
+                )
+            }
         )

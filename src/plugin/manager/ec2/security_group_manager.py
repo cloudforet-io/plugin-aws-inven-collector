@@ -16,7 +16,8 @@ class SecurityGroupManager(ResourceManager):
         self.include_vpc_default = False
 
     def create_cloud_service_type(self):
-        yield make_cloud_service_type(
+        result = []
+        sg_cst_result = make_cloud_service_type(
             name=self.cloud_service_type,
             group=self.cloud_service_group,
             provider=self.provider,
@@ -27,6 +28,8 @@ class SecurityGroupManager(ResourceManager):
             tags={"spaceone:icon": f"{ASSET_URL}/Amazon-VPC_VPN-Gateway_dark-bg.svg"},
             labels=["Compute", "Security"],
         )
+        result.append(sg_cst_result)
+        return result
 
     def create_cloud_service(self, region, options, secret_data, schema):
         cloudtrail_resource_type = "AWS::EC2::SecurityGroup"
@@ -39,6 +42,7 @@ class SecurityGroupManager(ResourceManager):
 
         # Get Security Group
         results = self.connector.get_security_groups()
+        self.connector.set_account_id()
         account_id = self.connector.get_account_id()
 
         for data in results:
@@ -114,6 +118,11 @@ class SecurityGroupManager(ResourceManager):
                     )
 
                     sg_vo = raw
+
+                    group_id = sg_vo.get("GroupId", "")
+                    link = f"https://console.aws.amazon.com/ec2/v2/home?region={region}#SecurityGroups:group-id={group_id}"
+                    reference = self.get_reference(group_id, link)
+
                     cloud_service = make_cloud_service(
                         name=sg_vo.get("GroupName", ""),
                         cloud_service_type=self.cloud_service_type,
@@ -123,6 +132,7 @@ class SecurityGroupManager(ResourceManager):
                         account=account_id,
                         tags=self.convert_tags_to_dict_type(raw.get("Tags", [])),
                         region_code=region,
+                        reference=reference,
                     )
                     yield cloud_service
                     # yield {

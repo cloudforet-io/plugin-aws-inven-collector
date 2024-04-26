@@ -47,7 +47,7 @@ class LoadBalancerManager(BaseManager):
                     if listener.get("Protocol") is not None
                 ],
                 "port": [
-                    listener.get("Port")
+                    str(listener.get("Port"))
                     for listener in match_load_balancer.get("listeners", [])
                     if listener.get("Port") is not None
                 ],

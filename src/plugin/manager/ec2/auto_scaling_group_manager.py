@@ -26,17 +26,20 @@ class AutoScalingGroupManager(ResourceManager):
     def create_cloud_service_type(self):
         metadata_name = "LaunchConfiguration"
         lf_metadata_path = "metadata/ec2/lf.yaml"
-        yield self._create_additional_cloud_service_type(
+        cloud_service_type_results = []
+        lf_cst_result = self._create_additional_cloud_service_type(
             metadata_name, lf_metadata_path
         )
+        cloud_service_type_results.append(lf_cst_result)
 
         metadata_name = "LaunchTemplate"
         lt_metadata_path = "metadata/ec2/lt.yaml"
-        yield self._create_additional_cloud_service_type(
+        lt_cst_result = self._create_additional_cloud_service_type(
             metadata_name, lt_metadata_path
         )
+        cloud_service_type_results.append(lt_cst_result)
 
-        yield make_cloud_service_type(
+        asg_cst_result = make_cloud_service_type(
             name=self.cloud_service_type,
             group=self.cloud_service_group,
             provider=self.provider,
@@ -47,6 +50,8 @@ class AutoScalingGroupManager(ResourceManager):
             tags={"spaceone:icon": f"{ASSET_URL}/Amazon-EC2-Auto-Scaling.svg"},
             labels=["Compute"],
         )
+        cloud_service_type_results.append(asg_cst_result)
+        return cloud_service_type_results
 
     def create_cloud_service(self, region, options, secret_data, schema):
         self.cloud_service_type = "AutoScalingGroup"
@@ -59,9 +64,9 @@ class AutoScalingGroupManager(ResourceManager):
             self._create_launch_templates,
         ]
         for pre_collect in pre_collect_list:
-            yield from pre_collect(secret_data, region)
-
+            yield from pre_collect(region)
         results = self.connector.get_auto_scaling_groups()
+        self.connector.set_account_id()
         account_id = self.connector.get_account_id()
         policies = None
         notification_configurations = None
@@ -211,6 +216,14 @@ class AutoScalingGroupManager(ResourceManager):
                     self._update_times(raw)
 
                     auto_scaling_group_vo = raw
+
+                    resource_id = auto_scaling_group_vo.get("AutoScalingGroupARN", "")
+                    auto_scaling_group_name = auto_scaling_group_vo.get(
+                        "AutoScalingGroupName", ""
+                    )
+                    link = f"https://console.aws.amazon.com/ec2/autoscaling/home?region={region}#AutoScalingGroups:id={auto_scaling_group_name}"
+                    reference = self.get_reference(resource_id, link)
+
                     cloud_service = make_cloud_service(
                         name=auto_scaling_group_vo.get("AutoScalingGroupName", ""),
                         cloud_service_type=self.cloud_service_type,
@@ -220,6 +233,7 @@ class AutoScalingGroupManager(ResourceManager):
                         account=account_id,
                         tags=self.convert_tags_to_dict_type(raw.get("Tags", [])),
                         region_code=region,
+                        reference=reference,
                     )
                     yield cloud_service
                     # yield {
@@ -430,12 +444,14 @@ class AutoScalingGroupManager(ResourceManager):
     #             match_lifecycle_kooks.append(_lifecycle_hook)
     #
     #     return match_lifecycle_kooks
-    def _create_launch_configurations(self, secret_data, region):
+    def _create_launch_configurations(self, region):
         cloud_service_type = "LaunchConfiguration"
         cloudtrail_resource_type = "AWS::AutoScaling::LaunchConfiguration"
 
         response = self.connector.get_launch_configurations()
+        self.connector.set_account_id()
         account_id = self.connector.get_account_id()
+        result_list = []
         for data in response:
             for raw in data.get("LaunchConfigurations", []):
                 try:
@@ -451,6 +467,16 @@ class AutoScalingGroupManager(ResourceManager):
 
                     launch_configuration_vo = raw
                     self._launch_configurations.append(launch_configuration_vo)
+
+                    resource_id = launch_configuration_vo.get(
+                        "LaunchConfigurationARN", ""
+                    )
+                    launch_configuration_name = launch_configuration_vo.get(
+                        "LaunchConfigurationName", ""
+                    )
+                    link = f"https://console.aws.amazon.com/ec2/autoscaling/home?region={region}#LaunchConfigurations:id={launch_configuration_name}"
+                    reference = self.get_reference(resource_id, link)
+
                     cloud_service = make_cloud_service(
                         name=launch_configuration_vo.get("LaunchConfigurationName", ""),
                         cloud_service_type=cloud_service_type,
@@ -459,8 +485,9 @@ class AutoScalingGroupManager(ResourceManager):
                         data=launch_configuration_vo,
                         account=account_id,
                         region_code=region,
+                        reference=reference,
                     )
-                    yield cloud_service
+                    result_list.append(cloud_service)
                     # yield {
                     #     'data': launch_configuration_vo,
                     #     'name': launch_configuration_vo.launch_configuration_name,
@@ -470,20 +497,25 @@ class AutoScalingGroupManager(ResourceManager):
 
                 except Exception as e:
                     # resource_id = raw.get('LaunchConfigurationARN', '')
-                    yield make_error_response(
+                    error_response = make_error_response(
                         error=e,
                         provider=self.provider,
                         cloud_service_group=self.cloud_service_group,
                         cloud_service_type=cloud_service_type,
                         region_name=region,
                     )
+                    result_list.append(error_response)
 
-    def _create_launch_templates(self, secret_data, region):
+        return result_list
+
+    def _create_launch_templates(self, region):
         cloud_service_type = "LaunchTemplate"
         cloudtrail_resource_type = "AWS::AutoScaling::LaunchTemplate"
 
         response = self.connector.get_launch_templates()
+        self.connector.set_account_id()
         account_id = self.connector.get_account_id()
+        result_list = []
         for data in response:
             for raw in data.get("LaunchTemplates", []):
                 try:
@@ -498,6 +530,9 @@ class AutoScalingGroupManager(ResourceManager):
                             "version_description": match_lt_version.get(
                                 "VersionDescription"
                             ),
+                            "ami_id": match_lt_data.get("ImageId", ""),
+                            "created_by": match_lt_data.get("CreatedBy", ""),
+                            "create_time": match_lt_data.get("CreateTime"),
                             "default_version": match_lt_version.get("DefaultVersion"),
                             "launch_template_data": match_lt_data,
                             "arn": self.generate_arn(
@@ -522,6 +557,11 @@ class AutoScalingGroupManager(ResourceManager):
                     self._update_lt_times(launch_template_vo)
                     self._launch_templates.append(launch_template_vo)
 
+                    resource_id = launch_template_vo.get("arn", "")
+                    launch_template_id = launch_template_vo.get("LaunchTemplateId", "")
+                    link = f"https://console.aws.amazon.com/ec2autoscaling/home?region={region}#/details?id={launch_template_id}"
+                    reference = self.get_reference(resource_id, link)
+
                     cloud_service = make_cloud_service(
                         name=launch_template_vo.get("LaunchTemplateName", ""),
                         cloud_service_type=cloud_service_type,
@@ -531,8 +571,9 @@ class AutoScalingGroupManager(ResourceManager):
                         account=account_id,
                         tags=self.convert_tags_to_dict_type(raw.get("Tags", [])),
                         region_code=region,
+                        reference=reference,
                     )
-                    yield cloud_service
+                    result_list.append(cloud_service)
                     # yield {
                     #     'data': launch_template_vo,
                     #     'name': launch_template_vo.launch_template_name,
@@ -543,16 +584,19 @@ class AutoScalingGroupManager(ResourceManager):
 
                 except Exception as e:
                     # resource_id = raw.get('LaunchConfigurationARN', '')
-                    yield make_error_response(
+                    error_response = make_error_response(
                         error=e,
                         provider=self.provider,
                         cloud_service_group=self.cloud_service_group,
                         cloud_service_type=cloud_service_type,
                         region_name=region,
                     )
+                    result_list.append(error_response)
+
+        return result_list
 
     def _create_additional_cloud_service_type(self, name, metadata_path):
-        yield make_cloud_service_type(
+        return make_cloud_service_type(
             name=name,
             group=self.cloud_service_group,
             provider=self.provider,
@@ -604,5 +648,5 @@ class AutoScalingGroupManager(ResourceManager):
 
     def _update_lt_times(self, lt_info: dict) -> None:
         lt_info.update(
-            {"CreateTime": self.datetime_to_iso8601(lt_info.get("CreateTime"))}
+            {"create_time": self.datetime_to_iso8601(lt_info.get("create_time"))}
         )

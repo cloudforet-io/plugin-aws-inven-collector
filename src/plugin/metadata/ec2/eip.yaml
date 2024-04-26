@@ -1,0 +1,64 @@
+search:
+  fields:
+  - IP Address: data.PublicIp
+  - Associated Instance ID: data.InstanceId
+  - Public DNS: data.public_dns
+  - Private IP: data.PrivateIpAddress
+  - NAT Gateway ID: data.nat_gateway_id
+  - Scope: data.Domain
+    type: enum
+    enums:
+      - VPC: gray
+      - Standard: gray
+  - AWS Account ID: account
+
+table:
+  sort:
+    key: data.id
+    desc: true
+  fields:
+    - Public IP: data.PublicIp
+    - Private IP: data.PrivateIpAddress
+    - Address Pool: data.PublicIpv4Pool
+    - Scope: data.Domain
+      type: enum
+      enums:
+        - vpc: blue.400
+        - standard: indigo.500
+    - Associate Instance ID: data.InstanceId
+    - Public DNS: data.public_dns
+      is_optional: true
+    - NAT Gateway ID: data.nat_gateway_id
+      is_optional: true
+    - Association ID: data.AssociationId
+      is_optional: true
+    - Allocation ID: data.AllocationId
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+
+tabs.0:
+  name: Elastic IPs
+  type: item
+  fields:
+    - Public IPv4 Address: data.PublicIp
+    - Associated Instance ID: data.InstanceId
+    - Public DNS: data.public_dns
+    - Allocation ID: data.AllocationId
+    - Private IP Address: data.PrivateIpAddress
+    - NAT Gateway ID: data.nat_gateway_id
+    - Association ID: data.AssociationId
+    - Network Interface ID: data.NetworkInterfaceId
+    - Address Pool: data.PublicIpv4Pool
+      type: Badge
+      background_color: gray.200
+      text_color: gray.900
+    - Scope: data.Domain
+      type: enum
+      enums:
+        - vpc: blue.400
+        - standard: indigo.500
+    - Network Interface Owner Account ID: data.NetworkInterfaceOwnerId
+    - Customer owned IP Address: data.CustomerOwnedIp
+    - Customer owned IP Address Pool: data.CustomerOwnedIpv4Pool

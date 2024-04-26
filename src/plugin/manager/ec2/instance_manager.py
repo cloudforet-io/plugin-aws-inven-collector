@@ -21,7 +21,8 @@ class InstanceManager(ResourceManager):
         self.metadata_path = "metadata/ec2/instance.yaml"
 
     def create_cloud_service_type(self):
-        yield make_cloud_service_type(
+        result = []
+        instance_cst_result = make_cloud_service_type(
             name=self.cloud_service_type,
             group=self.cloud_service_group,
             provider=self.provider,
@@ -34,6 +35,8 @@ class InstanceManager(ResourceManager):
             },
             labels=["Compute", "Server"],
         )
+        result.append(instance_cst_result)
+        return result
 
     def create_cloud_service(
         self, region: str, options: dict, secret_data: dict, schema: str
@@ -192,6 +195,7 @@ class InstanceManager(ResourceManager):
                         cloud_service_type=self.cloud_service_type,
                         cloud_service_group=self.cloud_service_group,
                         provider=self.provider,
+                        ip_addresses=server_data["ip_addresses"],
                         data=server_data["data"],
                         account=account_id,
                         reference=reference,

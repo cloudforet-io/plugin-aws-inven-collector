@@ -1,0 +1,149 @@
+search:
+  fields:
+    - ID: data.LaunchTemplateId
+    - AMI ID: data.ami_id
+    - Owner: data.created_by
+    - Default Version: data.default_version
+    - Versions: data.version
+    - Instance Type: data.launch_template_data.InstanceType
+    - Monitoring: data.launch_template_data.Monitoring.Enabled
+    - Security Group ID: data.launch_template_data.SecurityGroupIds
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.id
+    desc: true
+  fields:
+    - AMI ID: data.ami_id
+    - Owner: data.created_by
+    - Default Version: data.default_version
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Version: data.version
+    - Creation Time: data.create_time
+      type: datetime
+      source_type: iso8601
+    - ARN: data.arn
+      is_optional: true
+    - Launch Template ID: data.LaunchTemplateId
+      is_optional: true
+    - Version Description: data.version_description
+      is_optional: true
+    - Keypair name: data.launch_template_data.KeyName
+      is_optional: true
+    - Instance Type: data.launch_template_data.InstanceType
+      is_optional: true
+    - Security Groups: data.launch_template_data.SecurityGroupIds
+      type: badge
+      outline_color: violet.500
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+
+tabs.0:
+  name: Launch Template
+  type: item
+  fields:
+    - Name: data.LaunchTemplateName
+    - ID: data.LaunchTemplateId
+    - Version: data.version
+    - Default Version: data.default_version
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Version Description: data.version_description
+    - AMI ID: data.ami_id
+    - Instance Type: data.launch_template_data.InstanceType
+    - Key Name: data.launch_template_data.KeyName
+    - Security Groups: data.launch_template_data.SecurityGroupIds
+      type: badge
+      outline_color: violet.500
+    - Creation Time: data.create_time
+      type: datetime
+      source_type: iso8601
+    - Created By: data.created_by
+
+
+tabs.1:
+  name: Storage
+  type: table
+  root_path: data.launch_template_data.BlockDeviceMappings
+  fields:
+    - Device Name: DeviceName
+    - Type: Ebs.VolumeType
+    - Snapshot: Ebs.SnapshotId
+    - Size: Ebs.VolumeSize
+      display_unit: GB
+      source_unit: GB
+      type: size
+    - IOPS: Ebs.Iops
+    - Delete on Termination: Ebs.DeleteOnTermination
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Encrypted: Ebs.Encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+
+
+tabs.2:
+  name: Network Interface
+  type: table
+  root_path: data.launch_template_data.NetworkInterfaces
+  fields:
+    - Device Index: DeviceIndex
+    - Description: Description
+    - Subnet Id: SubnetId
+    - Private IP: PrivateIpAddress
+    - Secondary IP Number: SecondaryPrivateIpAddressCount
+    - IPv6: Ipv6Addresses
+      type: badge
+      outline_color: violet.500
+    - Security Groups: Groups
+      type: badge
+      outline_color: violet.500
+    - Delete On Termination: DeleteOnTermination
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+
+tabs.3:
+  name: Advanced Details
+  type: table
+  root_path: data.launch_template_data
+  fields:
+    - IAM Instance Profile: IamInstanceProfile.Name
+    - Monitoring: Monitoring.Enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Tenancy: Placement.Tenancy
+      type: enum
+      enums:
+        - default: blue.400
+        - dedicated: indigo.500
+        - host: coral.600
+    - Tenancy Host Group: Placement.GroupName
+    - Tenancy Host Group ARN: Placement.HostResourceGroupARN
+    - Tenancy Host ID: Placement.HostId
+    - Kernel ID: KernelId
+    - RAM Disk ID: RamDiskId
+    - License Specification: LicenseSpecification
+      type: badge
+      outline_color: violet.500
+    - EBS Optimized: EbsOptimized
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - User Data: UserData

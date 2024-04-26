@@ -3,3 +3,5 @@ from .auto_scaling_group_connector import AutoScalingGroupConnector
 from .eip_connector import EIPConnector
 from .instance_connector import InstanceConnector
 from .security_group_connector import SecurityGroupConnector
+from .volume_connector import VolumeConnector
+from .snapshot_connector import SnapshotConnector

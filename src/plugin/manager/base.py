@@ -45,7 +45,7 @@ class ResourceManager(BaseManager):
                 cloud_service_type=self.cloud_service_type,
             )
 
-    def collect_cloud_service_types(self) -> List[dict]:
+    def collect_cloud_service_types(self):
         cloud_service_types = self.create_cloud_service_type()
         for cloud_service_type in cloud_service_types:
             yield make_response(
