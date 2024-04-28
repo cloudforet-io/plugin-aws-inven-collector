@@ -1,6 +1,8 @@
 from ..base import ResourceManager
 from spaceone.inventory.plugin.collector.lib import *
 
+from ...conf.cloud_service_conf import ASSET_URL
+
 
 class EIPManager(ResourceManager):
     cloud_service_group = "EC2"
@@ -12,22 +14,28 @@ class EIPManager(ResourceManager):
         self.cloud_service_type = "EIP"
         self.metadata_path = "metadata/ec2/eip.yaml"
 
-    # def create_cloud_service_type(self):
-    #     return make_cloud_service_type(
-    #         name=self.cloud_service_type,
-    #         group=self.cloud_service_group,
-    #         provider=self.provider,
-    #         metadata_path=self.metadata_path,
-    #         is_primary=True,
-    #         is_major=True,
-    #         service_code="Cloud Pub/Sub",
-    #         tags={"spaceone:icon": f"{ASSET_URL}/cloud_pubsub.svg"},
-    #         labels=["Application Integration"],
-    #     )
+    def create_cloud_service_type(self):
+        result = []
+        eip_cst_result = make_cloud_service_type(
+            name=self.cloud_service_type,
+            group=self.cloud_service_group,
+            provider=self.provider,
+            metadata_path=self.metadata_path,
+            is_primary=True,
+            is_major=True,
+            service_code="AmazonEC2",
+            tags={
+                "spaceone:icon": f"{ASSET_URL}/Amazon-EC2_Elastic-IP-Address_light-bg.svg"
+            },
+            labels=["Networking", "Compute"],
+        )
+        result.append(eip_cst_result)
+        return result
 
     def create_cloud_service(self, region, options, secret_data, schema):
         cloudtrail_resource_type = "AWS::EC2::EIP"
-        results = self.connector.get_addressess()
+        results = self.connector.get_addresses()
+        self.connector.set_account_id()
         account_id = self.connector.get_account_id()
         nat_gateways = None
         network_interfaces = None
@@ -69,6 +77,11 @@ class EIPManager(ResourceManager):
                 )
 
                 eip_vo = _ip
+
+                allocation_id = eip_vo.get("AllocationId", "")
+                link = f"https://console.aws.amazon.com/ec2/v2/home?region={region}#ElasticIpDetails:AllocationId={allocation_id}"
+                reference = self.get_reference(allocation_id, link)
+
                 cloud_service = make_cloud_service(
                     name=eip_vo.get("name", ""),
                     cloud_service_type=self.cloud_service_type,
@@ -78,6 +91,7 @@ class EIPManager(ResourceManager):
                     account=account_id,
                     tags=self.convert_tags_to_dict_type(_ip.get("Tags", [])),
                     region_code=region,
+                    reference=reference,
                 )
                 yield cloud_service
                 # yield {

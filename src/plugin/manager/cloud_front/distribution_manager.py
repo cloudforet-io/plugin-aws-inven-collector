@@ -1,3 +1,4 @@
+from typing import List
 from spaceone.inventory.plugin.collector.lib import *
 from ..base import ResourceManager
 from ...conf.cloud_service_conf import *
@@ -13,7 +14,7 @@ class DistributionManager(ResourceManager):
         self.cloud_service_type = "Distribution"
         self.metadata_path = "metadata/cloudfront/distribution.yaml"
 
-    def create_cloud_service_type(self):
+    def create_cloud_service_type(self) -> List[dict]:
         yield make_cloud_service_type(
             name=self.cloud_service_type,
             group=self.cloud_service_group,

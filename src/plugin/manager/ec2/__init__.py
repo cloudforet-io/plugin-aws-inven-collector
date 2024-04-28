@@ -3,3 +3,5 @@ from .auto_scaling_group_manager import AutoScalingGroupManager
 from .eip_manager import EIPManager
 from .instance_manager import InstanceManager
 from .security_group_manager import SecurityGroupManager
+from .volume_manager import VolumeManager
+from .snapshot_manager import SnapshotManager

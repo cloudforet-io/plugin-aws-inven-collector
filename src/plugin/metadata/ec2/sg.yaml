@@ -1,0 +1,90 @@
+search:
+  fields:
+    - Security Group ID: data.GroupId
+    - VPC ID: data.VpcId
+    - Inbound Protocol: data.ip_permissions.protocol_display
+    - Inbound Port Range: data.ip_permissions.port_display
+    - Inbound Source: data.ip_permissions.source_display
+    - Outbound Protocol: data.ip_permissions_egress.protocol_display
+    - Outbound Port Range: data.ip_permissions_egress.port_display
+    - Outbound Source: data.ip_permissions_egress.source_display
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.id
+    desc: true
+  fields:
+    - ID: data.GroupId
+    - VPC ID: data.VpcId
+    - Description: data.Description
+    - AWS Account ID: account
+
+tabs.0:
+  name: Security Group
+  type: item
+  fields:
+    - ID: data.GroupId
+    - Name: data.GroupName
+      default: "None"
+    - Description: data.Description
+      default: "None"
+    - VPC ID: data.VpcId
+    - Account ID: data.OwnerId
+
+tabs.1:
+  name: Inbound Rules
+  type: table
+  root_path: data.ip_permissions
+  fields:
+    - Protocol: protocol_display
+      type: enum
+      enums:
+        - ALL: coral.600
+        - TCP: indigo.500
+        - UDP: peacock.500
+        - ICMP: green.500
+    - Port range: port_display
+    - Source: source_display
+    - Description: description_display
+      default: "None"
+
+
+tabs.2:
+  name: Outbound Rules
+  type: table
+  root_path: data.ip_permissions_egress
+  fields:
+    - Protocol: protocol_display
+      type: enum
+      enums:
+        - ALL: coral.600
+        - TCP: indigo.500
+        - UDP: peacock.500
+        - ICMP: green.500
+    - Port range: port_display
+    - Source: source_display
+    - Description: description_display
+      default: "None"
+
+
+tabs.3:
+  name: Instances
+  type: table
+  root_path: data.instances
+  fields:
+    - ID: InstanceId
+    - Name: instance_name
+      default: "None"
+    - State: State.Name
+      type: enum
+      enums:
+        - running: green.500
+        - pending: yellow.500
+        - stopping: yellow.500
+        - shutting-down: gray.400
+        - stopped: red.500
+    - VPC ID: VpcId
+    - Subnet ID: SubnetId
+    - Private IP: PrivateIpAddress
+

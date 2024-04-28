@@ -1,5 +1,6 @@
 from spaceone.inventory.plugin.collector.lib import *
 from ..base import ResourceManager
+from ...conf.cloud_service_conf import ASSET_URL, INSTANCE_FILTERS
 
 
 class SecurityGroupManager(ResourceManager):
@@ -14,18 +15,21 @@ class SecurityGroupManager(ResourceManager):
         self.metadata_path = "metadata/ec2/sg.yaml"
         self.include_vpc_default = False
 
-    # def create_cloud_service_type(self):
-    #     return make_cloud_service_type(
-    #         name=self.cloud_service_type,
-    #         group=self.cloud_service_group,
-    #         provider=self.provider,
-    #         metadata_path=self.metadata_path,
-    #         is_primary=True,
-    #         is_major=True,
-    #         service_code="Cloud Pub/Sub",
-    #         tags={"spaceone:icon": f"{ASSET_URL}/cloud_pubsub.svg"},
-    #         labels=["Application Integration"],
-    #     )
+    def create_cloud_service_type(self):
+        result = []
+        sg_cst_result = make_cloud_service_type(
+            name=self.cloud_service_type,
+            group=self.cloud_service_group,
+            provider=self.provider,
+            metadata_path=self.metadata_path,
+            is_primary=True,
+            is_major=True,
+            service_code="AmazonEC2",
+            tags={"spaceone:icon": f"{ASSET_URL}/Amazon-VPC_VPN-Gateway_dark-bg.svg"},
+            labels=["Compute", "Security"],
+        )
+        result.append(sg_cst_result)
+        return result
 
     def create_cloud_service(self, region, options, secret_data, schema):
         cloudtrail_resource_type = "AWS::EC2::SecurityGroup"
@@ -38,6 +42,7 @@ class SecurityGroupManager(ResourceManager):
 
         # Get Security Group
         results = self.connector.get_security_groups()
+        self.connector.set_account_id()
         account_id = self.connector.get_account_id()
 
         for data in results:
@@ -113,6 +118,11 @@ class SecurityGroupManager(ResourceManager):
                     )
 
                     sg_vo = raw
+
+                    group_id = sg_vo.get("GroupId", "")
+                    link = f"https://console.aws.amazon.com/ec2/v2/home?region={region}#SecurityGroups:group-id={group_id}"
+                    reference = self.get_reference(group_id, link)
+
                     cloud_service = make_cloud_service(
                         name=sg_vo.get("GroupName", ""),
                         cloud_service_type=self.cloud_service_type,
@@ -122,6 +132,7 @@ class SecurityGroupManager(ResourceManager):
                         account=account_id,
                         tags=self.convert_tags_to_dict_type(raw.get("Tags", [])),
                         region_code=region,
+                        reference=reference,
                     )
                     yield cloud_service
                     # yield {
@@ -195,7 +206,13 @@ class SecurityGroupManager(ResourceManager):
                     instance["instance_name"] = self.get_instance_name_from_tags(
                         instance
                     )
-                    sg_map_instances.append(instance)
+                    needed_instance = {}
+                    for key in INSTANCE_FILTERS:
+                        if key in instance:
+                            needed_instance[key] = instance[key]
+                        else:
+                            needed_instance[key] = None
+                    sg_map_instances.append(needed_instance)
 
         return [sg_map_instance for sg_map_instance in sg_map_instances]
 

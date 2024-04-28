@@ -12,6 +12,23 @@ BOTO3_HTTPS_VERIFIED = None
 
 ASSET_URL = "https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws"
 
+RESOURCES = [
+    "cloudformation",
+    "cloudwatch",
+    "dynamodb",
+    "ec2",
+    "glacier",
+    "iam",
+    "opsworks",
+    "s3",
+    "sns",
+    "sqs",
+]
+
+PAGINATOR_MAX_ITEMS = 10000
+PAGINATOR_PAGE_SIZE = 50
+
+DEFAULT_API_RETRIES = 10
 
 # CLOUD_SERVICE_GROUP_MAP = {
 #     'IAM': IAMManager,
@@ -241,5 +258,84 @@ REGION_INFO = {
         "name": "AWS GovCloud (US)",
         "tags": {"continent": "south_america"},
     },
+    "ap-south-2": {
+        "name": "Asia Pacific (Mumbai)",
+        "tags": {
+            "latitude": "17.3850",
+            "longitude": "78.4867",
+            "continent": "asia_pacific",
+        },
+    },
+    "ap-southeast-4": {
+        "name": "Asia Pacific (Melbourne)",
+        "tags": {
+            "latitude": "-37.8136",
+            "longitude": "144.9631",
+            "continent": "asia_pacific",
+        },
+    },
+    "ap-southeast-3": {
+        "name": "Asia Pacific (Jakarta)",
+        "tags": {
+            "latitude": "-6.2088",
+            "longitude": "106.8272",
+            "continent": "asia_pacific",
+        },
+    },
+    "ca-west-1": {
+        "name": "Canada West (Calgary)",
+        "tags": {
+            "latitude": "51.0447",
+            "longitude": "114.0719",
+            "continent": "north_america",
+        },
+    },
+    "eu-central-2": {
+        "name": "Europe (Zurich)",
+        "tags": {
+            "latitude": "47.3769",
+            "longitude": "8.5417",
+            "continent": "europe",
+        },
+    },
+    "eu-south-2": {
+        "name": "Europe (Spain)",
+        "tags": {
+            "latitude": "40.4168",
+            "longitude": "3.7038",
+            "continent": "europe",
+        },
+    },
+    "il-central-1": {
+        "name": "Israel (Tel Aviv)",
+        "tags": {
+            "latitude": "32.0853",
+            "longitude": "34.7818",
+            "continent": "middle_east",
+        },
+    },
+    "me-central-1": {
+        "name": "Middle East (UAE)",
+        "tags": {
+            "latitude": "25.2769",
+            "longitude": "55.2708",
+            "continent": "middle_east",
+        },
+    },
     "global": {"name": "Global"},
 }
+
+INSTANCE_FILTERS = [
+    "InstanceId",
+    "instance_name",
+    "State",
+    "SubnetId",
+    "VpcId",
+    "PrivateIpAddress",
+    "PrivateDnsName",
+    "PublicIpAddress",
+    "PublicDnsName",
+    "Architecture",
+    "SecurityGroups",
+    "Tags",
+]

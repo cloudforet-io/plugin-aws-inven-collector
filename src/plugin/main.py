@@ -118,11 +118,11 @@ def collector_collect(params):
     options = params["options"]
     secret_data = params["secret_data"]
     schema = params.get("schema")
-
-    resource_type = options.get("resource_type")
+    task_options = params.get("task_options")
+    resource_type = task_options.get("resource_type")
 
     if resource_type == "inventory.CloudServiceType":
-        services = options.get("services")
+        services = task_options.get("services")
         for service in services:
             resource_mgrs = ResourceManager.get_manager_by_service(service)
             for resource_mgr in resource_mgrs:
@@ -131,22 +131,24 @@ def collector_collect(params):
                     yield result
 
     elif resource_type == "inventory.CloudService":
-        service = options.get("service")
-        region = options.get("region")
+        service = task_options.get("service")
+        region = task_options.get("region")
         resource_mgrs = ResourceManager.get_manager_by_service(service)
-        resource_exists = False
         for resource_mgr in resource_mgrs:
+            print(resource_mgr)
+            print("CURRENT!")
             results = resource_mgr().collect_resources(
                 region, options, secret_data, schema
             )
             for result in results:
-                resource_exists = True
+                # print(
+                #     "-------------------------RESULTS--------------------------------"
+                # )
+                # print(result)
                 yield result
 
-        if resource_exists:
-            yield ResourceManager.collect_region(region)
     elif resource_type == "inventory.Region":
-        regions = options.get("regions")
+        regions = task_options.get("regions")
         for region in regions:
             yield ResourceManager.collect_region(region)
 
@@ -171,6 +173,7 @@ def job_get_tasks(params: dict) -> dict:
     tasks = []
     options = params.get("options", {})
     secret_data = params.get("secret_data", {})
+
     services = _set_service_filter(options)
     regions = _set_region_filter(options, secret_data)
 

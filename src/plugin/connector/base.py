@@ -144,9 +144,9 @@ class ResourceConnector(BaseConnector):
 
                 if "spaceone:icon" in _tags:
                     _icon = _tags["spaceone:icon"]
-                    _tags[
-                        "spaceone:icon"
-                    ] = f'{self.options["custom_asset_url"]}/{_icon.split("/")[-1]}'
+                    _tags["spaceone:icon"] = (
+                        f'{self.options["custom_asset_url"]}/{_icon.split("/")[-1]}'
+                    )
 
         return self.cloud_service_types
 

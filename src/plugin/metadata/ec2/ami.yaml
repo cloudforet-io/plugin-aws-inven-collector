@@ -1,0 +1,105 @@
+search:
+  fields:
+    - AMI ID: data.ImageId
+    - Status: data.State
+    - Source: data.ImageLocation
+    - Is Public: data.Public
+    - Platform: data.Platform
+    - Root Device Type: data.RootDeviceType
+    - Virtualization: data.VirtualizationType
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.id
+    desc: true
+  fields:
+    - ID: data.ImageId
+    - Source: data.ImageLocation
+    - Owner: account
+    - Is Public: data.Public
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Status: data.State
+      type: enum
+      enums:
+        - available: green.500
+        - pending: yellow.500
+        - transient: yellow.500
+        - deregistered: yellow.500
+        - invalid: yellow.500
+        - error: red.500
+        - failed: red.500
+    - Platform: data.Platform
+    - Root Device Type: data.RootDeviceType
+    - Virtualization: data.VirtualizationType
+    - Architecture: data.Architecture
+      is_optional: true
+    - Virtualization Type: data.VirtualizationType
+      is_optional: true
+    - Description: data.Description
+      is_optional: true
+    - Root Device Name: data.RootDeviceName
+      is_optional: true
+    - Root Device Type: data.RootDeviceType
+      is_optional: true
+    - SR-IOV Net Support: data.SriovNetSupport
+      is_optional: true
+    - Hypervisor: data.Hypervisor
+      is_optional: true
+    - Platform Details: data.PlatformDetails
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: AMI
+  type: item
+  fields:
+    - AMI ID: data.ImageId
+    - AMI Name: data.Name
+    - Owner: data.OwnerId
+    - Source: data.ImageLocation
+    - Status: data.State
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+        - transient: yellow.500
+          type: state
+        - deregistered: yellow.500
+          type: state
+        - invalid: yellow.500
+          type: state
+        - error: red.500
+          type: state
+        - failed: red.500
+          type: state
+    - State Reason: data.StateReason.Message
+    - Creation Date: data.CreationDate
+      type: datetime
+      source_type: iso8601
+    - Platform Details: data.PlatformDetails
+    - Architecture: data.Architecture
+    - Usage Operation: data.UsageOperation
+    - Image Type: data.ImageType
+    - Virtualization Type: data.VirtualizationType
+    - Description: data.Description
+    - Root Device Name: data.RootDeviceName
+    - Root Device Type: data.RootDeviceType
+    - RAM Disk ID: data.Platform
+    - Kernel ID: data.Platform
+    - Block Devices: data.BlockDeviceMappings.DeviceName
+      type: badge
+      outline_color: violet.500
+
+tabs.1:
+  name: Permission
+  type: table
+  root_path: data.launch_permissions
+  fields:
+    - AWS Account ID: UserId

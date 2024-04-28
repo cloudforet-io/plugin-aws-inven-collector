@@ -1,0 +1,110 @@
+search:
+  fields:
+    - Volume ID: data.VolumeId
+    - ARN: data.arn
+    - State: data.State
+      type: enum
+      enums:
+        - in-use: green.500
+        - available: blue.400
+        - deleting: yellow.500
+        - creating: yellow.500
+        - deleted: gray.400
+        - error: red.500
+    - Size (Bytes): instance_size # integer type! Trying Size Field
+      type: size
+    - Size (GB): data.Size # integer type! Trying Size Field
+      type: size
+    - Volume Type: instance_type # TO-DO: enum should support labels too
+      type: enum
+      enums:
+        - gp2: yellow.500
+        - gp3: yellow.500
+        - io1: yellow.500
+        - sc1: yellow.500
+        - st1: yellow.500
+        - standard: yellow.500
+    - Availability Zone: data.AvailabilityZone
+    - IOPS: data.iops
+    - Attached Instance ID: data.Attachments.InstanceId
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.id
+    desc: true
+  fields:
+    - Volume ID: data.VolumeId
+    - State: data.State
+      type: enum
+      enums:
+        - in-use: green.500
+        - available: blue.400
+        - deleting: yellow.500
+        - creating: yellow.500
+        - deleted: gray.400
+        - error: red.500
+    - Size (GB): instance_size
+      display_unit: GB
+      source_unit: GB
+      type: size
+    - Volume Type: instance_type
+    - IOPS: data.Iops
+    - From Snapshot: data.SnapshotId
+    - Availablity Zone: data.AvailabilityZone
+    - Created: data.CreateTime
+      type: datetime
+    - ARN: data.arn
+      is_optional: true
+    - Encrypted: data.Encrypted
+      is_optional: true
+    - KMS Key ID: data.kms_key_id
+      is_optional: true
+    - Multi Attach Enabled: data.MultiAttachEnabled
+      is_optional: true
+    - Attached Instance ID: data.Attachments.InstanceId
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+
+tabs.0:
+  name: Volumes
+  type: item
+  fields:
+    - Volume ID: data.VolumeId
+    - ARN: data.arn
+    - State: data.State
+      type: enum
+      enums:
+        - in-use: green.500
+        - available: blue.400
+        - deleting: yellow.500
+        - creating: yellow.500
+        - deleted: gray.400
+        - error: red.500
+    - Outpost ARN: data.OutpostArn
+      default: "None"
+    - Size: data.size
+      display_unit: GB
+      source_unit: GB
+      type: size
+    - Volume Type: data.VolumeType
+    - Snapshot: data.SnapshotId
+    - Availability Zone: data.AvailabilityZone
+    - Encryption: data.Encrypted
+    - Attachment information: data.Attachments.InstanceId
+      type: badge
+      outline_color: violet.500
+    - KMS Key ID: data.kms_key_id
+      default: "None"
+    - KMS Key ARN: data.KmsKeyId
+      default: "None"
+    - IOPS: data.Iops
+    - Multi-Attach Enabled: data.MultiAttachEnabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Created: data.CreateTime
+      type: datetime

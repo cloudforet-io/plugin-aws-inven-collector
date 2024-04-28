@@ -1,3 +1,5 @@
+from typing import List
+
 from spaceone.inventory.plugin.collector.lib import *
 
 from ..base import ResourceManager
@@ -15,8 +17,9 @@ class AMIManager(ResourceManager):
         self.cloud_service_type = "AMI"
         self.metadata_path = "metadata/ec2/ami.yaml"
 
-    def create_cloud_service_type(self):
-        return make_cloud_service_type(
+    def create_cloud_service_type(self) -> List[dict]:
+        result = []
+        ami_cst_result = make_cloud_service_type(
             name=self.cloud_service_type,
             group=self.cloud_service_group,
             provider=self.provider,
@@ -27,11 +30,14 @@ class AMIManager(ResourceManager):
             tags={"spaceone:icon": f"{ASSET_URL}/Amazon-AMI.svg"},
             labels=["Compute"],
         )
+        result.append(ami_cst_result)
+        return result
 
     def create_cloud_service(self, region, options, secret_data, schema):
         self.cloud_service_type = "AMI"
         cloudtrail_resource_type = "AWS::EC2::Ami"
         results = self.connector.get_ami_images()
+        self.connector.set_account_id()
         account_id = self.connector.get_account_id()
         for image in results.get("Images", []):
             try:

@@ -46,39 +46,37 @@ table:
 
 tabs.0:
   name: Tables
-  items:
-    - name: Tables
-      type: item
-      fields:
-        - Table Name: data.TableName
-        - ARN: data.TableArn
-        - Status: data.TableStatus
-          type: enum
-          enums:
-            - ACTIVE: green.500
-            - CREATING: yellow.500
-            - DELETING: red.500
-            - UPDATING: yellow.500
-            - ARCHIVING: yellow.500
-            - INACCESSIBLE_ENCRYPTION_CREDENTIALS: red.500
-            - ARCHIVED: red.500
-        - Partition Key: data.partition_key_display
-        - Primary Sort Key: data.sort_key_display
-        - Point-in-time Recovery: data.continuous_backup.PointInTimeRecoveryDescription.PointInTimeRecoveryStatus
-          type: enum
-          enums:
-            - ENABLED: green.500
-            - DISABLED: red.500
-        - CloudWatch Contributor Insights: data.contributor_insight.ContributorInsightsStatus
-          type: enum
-          enums:
-            - ENABLING: yellow.500
-            - ENABLED: green.500
-            - DISABLING: yellow.500
-            - DISABLED: red.500
-        - Item count: data.ItemCount
-        - Region: data.region_name
-        - Creation date: data.CreationDateTime
+  type: item
+  fields:
+    - Table Name: data.TableName
+    - ARN: data.TableArn
+    - Status: data.TableStatus
+      type: enum
+      enums:
+        - ACTIVE: green.500
+        - CREATING: yellow.500
+        - DELETING: red.500
+        - UPDATING: yellow.500
+        - ARCHIVING: yellow.500
+        - INACCESSIBLE_ENCRYPTION_CREDENTIALS: red.500
+        - ARCHIVED: red.500
+    - Partition Key: data.partition_key_display
+    - Primary Sort Key: data.sort_key_display
+    - Point-in-time Recovery: data.continuous_backup.PointInTimeRecoveryDescription.PointInTimeRecoveryStatus
+      type: enum
+      enums:
+        - ENABLED: green.500
+        - DISABLED: red.500
+    - CloudWatch Contributor Insights: data.contributor_insight.ContributorInsightsStatus
+      type: enum
+      enums:
+        - ENABLING: yellow.500
+        - ENABLED: green.500
+        - DISABLING: yellow.500
+        - DISABLED: red.500
+    - Item count: data.ItemCount
+    - Region: data.region_name
+    - Creation date: data.CreationDateTime
 
 tabs.1:
   name: Capacity

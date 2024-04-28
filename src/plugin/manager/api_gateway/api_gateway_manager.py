@@ -1,3 +1,4 @@
+from typing import List
 from ..base import ResourceManager
 from ...conf.cloud_service_conf import *
 from spaceone.core.utils import *
@@ -14,7 +15,7 @@ class ApiGatewayManager(ResourceManager):
         self.cloud_service_type = "API"
         self.metadata_path = "metadata/api_gateway/api_gateway.yaml"
 
-    def create_cloud_service_type(self):
+    def create_cloud_service_type(self) -> List[dict]:
         yield make_cloud_service_type(
             name=self.cloud_service_type,
             group=self.cloud_service_group,
@@ -27,7 +28,9 @@ class ApiGatewayManager(ResourceManager):
             labels=["Networking"],
         )
 
-    def create_cloud_service(self, region, options, secret_data, schema):
+    def create_cloud_service(
+        self, region: str, options: dict, secret_data: dict, schema: str
+    ) -> List[dict]:
         collect_list = [
             self._collect_rest_apis,
             self._collect_websockets,
@@ -36,7 +39,7 @@ class ApiGatewayManager(ResourceManager):
         for pre_collect in collect_list:
             yield from pre_collect(region)
 
-    def _collect_rest_apis(self, region):
+    def _collect_rest_apis(self, region: str) -> List[dict]:
         cloudwatch_namespace = "AWS/ApiGateway"
         cloudwatch_dimension_name = "ApiName"
         cloudtrail_resource_type = "AWS::ApiGateway::RestApi"
@@ -115,7 +118,7 @@ class ApiGatewayManager(ResourceManager):
                         region_name=region,
                     )
 
-    def _collect_websockets(self, region):
+    def _collect_websockets(self, region: str) -> List[dict]:
         cloudtrail_resource_type = "AWS::ApiGateway::RestApi"
         results = self.connector.get_apis()
         account_id = self.connector.get_account_id()
@@ -171,14 +174,14 @@ class ApiGatewayManager(ResourceManager):
                         region_name=region,
                     )
 
-    def _update_times(self, raw):
+    def _update_times(self, raw: dict) -> None:
         raw.update(
             {
                 "CreatedDate": self.datetime_to_iso8601(raw.get("CreatedDate")),
             }
         )
 
-    def set_rest_api_resource(self, resource):
+    def set_rest_api_resource(self, resource: dict) -> dict:
         resource.update(
             {
                 "display_methods": self.get_methods_in_resources(
@@ -189,11 +192,11 @@ class ApiGatewayManager(ResourceManager):
         return resource
 
     @staticmethod
-    def get_methods_in_resources(resource_methods):
+    def get_methods_in_resources(resource_methods: dict):
         return list(map(lambda method: method, resource_methods))
 
     @staticmethod
-    def get_endpoint_type(endpoint_types):
+    def get_endpoint_type(endpoint_types: list):
         if endpoint_types:
             return endpoint_types[0]
         else:

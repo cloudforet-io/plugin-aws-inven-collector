@@ -1,6 +1,7 @@
 import abc
 import logging
 import datetime
+from typing import List
 
 from plugin.conf.cloud_service_conf import REGION_INFO
 from plugin.connector.base import ResourceConnector
@@ -24,7 +25,9 @@ class ResourceManager(BaseManager):
         self.cloud_service_type = ""
         self.connector = None
 
-    def collect_resources(self, region, options, secret_data, schema):
+    def collect_resources(
+        self, region: str, options: dict, secret_data: dict, schema: str
+    ) -> List[dict]:
         _LOGGER.debug(
             f"[collect_resources] collect Field resources (options: {options})"
         )
@@ -51,7 +54,9 @@ class ResourceManager(BaseManager):
                 resource_type="inventory.CloudServiceType",
             )
 
-    def collect_cloud_service(self, region, options, secret_data, schema):
+    def collect_cloud_service(
+        self, region: str, options: dict, secret_data: dict, schema: str
+    ) -> List[dict]:
         cloud_services = self.create_cloud_service(region, options, secret_data, schema)
         for cloud_service in cloud_services:
             data = cloud_service.get("data")
@@ -82,7 +87,9 @@ class ResourceManager(BaseManager):
                 resource_type="inventory.CloudService",
             )
 
-    def set_cloudwatch(self, namespace, dimension_name, resource_id, region_name):
+    def set_cloudwatch(
+        self, namespace: str, dimension_name: str, resource_id: str, region_name: str
+    ) -> dict:
         """
         data.cloudwatch: {
             "metrics_info": [
@@ -109,7 +116,9 @@ class ResourceManager(BaseManager):
 
         return cloudwatch_data
 
-    def set_metrics_info(self, namespace, dimension_name, resource_id):
+    def set_metrics_info(
+        self, namespace: str, dimension_name: str, resource_id: str
+    ) -> List[dict]:
         metric_info = {"Namespace": namespace}
 
         if dimension_name:
@@ -124,20 +133,20 @@ class ResourceManager(BaseManager):
         return cls.__subclasses__()
 
     @classmethod
-    def get_manager_by_service(cls, service):
+    def get_manager_by_service(cls, service: str) -> List["ResourceManager"]:
         for manager in cls.list_managers():
             if manager.cloud_service_group == service:
                 yield manager
 
     @classmethod
-    def get_service_names(cls):
+    def get_service_names(cls) -> List[str]:
         services_name = set()
         for sub_cls in cls.__subclasses__():
             services_name.add(sub_cls.cloud_service_group)
         return list(services_name)
 
     @classmethod
-    def collect_region(cls, region):
+    def collect_region(cls, region: str) -> dict:
         match_region_info = REGION_INFO.get(region, None)
         if match_region_info is not None:
             region_info = match_region_info.copy()
@@ -158,12 +167,14 @@ class ResourceManager(BaseManager):
         return None
 
     @classmethod
-    def get_region_names(cls, secret_data):
+    def get_region_names(cls, secret_data: dict) -> List[str]:
         regions = ResourceConnector.get_regions(secret_data)
         return regions
 
     @staticmethod
-    def set_cloudtrail(region_name, resource_type, resource_name):
+    def set_cloudtrail(
+        region_name: str, resource_type: str, resource_name: str
+    ) -> dict:
         cloudtrail = {
             "LookupAttributes": [
                 {
@@ -178,20 +189,20 @@ class ResourceManager(BaseManager):
         return cloudtrail
 
     @staticmethod
-    def get_reference(resource_id, link):
+    def get_reference(resource_id: str, link: str) -> dict:
         return {
             "resource_id": resource_id,
             "external_link": link,
         }
 
     @staticmethod
-    def set_dimensions(dimension_name, resource_id):
+    def set_dimensions(dimension_name: str, resource_id: str) -> List[dict]:
         dimension = {"Name": dimension_name, "Value": resource_id}
 
         return [dimension]
 
     @staticmethod
-    def convert_tags_to_dict_type(tags, key="Key", value="Value"):
+    def convert_tags_to_dict_type(tags: list, key="Key", value="Value") -> dict:
         dict_tags = {}
 
         for _tag in tags:
