@@ -531,8 +531,6 @@ class AutoScalingGroupManager(ResourceManager):
                                 "VersionDescription"
                             ),
                             "ami_id": match_lt_data.get("ImageId", ""),
-                            "created_by": match_lt_data.get("CreatedBy", ""),
-                            "create_time": match_lt_data.get("CreateTime"),
                             "default_version": match_lt_version.get("DefaultVersion"),
                             "launch_template_data": match_lt_data,
                             "arn": self.generate_arn(
@@ -638,6 +636,8 @@ class AutoScalingGroupManager(ResourceManager):
             )
         launch_template = autoscaling_info.get("launch_template", {})
         if launch_template:
+            print(launch_template.get("CreateTime"))
+            print("EXISTS?")
             launch_template.update(
                 {
                     "CreateTime": self.datetime_to_iso8601(
@@ -648,5 +648,5 @@ class AutoScalingGroupManager(ResourceManager):
 
     def _update_lt_times(self, lt_info: dict) -> None:
         lt_info.update(
-            {"create_time": self.datetime_to_iso8601(lt_info.get("create_time"))}
+            {"CreateTime": self.datetime_to_iso8601(lt_info.get("CreateTime"))}
         )

@@ -135,6 +135,8 @@ def collector_collect(params):
         region = task_options.get("region")
         resource_mgrs = ResourceManager.get_manager_by_service(service)
         for resource_mgr in resource_mgrs:
+            print(resource_mgr)
+            print("CURRENT!")
             results = resource_mgr().collect_resources(
                 region, options, secret_data, schema
             )

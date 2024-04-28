@@ -2,7 +2,7 @@ search:
   fields:
     - ID: data.LaunchTemplateId
     - AMI ID: data.ami_id
-    - Owner: data.created_by
+    - Owner: data.CreatedBy
     - Default Version: data.default_version
     - Versions: data.version
     - Instance Type: data.launch_template_data.InstanceType
@@ -16,14 +16,14 @@ table:
     desc: true
   fields:
     - AMI ID: data.ami_id
-    - Owner: data.created_by
+    - Owner: data.CreatedBy
     - Default Version: data.default_version
       type: enum
       enums:
         - "true": indigo.500
         - "false": coral.600
     - Version: data.version
-    - Creation Time: data.create_time
+    - Creation Time: data.CreateTime
       type: datetime
       source_type: iso8601
     - ARN: data.arn
@@ -63,10 +63,10 @@ tabs.0:
     - Security Groups: data.launch_template_data.SecurityGroupIds
       type: badge
       outline_color: violet.500
-    - Creation Time: data.create_time
+    - Creation Time: data.CreateTime
       type: datetime
       source_type: iso8601
-    - Created By: data.created_by
+    - Created By: data.CreatedBy
 
 
 tabs.1:
