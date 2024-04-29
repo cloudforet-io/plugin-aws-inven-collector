@@ -17,12 +17,19 @@ table:
       type: enum
       enums:
         - ISSUED: green.500
+          type: state
         - PENDING_VALIDATION: yellow.500
+          type: state
         - INACTIVE: yellow.500
+          type: state
         - VALIDATION_TIMED_OUT: yellow.500
+          type: state
         - REVOKED: yellow.500
+          type: state
         - EXPIRED: red.500
+          type: state
         - FAILED: red.500
+          type: state
     - Type: instance_type
     - In use?: data.in_use_display
     - Renewal Eligibility: data.renewal_eligibility_display
@@ -52,6 +59,8 @@ tabs.0:
             - FAILED: red.500
             - EXPIRED: red.500
         - Issue Date: data.IssuedAt
+          type: datetime
+          iso8601: true
     - name: Domain Validation Status
       type: simple-table
       root_path: data.DomainValidationOptions

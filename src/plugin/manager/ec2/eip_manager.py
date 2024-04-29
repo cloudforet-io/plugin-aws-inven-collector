@@ -21,7 +21,7 @@ class EIPManager(ResourceManager):
             group=self.cloud_service_group,
             provider=self.provider,
             metadata_path=self.metadata_path,
-            is_primary=True,
+            is_primary=False,
             is_major=True,
             service_code="AmazonEC2",
             tags={

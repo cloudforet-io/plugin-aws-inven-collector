@@ -21,8 +21,8 @@ class SnapshotManager(ResourceManager):
             group=self.cloud_service_group,
             provider=self.provider,
             metadata_path=self.metadata_path,
-            is_primary=True,
-            is_major=True,
+            is_primary=False,
+            is_major=False,
             service_code="AmazonEC2",
             tags={
                 "spaceone:icon": f"{ASSET_URL}/Amazon-Elastic-Block-Store-EBS.svg",

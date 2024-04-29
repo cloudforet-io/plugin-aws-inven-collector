@@ -44,8 +44,8 @@ class AutoScalingGroupManager(ResourceManager):
             group=self.cloud_service_group,
             provider=self.provider,
             metadata_path=self.metadata_path,
-            is_primary=True,
-            is_major=True,
+            is_primary=False,
+            is_major=False,
             service_code="AmazonEC2",
             tags={"spaceone:icon": f"{ASSET_URL}/Amazon-EC2-Auto-Scaling.svg"},
             labels=["Compute"],
@@ -599,8 +599,8 @@ class AutoScalingGroupManager(ResourceManager):
             group=self.cloud_service_group,
             provider=self.provider,
             metadata_path=metadata_path,
-            is_primary=True,
-            is_major=True,
+            is_primary=False,
+            is_major=False,
             service_code="AmazonEC2",
             tags={"spaceone:icon": f"{ASSET_URL}/Amazon-EC2-Auto-Scaling.svg"},
             labels=["Compute"],
@@ -636,8 +636,6 @@ class AutoScalingGroupManager(ResourceManager):
             )
         launch_template = autoscaling_info.get("launch_template", {})
         if launch_template:
-            print(launch_template.get("CreateTime"))
-            print("EXISTS?")
             launch_template.update(
                 {
                     "CreateTime": self.datetime_to_iso8601(

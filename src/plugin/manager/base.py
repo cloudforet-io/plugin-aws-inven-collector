@@ -164,7 +164,7 @@ class ResourceManager(BaseManager):
                 resource_type="inventory.Region",
             )
 
-        return None
+        return {}
 
     @classmethod
     def get_region_names(cls, secret_data: dict) -> List[str]:

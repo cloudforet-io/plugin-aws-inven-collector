@@ -22,12 +22,6 @@ def collector_init(params: dict) -> dict:
             'metadata': 'dict'
         }
     """
-    """
-    Conf variable 굳이..?
-    supported_features? 
-    supported_schedules?
-    options_schema 새로 받을 것 (설민님과 상의)
-    """
     return _create_init_metadata()
 
 
@@ -135,8 +129,6 @@ def collector_collect(params):
         region = task_options.get("region")
         resource_mgrs = ResourceManager.get_manager_by_service(service)
         for resource_mgr in resource_mgrs:
-            print(resource_mgr)
-            print("CURRENT!")
             results = resource_mgr().collect_resources(
                 region, options, secret_data, schema
             )

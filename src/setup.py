@@ -41,6 +41,7 @@ setup(
             "metadata/documentdb/*.yaml",
             "metadata/dynamodb/*.yaml",
             "metadata/ec2/*.yaml",
+            "metadata/ec2/widget/*.yaml",
         ]
     },
     zip_safe=False,
