@@ -5,7 +5,6 @@ class CertificateConnector(ResourceConnector):
     service_name = "acm"
     cloud_service_group = "CertificateManager"
     cloud_service_type = "Certificate"
-    include_vpc_default = False
 
     def __init__(self, secret_data, region_name):
         super().__init__(secret_data, region_name)
