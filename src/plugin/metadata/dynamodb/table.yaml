@@ -1,0 +1,151 @@
+search:
+  fields:
+    - Table ARN: data.TableArn
+    - Table Status: data.TableStatus
+      type: enum
+      enums:
+          - ACTIVE: green.500
+          - CREATING: yellow.500
+          - DELETING: red.500
+          - UPDATING: yellow.500
+          - ARCHIVING: yellow.500
+          - INACCESSIBLE_ENCRYPTION_CREDENTIALS: red.500
+          - ARCHIVED: red.500
+    - Storage Size (Bytes): instance_size
+    - Item Count: data.ItemCount
+    - AWS Account ID: account
+
+table:
+#  sort:
+#    key: data.Id
+#    desc: true
+  fields:
+    - Status: data.TableStatus
+      type: enum
+      enums:
+        - ACTIVE: green.500
+        - CREATING: yellow.500
+        - DELETING: red.500
+        - UPDATING: yellow.500
+        - ARCHIVING: yellow.500
+        - INACCESSIBLE_ENCRYPTION_CREDENTIALS: red.500
+        - ARCHIVED: red.500
+    - Partition Key: data.partition_key_display
+    - Sort Key: data.sort_key_display
+    - Indexes: data.index_count
+    - Total read capacity: data.total_read_capacity
+    - Total write capacity: data.total_write_capacity
+    - Auto Scaling: data.auto_scaling_policies
+    - Table ID: data.TableId
+    - ARN: data.TableArn
+    - Encryption Type: data.encryption_type
+    - Item Count: data.ItemCount
+    - Time to Live Status: data.time_to_live.TimeToLiveStatus
+    - Billing Mode: data.BillingModeSummary.BillingMode
+    - AWS Account ID: account
+
+tabs.0:
+  name: Tables
+  type: item
+  fields:
+    - Table Name: data.TableName
+    - ARN: data.TableArn
+    - Status: data.TableStatus
+      type: enum
+      enums:
+        - ACTIVE: green.500
+        - CREATING: yellow.500
+        - DELETING: red.500
+        - UPDATING: yellow.500
+        - ARCHIVING: yellow.500
+        - INACCESSIBLE_ENCRYPTION_CREDENTIALS: red.500
+        - ARCHIVED: red.500
+    - Partition Key: data.partition_key_display
+    - Primary Sort Key: data.sort_key_display
+    - Point-in-time Recovery: data.continuous_backup.PointInTimeRecoveryDescription.PointInTimeRecoveryStatus
+      type: enum
+      enums:
+        - ENABLED: green.500
+        - DISABLED: red.500
+    - CloudWatch Contributor Insights: data.contributor_insight.ContributorInsightsStatus
+      type: enum
+      enums:
+        - ENABLING: yellow.500
+        - ENABLED: green.500
+        - DISABLING: yellow.500
+        - DISABLED: red.500
+    - Item count: data.ItemCount
+    - Region: data.region_name
+    - Creation date: data.CreationDateTime
+
+tabs.1:
+  name: Capacity
+  items:
+    - name: Capacity
+      type: item
+      fields:
+        - Read/write capacity mode: data.BillingModeSummary.BillingMode
+          type: enum
+          enums:
+            - PROVISIONED: indigo.500
+              type: badge
+              background_color: indigo.500
+            - PAY_PER_REQUEST: coral.600
+              type: badge
+              background_color: coral.600
+        - Last change to on-demand mode: data.BillingModeSummary.LastUpdateToPayPerRequestDateTime
+        - Provisioned Read capacity units: data.ProvisionedThroughput.ReadCapacityUnits
+        - Provisioned Write capacity units: data.ProvisionedThroughput.WriteCapacityUnits
+        - Last Increase Date Time: data.ProvisionedThroughput.LastIncreaseDateTime
+        - Last Decrease Date Time: data.ProvisionedThroughput.LastDecreaseDateTime
+
+tabs.2:
+  name: Encryptions
+  items:
+    - name: Encryptions
+      type: item
+      fields:
+        - Encryption Type: data.BillingModeSummary.BillingMode
+          type: badge
+          background_color: gray.200
+          text_color: gray.900
+        - Encryption Status: data.SSEDescription.Status
+          type: enum
+          enums:
+            - ENABLED: green.500
+            - UPDATING: yellow.500
+            - ENABLING: yellow.500
+            - DISABLING: yellow.500
+            - DISABLED: gray.400
+        - KMS Master Key ARN: data.SSEDescription.KMSMasterKeyArn
+
+tabs.3:
+  name: TTL Attributes
+  items:
+    - name: TTL Attributes
+      type: item
+      fields:
+        - Status: data.time_to_live.TimeToLiveStatus
+          type: enum
+          enums:
+            - ENABLED: green.500
+            - UPDATING: yellow.500
+            - DISABLING: yellow.500
+            - DISABLED: gray.400
+        - Attribute: data.time_to_live.AttributeName
+
+tabs.4:
+  name: CloudWatch Contributor Insights
+  items:
+    - name: CloudWatch Contributor Insights
+      type: item
+      fields:
+        - Status: data.contributor_insight.ContributorInsightsStatus
+          type: enum
+          enums:
+            - ENABLED: green.500
+            - ENABLING: yellow.500
+            - DISABLING: yellow.500
+            - DISABLED: gray.400
+            - FAILED: red.500
+        - Rule List: data.contributor_insight.ContributorInsightsRuleList

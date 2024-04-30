@@ -1,0 +1,88 @@
+search:
+  fields:
+    - Lag ID: data.lagId
+    - State: data.lagState
+      type: enum
+      enums:
+        - available: green.500
+        - requested: blue.400
+        - down: red.500
+        - unknown: gray.400
+        - deleted: gray.400
+        - pending: yellow.500
+        - deleting: yellow.500
+    - Location: data.location
+    - Connection Count: data.numberOfConnections
+    - Bandwidth: data.connectionsBandwidth
+    - Minimum Links: data.minimumLinks
+    - AWS Device: data.awsDevice
+    - AWS Account ID: account
+
+table:
+#  sort:
+#    key: data.Id
+#    desc: true
+  fields:
+    - ID: data.lagId
+    - State: data.lagState
+      type: enum
+      enums:
+        - available: green.500
+        - requested: blue.400
+        - down: red.500
+        - unknown: gray.400
+        - deleted: gray.400
+        - pending: yellow.500
+        - deleting: yellow.500
+    - Location: data.location
+    - Connections Bandwidth: data.connectionsBandwidth
+    - Number of Connections: data.numberOfConnections
+    - Minimum Links: data.minimumLinks
+    - AWS Device: data.awsDevice
+    - AWS Device V2: data.awsDeviceV2
+    - Allows Hosted Connections: data.allowsHostedConnections
+    - Jumbo Frame Capable: data.jumboFrameCapable
+      type: enum
+      enums:
+        - true: indigo.500
+        - false: coral.600
+    - Logical Redundancy: data.hasLogicalRedundancy
+    - Provider Name: data.providerName
+  ###########################################################
+    - Connection IDs: data.connections.connectionId
+    - Connection Names: data.connections.connectionName
+    - Connection States: data.connections.connectionState
+    - Connection VLANs: data.connections.vlan
+    - Connection Bandwidth: data.connections.bandwidth
+  ###########################################################
+    - AWS Account ID: account
+
+
+tabs.0:
+  name: LAGs
+  items:
+    - name: LAGs
+      type: item
+      fields:
+        - ID: data.lagId
+        - Name: data.lagName
+        - State: data.lagState
+          type: enum
+          enums:
+            - available: green.500
+            - requested: blue.400
+            - down: red.500
+            - unknown: gray.400
+            - deleted: gray.400
+            - pending: yellow.500
+            - deleting: yellow.500
+        - Location: data.location
+        - Region: data.region
+        - Minimum Links: data.minimumLinks
+        - AWS Device: data.awsDevice
+        - AWS Device (V2): data.awsDeviceV2
+        - Jumbo Frame Capable: data.jumboFrameCapable
+          type: enum
+          enums:
+            - true: indigo.500
+            - false: coral.600

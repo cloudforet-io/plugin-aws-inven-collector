@@ -1,0 +1,258 @@
+widget:
+  - name: Total Size by Region
+    type: chart
+    options:
+      chart_type: COLUMN
+      name_options:
+        key: name
+        reference:
+          reference_key: region_code
+          resource_type: inventory.Region
+        type: text
+      value_options:
+        key: value
+        type: size
+        options:
+          default: '0'
+          source_unit: 'GB'
+    query:
+      aggregate:
+        - group:
+            keys:
+              - name: name
+                key: region_code
+            fields:
+              - name: value
+                key: instance_size
+                operator: sum
+      filter:
+        - key: provider
+          operator: eq
+          value: aws
+        - key: cloud_service_group
+          operator: eq
+          value: EC2
+        - key: cloud_service_type
+          operator: eq
+          value: Snapshot
+
+  - name: Count by Account
+    type: chart
+    options:
+      chart_type: DONUT
+    query:
+      aggregate:
+        - group:
+            fields:
+              - name: value
+                operator: count
+            keys:
+              - key: account
+                name: name
+      filter:
+        - key: provider
+          operator: eq
+          value: aws
+        - key: cloud_service_group
+          operator: eq
+          value: EC2
+        - key: cloud_service_type
+          operator: eq
+          value: Snapshot
+
+  - name: Count by Region
+    type: chart
+    options:
+      chart_type: COLUMN
+      name_options:
+        key: name
+        reference:
+          reference_key: region_code
+          resource_type: inventory.Region
+        type: text
+    query:
+      aggregate:
+        - group:
+            fields:
+              - name: value
+                operator: count
+            keys:
+              - key: region_code
+                name: name
+      filter:
+        - key: provider
+          operator: eq
+          value: aws
+        - key: cloud_service_group
+          operator: eq
+          value: EC2
+        - key: cloud_service_type
+          operator: eq
+          value: Snapshot
+
+  - name: Total Size by Account
+    type: chart
+    options:
+      chart_type: DONUT
+      value_options:
+        key: value
+        type: size
+        options:
+          default: '0'
+          source_unit: 'GB'
+    query:
+      aggregate:
+        - group:
+            keys:
+              - name: name
+                key: account
+            fields:
+              - name: value
+                key: instance_size
+                operator: sum
+      filter:
+        - key: provider
+          operator: eq
+          value: aws
+        - key: cloud_service_group
+          operator: eq
+          value: EC2
+        - key: cloud_service_type
+          operator: eq
+          value: Snapshot
+
+  - name: Total Count
+    type: card
+    options:
+      value_options:
+        key: value
+        options:
+          default: '0'
+        type: text
+    query:
+      aggregate:
+        - count:
+            name: value
+      filter:
+        - key: provider
+          operator: eq
+          value: aws
+        - key: cloud_service_group
+          operator: eq
+          value: EC2
+        - key: cloud_service_type
+          operator: eq
+          value: Snapshot
+
+  - name: Total Size
+    type: card
+    options:
+      value_options:
+        key: value
+        type: size
+        options:
+          default: '0'
+          source_unit: 'GB'
+    query:
+      aggregate:
+        - group:
+            fields:
+              - name: value
+                key: instance_size
+                operator: sum
+      filter:
+        - key: provider
+          operator: eq
+          value: aws
+        - key: cloud_service_group
+          operator: eq
+          value: EC2
+        - key: cloud_service_type
+          operator: eq
+          value: Snapshot
+
+search:
+  fields:
+    - Snapshot ID: data.SnapshotId
+    - ARN: data.arn
+    - Status: data.State
+      type: enum
+      enums:
+        - completed: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+        - error: red.500
+          type: state
+    - Size (GB): instance_size # integer type! Trying Size Field
+      type: size
+    - Description: data.Description
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.id
+    desc: true
+  fields:
+    - Snapshot ID: data.SnapshotId
+    - Size: data.VolumeSize
+      display_unit: GB
+      source_unit: GB
+      type: size
+    - Status: data.State
+      type: enum
+      enums:
+        - completed: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+        - error: red.500
+          type: state
+    - Progress: data.Progress
+    - Encrypted: data.Encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - ARN: data.arn
+      is_optional: true
+    - KMS Key ID: data.kms_key_id
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+    - Description: data.Description
+      is_optional: true
+
+
+tabs.0:
+  name: Snapshots
+  type: item
+  fields:
+    - Snapshot ID: data.SnapshotId
+    - ARN: data.arn
+    - Status: data.State
+      type: enum
+      enums:
+        - completed: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+        - error: red.500
+          type: state
+    - Description: data.Description
+    - Progress: data.Progress
+    - Size: data.VolumeSize
+      display_unit: GB
+      source_unit: GB
+      type: size
+    - Volume: data.VolumeId
+    - Encrypted: data.Encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Owner: data.OwnerId
+    - KMS Key ID: data.kms_key_id
+    - KMS Key ARN: data.KmsKeyId
+    - Started: data.StartTime
+      type: datetime

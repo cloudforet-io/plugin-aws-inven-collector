@@ -1,0 +1,81 @@
+search:
+  fields:
+    - ARN: data.LaunchConfigurationARN
+    - AMI ID: data.ImageId
+    - Instance Type: data.InstanceType
+    - Monitoring: data.InstanceMonitoring.Enabled
+    - Security Group ID: data.SecurityGroups
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.id
+    desc: true
+  fields:
+    - AMI ID: data.ImageId
+    - Instance Type: data.InstanceType
+    - Spot Price: data.SpotPrice
+    - ARN: data.LaunchConfigurationARN
+      is_optional: true
+    - Keypair name: data.KeyName
+      is_optional: true
+    - IAM Instance Profile: data.IamInstanceProfile
+      is_optional: true
+    - Security Group IDs: data.SecurityGroups
+      is_optional: true
+    - Image ID: data.ImageId
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+
+tabs.0:
+  name: Launch Configuration
+  type: item
+  fields:
+    - Name: data.LaunchConfigurationName
+    - ARN: data.LaunchConfigurationARN
+    - AMI: data.ImageId
+    - Instance Type: data.InstanceType
+    - Monitoring: data.InstanceMonitoring.Enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - IAM Instance Profile: data.IamInstanceProfile
+    - Kernel ID: data.KernelId
+    - Security Groups: data.SecurityGroups
+      type: badge
+      outline_color: violet.500
+    - Spot Price: data.SpotPrice
+    - RAM Disk ID: data.RamdiskId
+    - EBS Optimized: data.EbsOptimized
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Creation Time: data.CreatedTime
+
+
+tabs.1:
+  name: Block Devices
+  type: simple-table
+  root_path: data.BlockDeviceMappings
+  fields:
+    - Device Name: DeviceName
+    - Type: Ebs.VolumeType
+    - Size: Ebs.VolumeSize
+      display_unit: GB
+      source_unit: GB
+      type: size
+    - IOPS: Ebs.Iops
+    - Delete on Termination: Ebs.DeleteOnTermination
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Encrypted: Ebs.Encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
