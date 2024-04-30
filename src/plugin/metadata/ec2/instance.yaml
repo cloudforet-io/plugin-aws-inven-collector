@@ -362,7 +362,7 @@ tabs.0:
     - Termination Protection: data.aws.termination_protection
     - Public DNS: data.nics.tags.public_dns
     - Public IP: data.nics.public_ip_address
-    - Security Groups: data.compute.security_groups # --> This resource is a reference(link) type (IN_PROGRESS)
+    - Security Groups: data.compute.security_groups.display
       reference_key: data.group_id
     - Account ID: data.compute.account
     - Launched At: data.compute.launched_at
