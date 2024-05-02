@@ -109,10 +109,10 @@ search:
   - Private IP: data.PrivateIpAddress
   - NAT Gateway ID: data.nat_gateway_id
   - Scope: data.Domain
-    type: enum
-    enums:
-      - vpc: gray.400
-      - standard: gray.400
+    type: text
+    labels:
+      - vpc: "VPC"
+      - standard: "Standard"
   - AWS Account ID: account
 
 table:

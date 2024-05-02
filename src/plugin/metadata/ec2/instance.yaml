@@ -204,10 +204,7 @@ search:
   - OS Details: data.os.details
   - OS Architecture: data.os.os_arch
   - Termination Protection: data.aws.termination_protection
-    type: enum
-    enums:
-      - "TRUE": gray
-      - "FALSE": gray
+    data_type: "boolean"
   - Auto Recovery: data.aws.auto_recovery
   - Root Volume Type: data.aws.root_volume_type
   - MAC Address: data.nics.mac_address
@@ -362,7 +359,7 @@ tabs.0:
     - Termination Protection: data.aws.termination_protection
     - Public DNS: data.nics.tags.public_dns
     - Public IP: data.nics.public_ip_address
-    - Security Groups: data.compute.security_groups.display
+    - Security Groups: data.compute.security_groups.display # 상용에서도 똑같이 정상작동하지 않는 부분으로, 추후 수정이 필요함
       reference_key: data.group_id
     - Account ID: data.compute.account
     - Launched At: data.compute.launched_at
@@ -392,11 +389,11 @@ tabs.3:
   name: VPC
   type: item
   fields:
-    - VPC ID: data.vpc.vpc_id # --> This resource is a reference(link) type (IN_PROGRESS)
-      reference_key: data.vpc_id
+    - VPC ID: data.vpc.vpc_id
+      reference_key: data.vpc_id # VPC Refactoring 후 data.VpcId 으로 바꾸기
     - VPC Name: data.vpc.vpc_name
-    - Subnet ID: data.subnet.subnet_id # --> This resource is a reference(link) type (IN_PROGRESS)
-      reference_key: data.subnet_id
+    - Subnet ID: data.subnet.subnet_id
+      reference_key: data.subnet_id # VPC Refactoring 후 data.SubnetId 으로 바꾸기
     - Subnet Name: data.subnet.subnet_name
 
 
@@ -404,12 +401,12 @@ tabs.4:
   name: Auto Scaling Group
   type: item
   fields:
-    - Auto Scaling Group Name: data.auto_scaling_group.name # --> This resource is a reference(link) type (IN_PROGRESS)
-      reference_key: data.auto_scaling_group_name
-    - Launch Configuration: data.auto_scaling_group.launch_configuration.name # --> This resource is a reference(link) type (IN_PROGRESS)
-      reference_key: data.launch_configuration_name
-    - Launch Template: data.auto_scaling_group.launch_template.LaunchTemplateName # --> This resource is a reference(link) type (IN_PROGRESS)
-      reference_key: data.launch_template_name
+    - Auto Scaling Group Name: data.auto_scaling_group.name
+      reference_key: data.AutoScalingGroupName
+    - Launch Configuration: data.auto_scaling_group.launch_configuration.name
+      reference_key: data.LaunchConfigurationName
+    - Launch Template: data.auto_scaling_group.launch_template.LaunchTemplateName
+      reference_key: data.LaunchTemplateName
 
 
 tabs.5:
@@ -484,10 +481,10 @@ tabs.8:
   type: table
   root_path: data.load_balancer
   fields:
-    - Name: name # --> This resource is a reference(link) type (IN_PROGRESS)
-      reference_key: data.load_balancer_name
-    - Endpoint: endpoint # --> This resource is a reference(link) type (IN_PROGRESS)
-      reference_key: data.dns_name
+    - Name: name
+      reference_key: data.load_balancer_name # ELB Refactoring 후 data.LoadBalancerName 으로 바꾸기
+    - Endpoint: endpoint
+      reference_key: data.dns_name # ELB Refactoring 후 data.DNSName 으로 바꾸기
     - Type: type
       type: enum
       enums:

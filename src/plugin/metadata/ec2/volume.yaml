@@ -211,35 +211,30 @@ search:
     - Volume ID: data.VolumeId
     - ARN: data.arn
     - State: data.State
-      type: enum
-      enums:
-        - in-use: green.500
-          type: state
-        - available: blue.400
-          type: state
-        - deleting: yellow.500
-          type: state
-        - creating: yellow.500
-          type: state
-        - deleted: gray.400
-          type: state
-        - error: red.500
-          type: state
+      type: text
+      labels:
+        - in-use: "in-use"
+        - available: "available"
+        - deleting: "deleting"
+        - creating: "creating"
+        - deleted: "deleted"
+        - error: "error"
     - Size (Bytes): instance_size # integer type! Trying Size Field
-      type: size
+      data_type: "integer"
     - Size (GB): data.Size # integer type! Trying Size Field
-      type: size
-    - Volume Type: instance_type # TO-DO: enum should support labels too
-      type: enum
-      enums:
-        - gp2: yellow.500
-        - gp3: yellow.500
-        - io1: yellow.500
-        - sc1: yellow.500
-        - st1: yellow.500
-        - standard: yellow.500
+      data_type: "integer"
+    - Volume Type: instance_type # TO-DO: enum should support labels too\
+      type: text
+      labels:
+        - gp2: "General Purpose SSD (gp2)"
+        - gp3: "General Purpose SSD (gp3)"
+        - io1: "Provisioned IOPS SSD (io1)"
+        - sc1: "Cold HDD (sc1)"
+        - st1: "Throughput Optimized HDD (st1)"
+        - standard: "Magnetic (standard)"
     - Availability Zone: data.AvailabilityZone
     - IOPS: data.iops
+      data_type: "integer"
     - Attached Instance ID: data.Attachments.InstanceId
     - AWS Account ID: account
 

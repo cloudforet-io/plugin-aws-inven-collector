@@ -82,12 +82,7 @@ search:
     - Status: data.State
     - Source: data.ImageLocation
     - Is Public: data.Public
-      type: enum
-      enums:
-        - "true": indigo.500
-          type: state
-        - "false": coral.600
-          type: state
+      data_type: "boolean"
     - Platform: data.Platform
     - Root Device Type: data.RootDeviceType
     - Virtualization: data.VirtualizationType

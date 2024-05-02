@@ -176,16 +176,13 @@ search:
     - Snapshot ID: data.SnapshotId
     - ARN: data.arn
     - Status: data.State
-      type: enum
-      enums:
-        - completed: green.500
-          type: state
-        - pending: yellow.500
-          type: state
-        - error: red.500
-          type: state
+      type: text
+      labels:
+        - completed: "completed"
+        - pending: "pending"
+        - error: "error"
     - Size (GB): instance_size # integer type! Trying Size Field
-      type: size
+      data_type: "integer"
     - Description: data.Description
     - AWS Account ID: account
 
