@@ -377,9 +377,9 @@ tabs.4: # ELB Tab metadata refactoring needs to be developed.(IN_PROGRESS)
   root_path: data.load_balancers
   fields:
     - Name: name
-      reference_key: data.load_balancer_name
-    - Endpoint: LoadBalancerName # Inventory needs to be developed first to support this format.
-      reference_key: data.dns_name
+      reference_key: data.load_balancer_name # ELB Refactoring 후 data.LoadBalancerName 으로 바꾸기
+    - Endpoint: LoadBalancerName
+      reference_key: data.dns_name # ELB Refactoring 후 data.DNSName 으로 바꾸기
     - Type: Type
       type: enum
       enums:

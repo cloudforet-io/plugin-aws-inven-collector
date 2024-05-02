@@ -4,6 +4,7 @@ search:
     - AMI ID: data.ImageId
     - Instance Type: data.InstanceType
     - Monitoring: data.InstanceMonitoring.Enabled
+      data_type: "boolean"
     - Security Group ID: data.SecurityGroups
     - AWS Account ID: account
 

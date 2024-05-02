@@ -4,9 +4,11 @@ search:
     - AMI ID: data.ami_id
     - Owner: data.CreatedBy
     - Default Version: data.default_version
+      data_type: "boolean"
     - Versions: data.version
     - Instance Type: data.launch_template_data.InstanceType
     - Monitoring: data.launch_template_data.Monitoring.Enabled
+      data_type: "boolean"
     - Security Group ID: data.launch_template_data.SecurityGroupIds
     - AWS Account ID: account
 
