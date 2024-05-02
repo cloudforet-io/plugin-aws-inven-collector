@@ -144,6 +144,11 @@ def collector_collect(params):
         for region in regions:
             yield ResourceManager.collect_region(region)
 
+    elif resource_type == "inventory.Metric":
+        services = task_options.get("services")
+        for service in services:
+            yield from ResourceManager.collect_metrics(service)
+
 
 @app.route("Job.get_tasks")
 def job_get_tasks(params: dict) -> dict:
@@ -175,7 +180,10 @@ def job_get_tasks(params: dict) -> dict:
     # create task 2: task for collecting only cloud service region metadata
     tasks.extend(_add_cloud_service_region_tasks(regions))
 
-    # create task 3: task for collecting only cloud service group metadata
+    # create task 3: task for collecting only metrics
+    tasks.extend(_add_metric_tasks(services))
+
+    # create task 4: task for collecting only cloud service group metadata
     tasks.extend(_add_cloud_service_group_tasks(services, regions))
 
     return {"tasks": tasks}
@@ -230,6 +238,14 @@ def _add_cloud_service_type_tasks(services: list) -> list:
     return [
         _make_task_wrapper(
             resource_type="inventory.CloudServiceType", services=services
+        )
+    ]
+
+
+def _add_metric_tasks(services: list) -> list:
+    return [
+        _make_task_wrapper(
+            resource_type="inventory.Metric", services=services
         )
     ]
 

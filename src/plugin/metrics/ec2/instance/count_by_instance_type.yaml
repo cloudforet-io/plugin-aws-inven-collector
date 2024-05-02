@@ -1,0 +1,25 @@
+---
+metric_id: metric-aws-ec2-instance-type
+name: Count by Instance Type
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.EC2.Instance
+query_options:
+  group_by:
+    - key: region_code
+      name: Region
+      search_key: region_code
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: account
+      name: Account
+      search_key: account
+    - key: instance_type
+      name: Instance Type
+      search_key: instance_type
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-ec2-instance
+version: '1.0'
