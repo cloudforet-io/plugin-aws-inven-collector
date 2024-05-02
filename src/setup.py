@@ -42,6 +42,7 @@ setup(
             "metadata/dynamodb/*.yaml",
             "metadata/ec2/*.yaml",
             "metadata/ec2/widget/*.yaml",
+            "metrics/**/**/*.yaml",
         ]
     },
     zip_safe=False,
