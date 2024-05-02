@@ -1,17 +1,22 @@
+import os
 import abc
 import logging
 import datetime
 from typing import List
 
+from spaceone.core.manager import BaseManager
+from spaceone.core import utils
+from spaceone.inventory.plugin.collector.lib import *
+
 from plugin.conf.cloud_service_conf import REGION_INFO
 from plugin.connector.base import ResourceConnector
-from spaceone.core.manager import BaseManager
-from spaceone.inventory.plugin.collector.lib import *
 
 
 _LOGGER = logging.getLogger(__name__)
+CURRENT_DIR = os.path.dirname(__file__)
+_METRIC_DIR = os.path.join(CURRENT_DIR, "../metrics/")
 
-__all__ = ["ResourceManager", "_LOGGER"]
+__all__ = ["ResourceManager"]
 
 
 class ResourceManager(BaseManager):
@@ -144,6 +149,26 @@ class ResourceManager(BaseManager):
         for sub_cls in cls.__subclasses__():
             services_name.add(sub_cls.cloud_service_group)
         return list(services_name)
+
+    @classmethod
+    def collect_metrics(cls, service: str) -> dict:
+        for dirname in os.listdir(os.path.join(_METRIC_DIR, service)):
+            for filename in os.listdir(os.path.join(_METRIC_DIR, service, dirname)):
+                if filename.endswith(".yaml"):
+                    file_path = os.path.join(_METRIC_DIR, service, dirname, filename)
+                    info = utils.load_yaml_from_file(file_path)
+                    if filename == "namespace.yaml":
+                        yield make_response(
+                            namespace=info,
+                            match_keys=[],
+                            resource_type="inventory.Namespace",
+                        )
+                    else:
+                        yield make_response(
+                            metric=info,
+                            match_keys=[],
+                            resource_type="inventory.Metric",
+                        )
 
     @classmethod
     def collect_region(cls, region: str) -> dict:

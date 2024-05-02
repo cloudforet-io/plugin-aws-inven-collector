@@ -1,0 +1,7 @@
+---
+namespace_id: ns-aws-ec2-instance
+name: EC2/Instance
+category: ASSET
+provider: aws
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-ec2.svg'
+version: '1.0'
