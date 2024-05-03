@@ -1,8 +1,8 @@
 ---
-metric_id: metric-aws-ec2-instance-type
-name: Count by Instance Type
+metric_id: metric-aws-ec2-eip-count
+name: Volume Count
 metric_type: GAUGE
-resource_type: inventory.CloudService:aws.EC2.Instance
+resource_type: inventory.CloudService:aws.EC2.EIP
 query_options:
   group_by:
     - key: region_code
@@ -12,14 +12,14 @@ query_options:
         resource_type: inventory.Region
         reference_key: region_code
     - key: account
-      name: Account
+      name: Account ID
       search_key: account
-    - key: instance_type
-      name: Instance Type
-      search_key: instance_type
+    - key: data.allocation_status
+      name: Allocation Status
+      search_key: data.allocation_status
   fields:
     value:
       operator: count
 unit: Count
-namespace_id: ns-aws-ec2-instance
+namespace_id: ns-aws-ec2-eip
 version: '1.0'

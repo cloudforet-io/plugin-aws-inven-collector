@@ -1,8 +1,8 @@
 ---
-metric_id: metric-aws-ec2-instance-memory-size
-name: Memory Size
+metric_id: metric-aws-ec2-volume-size
+name: Volume Size
 metric_type: GAUGE
-resource_type: inventory.CloudService:aws.EC2.Instance
+resource_type: inventory.CloudService:aws.EC2.Volume
 query_options:
   group_by:
     - key: region_code
@@ -11,22 +11,22 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.compute.az
+    - key: data.AvailabilityZone
       name: Availability Zone
-      search_key: data.compute.az
+      search_key: data.AvailabilityZone
     - key: account
       name: Account ID
       search_key: account
     - key: instance_type
-      name: Instance Type
+      name: Volume Type
       search_key: instance_type
-    - key: data.os.os_type
-      name: OS Type
-      search_key: data.os.os_type
+    - key: data.State
+      name: Volume State
+      search_key: data.State
   fields:
     value:
-      key: data.hardware.memory
       operator: sum
-unit: GB
-namespace_id: ns-aws-ec2-instance
+      key: instance_size
+unit: Bytes
+namespace_id: ns-aws-ec2-volume
 version: '1.0'

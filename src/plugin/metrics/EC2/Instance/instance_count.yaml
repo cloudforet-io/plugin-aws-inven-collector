@@ -1,6 +1,6 @@
 ---
-metric_id: metric-aws-ec2-instance-memory-size
-name: Memory Size
+metric_id: metric-aws-ec2-instance-count
+name: Instance Count
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.EC2.Instance
 query_options:
@@ -11,22 +11,21 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.compute.az
-      name: Availability Zone
-      search_key: data.compute.az
     - key: account
       name: Account ID
       search_key: account
     - key: instance_type
       name: Instance Type
       search_key: instance_type
-    - key: data.os.os_type
-      name: OS Type
-      search_key: data.os.os_type
+    - key: data.compute.instance_state
+      name: Instance State
+      search_key: data.compute.instance_state
+    - key: data.compute.instance_state
+      name: Instance State
+      search_key: data.compute.instance_state
   fields:
     value:
-      key: data.hardware.memory
-      operator: sum
-unit: GB
+      operator: count
+unit: Count
 namespace_id: ns-aws-ec2-instance
 version: '1.0'
