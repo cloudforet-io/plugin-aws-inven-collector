@@ -23,6 +23,7 @@ query_options:
     - key: data.State
       name: Volume State
       search_key: data.State
+      default: true
   fields:
     value:
       operator: sum

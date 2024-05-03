@@ -17,6 +17,7 @@ query_options:
     - key: data.State
       name: Status
       search_key: data.State
+      default: true
   fields:
     value:
       operator: count
