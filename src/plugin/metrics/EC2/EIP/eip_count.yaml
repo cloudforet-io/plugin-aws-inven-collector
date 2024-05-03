@@ -1,6 +1,6 @@
 ---
 metric_id: metric-aws-ec2-eip-count
-name: Volume Count
+name: EIP Count
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.EC2.EIP
 query_options:
