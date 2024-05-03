@@ -21,9 +21,12 @@ query_options:
       name: Instance State
       search_key: data.compute.instance_state
       default: true
-    - key: data.compute.instance_state
-      name: Instance State
-      search_key: data.compute.instance_state
+    - key: data.os.os_type
+      name: OS Type
+      search_key: data.os.os_type
+    - key: data.compute.az
+      name: Availability Zone
+      search_key: data.compute.az
   fields:
     value:
       operator: count
