@@ -1,8 +1,8 @@
 ---
-metric_id: metric-aws-ec2-eip-count
+metric_id: metric-aws-ec2-sg-count
 name: Volume Count
 metric_type: GAUGE
-resource_type: inventory.CloudService:aws.EC2.EIP
+resource_type: inventory.CloudService:aws.EC2.SecurityGroup
 query_options:
   group_by:
     - key: region_code
@@ -14,13 +14,12 @@ query_options:
     - key: account
       name: Account ID
       search_key: account
-    - key: data.allocation_status
-      name: Allocation Status
-      search_key: data.allocation_status
-      default: true
+    - key: data.VpcId
+      name: VPC
+      search_key: data.VpcId
   fields:
     value:
       operator: count
 unit: Count
-namespace_id: ns-aws-ec2-eip
+namespace_id: ns-aws-ec2-sg
 version: '1.0'
