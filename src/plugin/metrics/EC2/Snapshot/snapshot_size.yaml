@@ -1,0 +1,26 @@
+---
+metric_id: metric-aws-ec2-snapshot-size
+name: Snapshot Size
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.EC2.Volume
+query_options:
+  group_by:
+    - key: region_code
+      name: Region
+      search_key: region_code
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: account
+      name: Account ID
+      search_key: account
+    - key: data.State
+      name: Status
+      search_key: data.State
+  fields:
+    value:
+      operator: sum
+      key: instance_size
+unit: Bytes
+namespace_id: ns-aws-ec2-snapshot
+version: '1.0'
