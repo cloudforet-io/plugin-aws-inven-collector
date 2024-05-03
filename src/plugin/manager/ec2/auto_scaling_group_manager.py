@@ -24,13 +24,13 @@ class AutoScalingGroupManager(ResourceManager):
         self._launch_templates = []
 
     def create_cloud_service_type(self):
-        metadata_name = "LaunchConfiguration"
-        lf_metadata_path = "metadata/ec2/lf.yaml"
+        # metadata_name = "LaunchConfiguration"
+        # lf_metadata_path = "metadata/ec2/lf.yaml"
         cloud_service_type_results = []
-        lf_cst_result = self._create_additional_cloud_service_type(
-            metadata_name, lf_metadata_path
-        )
-        cloud_service_type_results.append(lf_cst_result)
+        # lf_cst_result = self._create_additional_cloud_service_type(
+        #     metadata_name, lf_metadata_path
+        # )
+        # cloud_service_type_results.append(lf_cst_result)
 
         metadata_name = "LaunchTemplate"
         lt_metadata_path = "metadata/ec2/lt.yaml"
@@ -60,7 +60,7 @@ class AutoScalingGroupManager(ResourceManager):
         cloudtrail_resource_type = "AWS::AutoScaling::AutoScalingGroup"
 
         pre_collect_list = [
-            self._create_launch_configurations,
+            # self._create_launch_configurations,
             self._create_launch_templates,
         ]
         for pre_collect in pre_collect_list:

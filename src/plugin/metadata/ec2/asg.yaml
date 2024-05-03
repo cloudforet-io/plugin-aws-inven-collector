@@ -195,8 +195,6 @@ widget:
 search:
   fields:
     - ARN: data.AutoScalingGroupARN
-    - Launch Configuration Name: data.LaunchConfigurationName
-    - Launch Configuration ARN: data.launch_configuration.LaunchConfigurationARN
     - Launch Template Name: data.launch_template.LaunchTemplateName
     - Launch Template ID: data.launch_template.LaunchTemplateId
     - Availability Zone: data.AvailabilityZones
@@ -211,7 +209,7 @@ table:
     - Desired: data.DesiredCapacity
     - Min: data.MinSize
     - Max: data.MaxSize
-    - Launch Template / Configuration: data.display_launch_configuration_template
+    - Launch Template: data.display_launch_configuration_template
     - AZ: data.AvailabilityZones
     - ARN: data.AutoScalingGroupARN
     - Health Check Type: data.HealthCheckType
@@ -255,7 +253,6 @@ tabs.0:
   type: item
   fields:
     - Name: data.AutoScalingGroupName
-    - Launch Configuration name: data.LaunchConfigurationName
     - Launch Template name: data.launch_template.LaunchTemplateName
     - ARN: data.AutoScalingGroupARN
     - Desired Capacity: data.DesiredCapacity
@@ -279,34 +276,6 @@ tabs.0:
       background_color: gray.200
       text_color: gray.900
     - Creation Time: data.CreatedTime
-      type: datetime
-      source_type: iso8601
-
-
-tabs.1:
-  name: Launch Configuration
-  type: item
-  fields:
-    - Name: data.launch_configuration.LaunchConfigurationName
-    - ARN: data.launch_configuration.LaunchConfigurationARN
-    - AMI: data.launch_configuration.ImageId
-    - Instance Type: data.launch_configuration.InstanceType
-    - Monitoring: data.launch_configuration.InstanceMonitoring.Enabled
-      type: enum
-      enums:
-        - "true": indigo.500
-        - "false": coral.600
-    - IAM Instance Profile: data.launch_configuration.IamInstanceProfile
-    - Kernel ID: data.launch_configuration.KernelId
-    - Security Groups: data.launch_configuration.SecurityGroups
-    - Spot Price: data.launch_configuration.KernelId
-    - RAM Disk ID: data.launch_configuration.RamdiskId
-    - EBS Optimized: data.launch_configuration.EbsOptimized
-      type: enum
-      enums:
-        - "true": indigo.500
-        - "false": coral.600
-    - Creation Time: data.launch_configuration.CreatedTime
       type: datetime
       source_type: iso8601
 
