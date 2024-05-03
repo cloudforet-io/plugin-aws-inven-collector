@@ -315,7 +315,7 @@ tabs.2:
   name: Launch Template
   type: item
   fields:
-    - ID: data.launch_template.LaunchTemplateName
+    - ID: data.launch_template.LaunchTemplateId
     - Name: data.launch_template.LaunchTemplateName
     - Version: data.launch_template.version
 
@@ -418,8 +418,8 @@ tabs.6:
   type: table
   root_path: data.notification_configurations
   fields:
-    - Topic ARN: topic_arn
-    - Notification Type: notification_type
+    - Topic ARN: TopicARN
+    - Notification Type: NotificationType
 
 tabs.7:
   name: Scheduled Actions

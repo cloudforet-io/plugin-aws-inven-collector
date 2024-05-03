@@ -51,7 +51,8 @@ class AutoScalingGroupConnector(ResourceConnector):
         return lt_versions
 
     def describe_instances(self, instance_ids):
-        res = self.client.describe_instances(InstanceIds=instance_ids)
+        ec2_client = self.session.client("ec2", verify=BOTO3_HTTPS_VERIFIED)
+        res = ec2_client.describe_instances(InstanceIds=instance_ids)
         return res
 
     def describe_target_groups(self, tg_arns):

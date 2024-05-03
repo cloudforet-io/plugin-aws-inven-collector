@@ -1,3 +1,4 @@
+import copy
 from spaceone.inventory.plugin.collector.lib import *
 from ..base import ResourceManager
 from ...conf.cloud_service_conf import ASSET_URL, INSTANCE_FILTERS
@@ -58,23 +59,28 @@ class SecurityGroupManager(ResourceManager):
                     inbound_rules = []
                     for in_rule in raw.get("IpPermissions", []):
                         for _ip_range in in_rule.get("IpRanges", []):
+                            in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
                                 self.custom_security_group_rule_info(
-                                    in_rule, _ip_range, "ip_ranges"
+                                    in_rule_copy, _ip_range, "ip_ranges"
                                 )
                             )
 
                         for _user_group_pairs in in_rule.get("UserIdGroupPairs", []):
+                            in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
                                 self.custom_security_group_rule_info(
-                                    in_rule, _user_group_pairs, "user_id_group_pairs"
+                                    in_rule_copy,
+                                    _user_group_pairs,
+                                    "user_id_group_pairs",
                                 )
                             )
 
                         for _ip_v6_range in in_rule.get("Ipv6Ranges", []):
+                            in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
                                 self.custom_security_group_rule_info(
-                                    in_rule, _ip_v6_range, "ipv6_ranges"
+                                    in_rule_copy, _ip_v6_range, "ipv6_ranges"
                                 )
                             )
 
@@ -82,25 +88,28 @@ class SecurityGroupManager(ResourceManager):
                     outbound_rules = []
                     for out_rule in raw.get("IpPermissionsEgress", []):
                         for _ip_range in out_rule.get("IpRanges", []):
+                            out_rule_copy = copy.deepcopy(out_rule)
                             outbound_rules.append(
                                 self.custom_security_group_rule_info(
-                                    out_rule, _ip_range, "ip_ranges"
+                                    out_rule_copy, _ip_range, "ip_ranges"
                                 )
                             )
 
                         for _user_group_pairs in out_rule.get("UserIdGroupPairs", []):
+                            out_rule_copy = copy.deepcopy(out_rule)
                             outbound_rules.append(
                                 self.custom_security_group_rule_info(
-                                    out_rule,
+                                    out_rule_copy,
                                     _user_group_pairs,
                                     "user_id_group_pairs",
                                 )
                             )
 
                         for _ip_v6_range in out_rule.get("Ipv6Ranges", []):
+                            out_rule_copy = copy.deepcopy(out_rule)
                             outbound_rules.append(
                                 self.custom_security_group_rule_info(
-                                    out_rule, _ip_v6_range, "ipv6_ranges"
+                                    out_rule_copy, _ip_v6_range, "ipv6_ranges"
                                 )
                             )
 
@@ -116,7 +125,6 @@ class SecurityGroupManager(ResourceManager):
                             ),
                         }
                     )
-
                     sg_vo = raw
 
                     group_id = sg_vo.get("GroupId", "")
