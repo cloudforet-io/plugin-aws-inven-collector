@@ -33,6 +33,7 @@ setup(
     install_requires=["spaceone-core", "spaceone-api", "spaceone-inventory"],
     package_data={
         "plugin": [
+            "metadata/**/*.yaml",
             "metadata/**/**/*.yaml",
             "metrics/**/**/*.yaml",
         ]
