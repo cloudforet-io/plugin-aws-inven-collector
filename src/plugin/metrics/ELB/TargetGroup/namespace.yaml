@@ -1,0 +1,7 @@
+---
+namespace_id: ns-aws-elb-targetgrop
+name: ELB/TargetGroup
+category: ASSET
+provider: aws
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Elastic-Load-Balancing.svg'
+version: '1.0'
