@@ -1,0 +1,28 @@
+---
+metric_id: metric-aws-cloudfront-distribution-count
+name: Distribution Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.CloudFront.Distribution
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+      search_key: account
+    - key: data.id
+      name: ID
+      search_key: data.id
+    - key: data.viewer_certificate.minimum_protocol_version
+      name: SSL version
+      search_key: data.viewer_certificate.minimum_protocol_version
+    - key: data.status
+      name: Distribution Status
+      search_key: data.status
+    - key: data.state_display
+      name: Status
+      search_key: data.state_display
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-cloudfront-distribution
+version: '1.0'
