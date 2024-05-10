@@ -1,8 +1,8 @@
 ---
-metric_id: metric-aws-ec2-launch_template-count
-name: AMI Count
+metric_id: metric-aws-ec2-auto-scaling-group-count
+name: AutoScalingGroup Count
 metric_type: GAUGE
-resource_type: inventory.CloudService:aws.EC2.LaunchTemplate
+resource_type: inventory.CloudService:aws.EC2.AutoScalingGroup
 query_options:
   group_by:
     - key: region_code
