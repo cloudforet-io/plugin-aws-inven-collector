@@ -1,0 +1,31 @@
+---
+metric_id: metric-aws-elb-target-group-count
+name: Target Group Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.ELB.TargetGroup
+query_options:
+  group_by:
+    - key: region_code
+      name: Region
+      search_key: region_code
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: account
+      name: Account ID
+      search_key: account
+    - key: data.port
+      name: Port
+      search_key: data.port
+    - key: data.protocol
+      name: Protocol
+      search_key: data.protocol
+    - key: data.target_type
+      name: Target Type
+      search_key: data.target_type
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-elb-target-group
+version: '1.0'
