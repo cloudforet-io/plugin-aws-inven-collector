@@ -1,8 +1,8 @@
 ---
-metric_id: metric-aws-ec2-sg-count
-name: Security Groups Count
+metric_id: metric-aws-ec2-ami-count
+name: AMI Count
 metric_type: GAUGE
-resource_type: inventory.CloudService:aws.EC2.SecurityGroup
+resource_type: inventory.CloudService:aws.EC2.AMI
 query_options:
   group_by:
     - key: region_code
@@ -14,12 +14,9 @@ query_options:
     - key: account
       name: Account ID
       search_key: account
-    - key: data.VpcId
-      name: VPC
-      search_key: data.VpcId
   fields:
     value:
       operator: count
-unit: Count
-namespace_id: ns-aws-ec2-sg
+unit: count
+namespace_id: ns-aws-ec2-ami
 version: '1.0'

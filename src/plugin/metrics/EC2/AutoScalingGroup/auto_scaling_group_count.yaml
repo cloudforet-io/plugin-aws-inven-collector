@@ -1,8 +1,8 @@
 ---
-metric_id: metric-aws-ec2-sg-count
-name: Security Groups Count
+metric_id: metric-aws-ec2-launch_template-count
+name: AMI Count
 metric_type: GAUGE
-resource_type: inventory.CloudService:aws.EC2.SecurityGroup
+resource_type: inventory.CloudService:aws.EC2.LaunchTemplate
 query_options:
   group_by:
     - key: region_code
@@ -11,15 +11,15 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
+    - key: data.AvailabilityZones
+      name: Availability Zone
+      search_key: data.AvailabilityZones
     - key: account
       name: Account ID
       search_key: account
-    - key: data.VpcId
-      name: VPC
-      search_key: data.VpcId
   fields:
     value:
       operator: count
-unit: Count
-namespace_id: ns-aws-ec2-sg
+unit: count
+namespace_id: ns-aws-ec2-auto-scaling-group
 version: '1.0'

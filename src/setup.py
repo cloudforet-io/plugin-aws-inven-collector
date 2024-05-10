@@ -33,15 +33,7 @@ setup(
     install_requires=["spaceone-core", "spaceone-api", "spaceone-inventory"],
     package_data={
         "plugin": [
-            "metadata/acm/*.yaml",
-            "metadata/api_gateway/*.yaml",
-            "metadata/cloudfront/*.yaml",
-            "metadata/cloudtrail/*.yaml",
-            "metadata/direct_connect/*.yaml",
-            "metadata/documentdb/*.yaml",
-            "metadata/dynamodb/*.yaml",
-            "metadata/ec2/*.yaml",
-            "metadata/ec2/widget/*.yaml",
+            "metadata/**/*.yaml",
             "metrics/**/**/*.yaml",
         ]
     },
