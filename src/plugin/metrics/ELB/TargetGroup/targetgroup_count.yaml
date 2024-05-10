@@ -1,5 +1,5 @@
 ---
-metric_id: metric-aws-elb-targetgroup-count
+metric_id: metric-aws-elb-target-group-count
 name: TargetGroup Count
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.ELB.TargetGroup
@@ -27,5 +27,5 @@ query_options:
     value:
       operator: count
 unit: Count
-namespace_id: ns-aws-elb-targetgrop
+namespace_id: ns-aws-elb-target-group
 version: '1.0'

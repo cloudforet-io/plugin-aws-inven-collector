@@ -1,5 +1,5 @@
 ---
-namespace_id: ns-aws-elb-targetgrop
+namespace_id: ns-aws-elb-target-group
 name: ELB/TargetGroup
 category: ASSET
 provider: aws
