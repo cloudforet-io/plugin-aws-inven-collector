@@ -35,7 +35,7 @@ setup(
         "plugin": [
             "metadata/**/*.yaml",
             "metadata/**/**/*.yaml",
-            "metrics/**/**/*.yaml",
+            "metrics/**/**/*.yaml"
         ]
     },
     zip_safe=False,

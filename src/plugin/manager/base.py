@@ -14,7 +14,7 @@ from plugin.connector.base import ResourceConnector
 
 _LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)
-_METRIC_DIR = os.path.join(CURRENT_DIR, "../metrics/")
+METRIC_DIR = os.path.join(CURRENT_DIR, "../metrics/")
 
 __all__ = ["ResourceManager"]
 
@@ -152,10 +152,10 @@ class ResourceManager(BaseManager):
 
     @classmethod
     def collect_metrics(cls, service: str) -> dict:
-        for dirname in os.listdir(os.path.join(_METRIC_DIR, service)):
-            for filename in os.listdir(os.path.join(_METRIC_DIR, service, dirname)):
+        for dirname in os.listdir(os.path.join(METRIC_DIR, service)):
+            for filename in os.listdir(os.path.join(METRIC_DIR, service, dirname)):
                 if filename.endswith(".yaml"):
-                    file_path = os.path.join(_METRIC_DIR, service, dirname, filename)
+                    file_path = os.path.join(METRIC_DIR, service, dirname, filename)
                     info = utils.load_yaml_from_file(file_path)
                     if filename == "namespace.yaml":
                         yield make_response(
