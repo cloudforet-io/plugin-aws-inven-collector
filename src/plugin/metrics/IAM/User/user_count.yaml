@@ -1,0 +1,25 @@
+---
+metric_id: metric-aws-iam-user-count
+name: User Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.IAM.User
+query_options:
+  group_by:
+    - key: region_code
+      name: Region
+      search_key: region_code
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: account
+      name: Account ID
+      search_key: account
+    - key: data.groups.group_name
+      name: Groups
+      search_key: data.groups.group_name
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-iam-user
+version: '1.0'

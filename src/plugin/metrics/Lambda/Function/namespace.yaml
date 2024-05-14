@@ -1,0 +1,7 @@
+---
+namespace_id: ns-aws-lambda-function
+name: Lambda/Function
+category: ASSET
+provider: aws
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Lambda.svg'
+version: '1.0'

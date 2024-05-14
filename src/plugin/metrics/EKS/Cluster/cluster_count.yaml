@@ -1,0 +1,28 @@
+---
+metric_id: metric-aws-eks-cluster-count
+name: Cluster Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.EKS.Cluster
+query_options:
+  group_by:
+    - key: region_code
+      name: Region
+      search_key: region_code
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: account
+      name: Account ID
+      search_key: account
+    - key: data.status
+      name: Status
+      search_key: data.status
+    - key: data.version
+      name: Version
+      search_key: data.version
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-eks-cluster
+version: '1.0'

@@ -1,0 +1,34 @@
+---
+metric_id: metric-aws-certificate-manager-certificate-count
+name: Certificate Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.CertificateManager.Certificate
+query_options:
+  group_by:
+    - key: region_code
+      name: Region
+      search_key: region_code
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: account
+      name: Account ID
+      search_key: account
+    - key: data.state
+      name: State
+      search_key: data.state
+    - key: data.in_use_display
+      name: In Use
+      search_key: data.in_use_display
+    - key: data.status
+      name: Distribution Status
+      search_key: data.status
+    - key: data.renewal_eligibility_display
+      name: Renewal Eligibility
+      search_key: data.renewal_eligibility_display
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-certificate-manager-certificate
+version: '1.0'
