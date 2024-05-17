@@ -9,7 +9,7 @@ class CertificateConnector(ResourceConnector):
     def __init__(self, secret_data, region_name):
         super().__init__(secret_data, region_name)
         self.service_name = "acm"
-        self.cloud_service_type = "AMI"
+        self.cloud_service_type = "Certificate"
         self.cloud_service_group = "CertificateManager"
         self.rest_service_name = "acm"
 
