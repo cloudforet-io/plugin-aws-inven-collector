@@ -1,0 +1,20 @@
+---
+metric_id: metric-aws-route53-hosted-zone-record-set-count
+name: Record Set Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.Route53.HostedZone
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+      search_key: account
+    - key: instance_type
+      name: Type
+      search_key: instance_type
+  fields:
+    value:
+      operator: sum
+      key: data.resource_record_set_count
+unit: Count
+namespace_id: ns-aws-route53-hosted-zone
+version: '1.0'

@@ -1,0 +1,31 @@
+---
+metric_id: metric-aws-eks-nodegroup-count
+name: NodeGroup Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.EKS.NodeGroup
+query_options:
+  group_by:
+    - key: region_code
+      name: Region
+      search_key: region_code
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: account
+      name: Account ID
+      search_key: account
+    - key: data.cluster_name
+      name: Cluster Name
+      search_key: data.cluster_name
+    - key: status
+      name: Status
+      search_key: status
+    - key: data.version
+      name: Version
+      search_key: data.version
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-eks-nodegroup
+version: '1.0'

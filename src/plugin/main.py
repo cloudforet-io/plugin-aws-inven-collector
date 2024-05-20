@@ -243,9 +243,27 @@ def _add_cloud_service_type_tasks(services: list) -> list:
 
 
 def _add_metric_tasks(services: list) -> list:
+    # Specific cloud_service_group list.
+    metric_services = [
+        "CertificateManager", # "ACM",
+        "CloudFront",
+        "CloudTrail",
+        "DocumentDB",
+        "EC2",
+        "ECR",
+        "EFS",
+        "EKS",
+        "ELB",
+        "IAM",
+        "KMS",
+        "Lambda",
+        "Route53",
+        "S3"
+    ]
     return [
         _make_task_wrapper(
-            resource_type="inventory.Metric", services=services
+            resource_type="inventory.Metric", services=metric_services
+            # resource_type="inventory.Metric", services = services     # origin
         )
     ]
 
