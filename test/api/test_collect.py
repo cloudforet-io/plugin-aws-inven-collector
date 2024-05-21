@@ -14,7 +14,6 @@ ROLE_ARN = os.environ.get("ROLE_ARN", None)
 EXTERNAL_ID = os.environ.get("EXTERNAL_ID", None)
 REGION_NAME = os.environ.get("REGION_NAME", None)
 
-
 if AKI == None or SAK == None:
     print(
         """
@@ -90,9 +89,10 @@ class TestCollect(TestCase):
             task_options = task["task_options"]
             filter = {}
             params = {
-                "options": task_options,
+                "options": {},
                 "secret_data": self.secret_data,
                 "filter": filter,
+                "task_options": task_options,
             }
             res_stream = self.inventory.Collector.collect(params)
             for res in res_stream:

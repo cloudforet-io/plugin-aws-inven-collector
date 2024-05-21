@@ -58,16 +58,15 @@ class AutoScalingGroupManager(ResourceManager):
         cloudwatch_namespace = "AWS/AutoScaling"
         cloudwatch_dimension_name = "AutoScalingGroupName"
         cloudtrail_resource_type = "AWS::AutoScaling::AutoScalingGroup"
-
+        account_id = options.get("account_id", "")
+        self.connector.load_account_id(account_id)
         pre_collect_list = [
             # self._create_launch_configurations,
             self._create_launch_templates,
         ]
         for pre_collect in pre_collect_list:
-            yield from pre_collect(region)
+            yield from pre_collect(region, account_id)
         results = self.connector.get_auto_scaling_groups()
-        self.connector.set_account_id()
-        account_id = self.connector.get_account_id()
         policies = None
         notification_configurations = None
 
@@ -152,9 +151,9 @@ class AutoScalingGroupManager(ResourceManager):
                             }
                         )
                     elif (
-                        raw.get("MixedInstancesPolicy", {})
-                        .get("LaunchTemplate", {})
-                        .get("LaunchTemplateSpecification")
+                            raw.get("MixedInstancesPolicy", {})
+                                    .get("LaunchTemplate", {})
+                                    .get("LaunchTemplateSpecification")
                     ):
                         _lt_info = (
                             raw.get("MixedInstancesPolicy", {})
@@ -259,7 +258,7 @@ class AutoScalingGroupManager(ResourceManager):
         max_count = 20
         instances_from_ec2 = []
         split_instances = [
-            instances[i : i + max_count] for i in range(0, len(instances), max_count)
+            instances[i: i + max_count] for i in range(0, len(instances), max_count)
         ]
 
         for instances in split_instances:
@@ -297,7 +296,7 @@ class AutoScalingGroupManager(ResourceManager):
         max_count = 20
 
         split_tgs_arns = [
-            target_group_arns[i : i + max_count]
+            target_group_arns[i: i + max_count]
             for i in range(0, len(target_group_arns), max_count)
         ]
 
@@ -317,7 +316,7 @@ class AutoScalingGroupManager(ResourceManager):
         max_count = 20
 
         split_lb_arns = [
-            lb_arns[i : i + max_count] for i in range(0, len(lb_arns), max_count)
+            lb_arns[i: i + max_count] for i in range(0, len(lb_arns), max_count)
         ]
 
         load_balancer_data_list = []
@@ -381,9 +380,9 @@ class AutoScalingGroupManager(ResourceManager):
         if raw.get("LaunchTemplate"):
             lt_dict = raw.get("LaunchTemplate")
         elif (
-            raw.get("MixedInstancesPolicy", {})
-            .get("LaunchTemplate", {})
-            .get("LaunchTemplateSpecification")
+                raw.get("MixedInstancesPolicy", {})
+                        .get("LaunchTemplate", {})
+                        .get("LaunchTemplateSpecification")
         ):
             lt_dict = (
                 raw.get("MixedInstancesPolicy", {})
@@ -400,7 +399,7 @@ class AutoScalingGroupManager(ResourceManager):
                 launch_template
                 for launch_template in self._launch_templates
                 if launch_template.get("LaunchTemplateId")
-                == lt_dict.get("LaunchTemplateId")
+                   == lt_dict.get("LaunchTemplateId")
             ),
             None,
         )
@@ -508,13 +507,11 @@ class AutoScalingGroupManager(ResourceManager):
 
         return result_list
 
-    def _create_launch_templates(self, region):
+    def _create_launch_templates(self, region, account_id):
         cloud_service_type = "LaunchTemplate"
         cloudtrail_resource_type = "AWS::AutoScaling::LaunchTemplate"
 
         response = self.connector.get_launch_templates()
-        self.connector.set_account_id()
-        account_id = self.connector.get_account_id()
         result_list = []
         for data in response:
             for raw in data.get("LaunchTemplates", []):
@@ -539,8 +536,8 @@ class AutoScalingGroupManager(ResourceManager):
                                 account_id="",
                                 resource_type="launch_template",
                                 resource_id=raw["LaunchTemplateId"]
-                                + "/v"
-                                + str(match_lt_version.get("VersionNumber")),
+                                            + "/v"
+                                            + str(match_lt_version.get("VersionNumber")),
                             ),
                             "cloudtrail": self.set_cloudtrail(
                                 region,

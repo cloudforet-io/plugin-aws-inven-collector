@@ -128,6 +128,8 @@ def collector_collect(params):
         service = task_options.get("service")
         region = task_options.get("region")
         resource_mgrs = ResourceManager.get_manager_by_service(service)
+        account_id = ResourceManager.get_account_id(secret_data, region)
+        options["account_id"] = account_id
         for resource_mgr in resource_mgrs:
             results = resource_mgr().collect_resources(
                 region, options, secret_data, schema
@@ -245,7 +247,7 @@ def _add_cloud_service_type_tasks(services: list) -> list:
 def _add_metric_tasks(services: list) -> list:
     # Specific cloud_service_group list.
     metric_services = [
-        "CertificateManager", # "ACM",
+        "CertificateManager",  # "ACM",
         "CloudFront",
         "CloudTrail",
         "DocumentDB",
@@ -258,11 +260,12 @@ def _add_metric_tasks(services: list) -> list:
         "KMS",
         "Lambda",
         "Route53",
-        "S3"
+        "S3",
     ]
     return [
         _make_task_wrapper(
-            resource_type="inventory.Metric", services=metric_services
+            resource_type="inventory.Metric",
+            services=metric_services,
             # resource_type="inventory.Metric", services = services     # origin
         )
     ]

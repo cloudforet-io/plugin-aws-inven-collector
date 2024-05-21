@@ -35,8 +35,8 @@ class EIPManager(ResourceManager):
     def create_cloud_service(self, region, options, secret_data, schema):
         cloudtrail_resource_type = "AWS::EC2::EIP"
         results = self.connector.get_addresses()
-        self.connector.set_account_id()
-        account_id = self.connector.get_account_id()
+        account_id = options.get("account_id", "")
+        self.connector.load_account_id(account_id)
         nat_gateways = None
         network_interfaces = None
         eips = results.get("Addresses", [])

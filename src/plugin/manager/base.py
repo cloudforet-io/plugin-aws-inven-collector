@@ -11,7 +11,6 @@ from spaceone.inventory.plugin.collector.lib import *
 from plugin.conf.cloud_service_conf import REGION_INFO
 from plugin.connector.base import ResourceConnector
 
-
 _LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)
 METRIC_DIR = os.path.join(CURRENT_DIR, "../metrics/")
@@ -252,6 +251,14 @@ class ResourceManager(BaseManager):
             value = value.replace(tzinfo=None)
             return f"{value.isoformat()}"
         return None
+
+    @classmethod
+    def get_account_id(cls, secret_data, region):
+        resource_connector = ResourceConnector(
+            secret_data=secret_data, region_name=region
+        )
+        resource_connector.set_account_id()
+        return resource_connector.get_account_id()
 
     @abc.abstractmethod
     def create_cloud_service_type(self):

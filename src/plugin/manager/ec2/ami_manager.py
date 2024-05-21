@@ -37,8 +37,8 @@ class AMIManager(ResourceManager):
         self.cloud_service_type = "AMI"
         cloudtrail_resource_type = "AWS::EC2::Ami"
         results = self.connector.get_ami_images()
-        self.connector.set_account_id()
-        account_id = self.connector.get_account_id()
+        account_id = options.get("account_id", "")
+        self.connector.load_account_id(account_id)
         for image in results.get("Images", []):
             try:
                 try:
