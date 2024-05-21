@@ -43,8 +43,8 @@ class SecurityGroupManager(ResourceManager):
 
         # Get Security Group
         results = self.connector.get_security_groups()
-        self.connector.set_account_id()
-        account_id = self.connector.get_account_id()
+        account_id = options.get("account_id", "")
+        self.connector.load_account_id(account_id)
 
         for data in results:
             for raw in data.get("SecurityGroups", []):
