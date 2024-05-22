@@ -151,9 +151,9 @@ class AutoScalingGroupManager(ResourceManager):
                             }
                         )
                     elif (
-                            raw.get("MixedInstancesPolicy", {})
-                                    .get("LaunchTemplate", {})
-                                    .get("LaunchTemplateSpecification")
+                        raw.get("MixedInstancesPolicy", {})
+                        .get("LaunchTemplate", {})
+                        .get("LaunchTemplateSpecification")
                     ):
                         _lt_info = (
                             raw.get("MixedInstancesPolicy", {})
@@ -258,7 +258,7 @@ class AutoScalingGroupManager(ResourceManager):
         max_count = 20
         instances_from_ec2 = []
         split_instances = [
-            instances[i: i + max_count] for i in range(0, len(instances), max_count)
+            instances[i : i + max_count] for i in range(0, len(instances), max_count)
         ]
 
         for instances in split_instances:
@@ -296,7 +296,7 @@ class AutoScalingGroupManager(ResourceManager):
         max_count = 20
 
         split_tgs_arns = [
-            target_group_arns[i: i + max_count]
+            target_group_arns[i : i + max_count]
             for i in range(0, len(target_group_arns), max_count)
         ]
 
@@ -316,7 +316,7 @@ class AutoScalingGroupManager(ResourceManager):
         max_count = 20
 
         split_lb_arns = [
-            lb_arns[i: i + max_count] for i in range(0, len(lb_arns), max_count)
+            lb_arns[i : i + max_count] for i in range(0, len(lb_arns), max_count)
         ]
 
         load_balancer_data_list = []
@@ -380,9 +380,9 @@ class AutoScalingGroupManager(ResourceManager):
         if raw.get("LaunchTemplate"):
             lt_dict = raw.get("LaunchTemplate")
         elif (
-                raw.get("MixedInstancesPolicy", {})
-                        .get("LaunchTemplate", {})
-                        .get("LaunchTemplateSpecification")
+            raw.get("MixedInstancesPolicy", {})
+            .get("LaunchTemplate", {})
+            .get("LaunchTemplateSpecification")
         ):
             lt_dict = (
                 raw.get("MixedInstancesPolicy", {})
@@ -399,7 +399,7 @@ class AutoScalingGroupManager(ResourceManager):
                 launch_template
                 for launch_template in self._launch_templates
                 if launch_template.get("LaunchTemplateId")
-                   == lt_dict.get("LaunchTemplateId")
+                == lt_dict.get("LaunchTemplateId")
             ),
             None,
         )
@@ -536,8 +536,8 @@ class AutoScalingGroupManager(ResourceManager):
                                 account_id="",
                                 resource_type="launch_template",
                                 resource_id=raw["LaunchTemplateId"]
-                                            + "/v"
-                                            + str(match_lt_version.get("VersionNumber")),
+                                + "/v"
+                                + str(match_lt_version.get("VersionNumber")),
                             ),
                             "cloudtrail": self.set_cloudtrail(
                                 region,

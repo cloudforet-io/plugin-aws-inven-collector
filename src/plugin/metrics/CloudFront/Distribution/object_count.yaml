@@ -9,7 +9,7 @@ query_options:
       name: Account ID
       search_key: account
     - key: data.id
-      name: ID
+      name: Distribution ID
       search_key: data.id
     - key: data.viewer_certificate.minimum_protocol_version
       name: SSL version
