@@ -29,7 +29,7 @@ query_options:
   fields:
     value:
       operator: sum
-      key: data.instances
+      key: data.stats.instances_size
 unit: Count
 namespace_id: ns-aws-cloudfront-distribution
 version: '1.0'
