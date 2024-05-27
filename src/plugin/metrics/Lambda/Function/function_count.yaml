@@ -5,18 +5,17 @@ metric_type: GAUGE
 resource_type: inventory.CloudService:aws.Lambda.Function
 query_options:
   group_by:
+    - key: account
+      name: Account ID
     - key: region_code
       name: Region
-      search_key: region_code
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: account
-      name: Account ID
-      search_key: account
     - key: data.runtime
       name: Runtime
-      search_key: data.runtime
+    - key: data.package_type
+      name: Package Type
   fields:
     value:
       operator: count

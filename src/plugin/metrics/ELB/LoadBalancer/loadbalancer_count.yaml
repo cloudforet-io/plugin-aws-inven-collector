@@ -5,27 +5,19 @@ metric_type: GAUGE
 resource_type: inventory.CloudService:aws.ELB.LoadBalancer
 query_options:
   group_by:
+    - key: account
+      name: Account ID
     - key: region_code
       name: Region
-      search_key: region_code
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.availability_zones.zone_name
-      name: Availability Zone
-      search_key: data.availability_zones.zone_name
-    - key: account
-      name: Account ID
-      search_key: account
     - key: data.state.code
       name: State
-      search_key: data.state.code
     - key: data.type
       name: Type
-      search_key: data.type
     - key: data.scheme
       name: Scheme
-      search_key: data.scheme
   fields:
     value:
       operator: count

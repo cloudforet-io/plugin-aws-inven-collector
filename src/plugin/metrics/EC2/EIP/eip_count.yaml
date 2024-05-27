@@ -5,18 +5,15 @@ metric_type: GAUGE
 resource_type: inventory.CloudService:aws.EC2.EIP
 query_options:
   group_by:
+    - key: account
+      name: Account ID
     - key: region_code
       name: Region
-      search_key: region_code
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: account
-      name: Account ID
-      search_key: account
     - key: data.allocation_status
       name: Allocation Status
-      search_key: data.allocation_status
       default: true
   fields:
     value:

@@ -5,24 +5,19 @@ metric_type: GAUGE
 resource_type: inventory.CloudService:aws.EC2.Volume
 query_options:
   group_by:
+    - key: account
+      name: Account ID
     - key: region_code
       name: Region
-      search_key: region_code
       reference:
         resource_type: inventory.Region
         reference_key: region_code
     - key: data.AvailabilityZone
       name: Availability Zone
-      search_key: data.AvailabilityZone
-    - key: account
-      name: Account ID
-      search_key: account
     - key: instance_type
       name: Volume Type
-      search_key: instance_type
     - key: data.State
       name: Volume State
-      search_key: data.State
       default: true
   fields:
     value:

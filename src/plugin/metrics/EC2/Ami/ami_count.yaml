@@ -5,15 +5,19 @@ metric_type: GAUGE
 resource_type: inventory.CloudService:aws.EC2.AMI
 query_options:
   group_by:
+    - key: account
+      name: Account ID
     - key: region_code
       name: Region
-      search_key: region_code
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: account
-      name: Account ID
-      search_key: account
+    - key: data.public
+      name: Is Public
+    - key: data.state
+      name: Status
+    - key: data.platform
+      name: Platform
   fields:
     value:
       operator: count

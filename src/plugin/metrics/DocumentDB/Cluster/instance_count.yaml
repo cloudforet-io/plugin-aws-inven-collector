@@ -1,8 +1,8 @@
 ---
-metric_id: metric-aws-eks-nodegroup-count
-name: NodeGroup Count
+metric_id: metric-aws-documentdb-instance-count
+name: Instance Count
 metric_type: GAUGE
-resource_type: inventory.CloudService:aws.EKS.NodeGroup
+resource_type: inventory.CloudService:aws.DocumentDB.Cluster
 query_options:
   group_by:
     - key: account
@@ -12,15 +12,16 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.cluster_name
-      name: Cluster
     - key: data.status
       name: Status
-    - key: data.version
+    - key: data.engine
+      name: Engine
+    - key: data.engine_version
       name: Version
   fields:
     value:
-      operator: count
+      key: instance_size
+      operator: sum
 unit: Count
-namespace_id: ns-aws-eks-nodegroup
+namespace_id: ns-aws-documentdb-cluster
 version: '1.0'

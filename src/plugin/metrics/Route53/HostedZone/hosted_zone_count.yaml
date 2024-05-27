@@ -7,10 +7,8 @@ query_options:
   group_by:
     - key: account
       name: Account ID
-      search_key: account
     - key: instance_type
       name: Type
-      search_key: instance_type
   fields:
     value:
       operator: count
