@@ -12,7 +12,7 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.mfa_enabled
+    - key: data.mfa_device
       name: MFA
     - key: data.access_key_age_status
       name: AccessKey Status

@@ -13,7 +13,7 @@ query_options:
         resource_type: inventory.Region
         reference_key: region_code
     - key: data.status
-      name: Distribution Status
+      name: Status
       default: true
     - key: data.in_use_display
       name: In Use

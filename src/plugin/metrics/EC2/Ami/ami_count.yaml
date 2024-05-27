@@ -12,11 +12,11 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.public
+    - key: data.Public
       name: Is Public
     - key: data.state
       name: Status
-    - key: data.platform
+    - key: data.Platform
       name: Platform
   fields:
     value:

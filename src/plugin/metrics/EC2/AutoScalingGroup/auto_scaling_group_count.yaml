@@ -12,8 +12,6 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.AvailabilityZones
-      name: Availability Zone
   fields:
     value:
       operator: count
