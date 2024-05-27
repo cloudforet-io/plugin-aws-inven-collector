@@ -23,7 +23,7 @@ class TrailManager(ResourceManager):
             is_major=True,
             service_code="AWSCloudTrail",
             tags={"spaceone:icon": f"{ASSET_URL}/AWS-Cloudtrail.svg"},
-            labels=["Management"],
+            labels=["Security"],
         )
 
     def create_cloud_service(self, region, options, secret_data, schema):

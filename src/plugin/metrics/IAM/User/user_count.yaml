@@ -5,18 +5,17 @@ metric_type: GAUGE
 resource_type: inventory.CloudService:aws.IAM.User
 query_options:
   group_by:
+    - key: account
+      name: Account ID
     - key: region_code
       name: Region
-      search_key: region_code
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: account
-      name: Account ID
-      search_key: account
-    - key: data.groups.group_name
-      name: Groups
-      search_key: data.groups.group_name
+    - key: data.mfa_enabled
+      name: MFA
+    - key: data.access_key_age_status
+      name: AccessKey Status
   fields:
     value:
       operator: count
