@@ -14,6 +14,7 @@ query_options:
         reference_key: region_code
     - key: data.life_cycle_state
       name: State
+      default: true
   fields:
     value:
       operator: sum
