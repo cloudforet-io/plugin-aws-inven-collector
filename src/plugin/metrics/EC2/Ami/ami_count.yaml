@@ -14,7 +14,7 @@ query_options:
         reference_key: region_code
     - key: data.Public
       name: Is Public
-    - key: data.state
+    - key: data.State
       name: Status
     - key: data.Platform
       name: Platform
