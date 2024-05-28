@@ -20,7 +20,7 @@ query_options:
       name: Scheme
   fields:
     value:
-      operator: sum # count?
+      operator: sum
       key: data.stats.instances_size
 unit: Count
 namespace_id: ns-aws-elb-loadbalancer
