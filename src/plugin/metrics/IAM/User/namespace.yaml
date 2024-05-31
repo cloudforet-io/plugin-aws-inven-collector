@@ -2,6 +2,7 @@
 namespace_id: ns-aws-iam-user
 name: IAM/User
 category: ASSET
-provider: aws
+resource_type: inventory.CloudService:aws.IAM.User
+group: aws
 icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg'
-version: '1.0'
+version: '1.1'

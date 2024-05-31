@@ -2,6 +2,7 @@
 namespace_id: ns-aws-route53-hosted-zone
 name: Route53/HostedZone
 category: ASSET
-provider: aws
+resource_type: inventory.CloudService:aws.Route53.HostedZone
+group: aws
 icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Route-53.svg'
-version: '1.0'
+version: '1.1'
