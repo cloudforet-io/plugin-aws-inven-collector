@@ -2,6 +2,7 @@
 namespace_id: ns-aws-ec2-ami
 name: EC2/AMI
 category: ASSET
-provider: aws
+resource_type: inventory.CloudService:aws.EC2.Ami
+group: aws
 icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-AMI.svg'
-version: '1.0'
+version: '1.1'
