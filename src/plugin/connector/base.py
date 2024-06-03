@@ -4,6 +4,7 @@ import datetime
 from functools import partial
 from typing import List
 from boto3.session import Session
+from botocore.config import Config
 from spaceone.core import utils
 from spaceone.core.connector import BaseConnector
 from spaceone.core.error import *
@@ -163,7 +164,9 @@ class ResourceConnector(BaseConnector):
     def client(self):
         if self._client is None:
             self._client = self.session.client(
-                self.rest_service_name, verify=BOTO3_HTTPS_VERIFIED
+                self.rest_service_name,
+                verify=BOTO3_HTTPS_VERIFIED,
+                config=Config(retries={"max_attempts": 10}),
             )
         return self._client
 
