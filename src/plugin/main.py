@@ -112,7 +112,7 @@ def collector_collect(params):
     options = params["options"]
     secret_data = params["secret_data"]
     schema = params.get("schema")
-    task_options = params.get("task_options")
+    task_options = params.get("task_options", {})
     resource_type = task_options.get("resource_type")
 
     if resource_type == "inventory.CloudServiceType":
