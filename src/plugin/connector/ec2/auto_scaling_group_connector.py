@@ -1,5 +1,3 @@
-from botocore.config import Config
-
 from plugin.conf.cloud_service_conf import BOTO3_HTTPS_VERIFIED
 from plugin.connector.base import ResourceConnector
 
@@ -27,11 +25,7 @@ class AutoScalingGroupConnector(ResourceConnector):
         return response_iterator
 
     def get_launch_templates(self):
-        lt_client = self.session.client(
-            "ec2",
-            verify=BOTO3_HTTPS_VERIFIED,
-            Config=Config(retries={"max_attempts": 10}),
-        )
+        lt_client = self.session.client("ec2", verify=BOTO3_HTTPS_VERIFIED)
         paginator = lt_client.get_paginator("describe_launch_templates")
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -52,49 +46,29 @@ class AutoScalingGroupConnector(ResourceConnector):
         return response_iterator
 
     def describe_launch_template_versions(self, lt):
-        lt_client = self.session.client(
-            "ec2",
-            verify=BOTO3_HTTPS_VERIFIED,
-            Config=Config(retries={"max_attempts": 10}),
-        )
+        lt_client = self.session.client("ec2", verify=BOTO3_HTTPS_VERIFIED)
         lt_versions = lt_client.describe_launch_template_versions(LaunchTemplateId=lt)
         return lt_versions
 
     def describe_instances(self, instance_ids):
-        ec2_client = self.session.client(
-            "ec2",
-            verify=BOTO3_HTTPS_VERIFIED,
-            Config=Config(retries={"max_attempts": 10}),
-        )
+        ec2_client = self.session.client("ec2", verify=BOTO3_HTTPS_VERIFIED)
         res = ec2_client.describe_instances(InstanceIds=instance_ids)
         return res
 
     def describe_target_groups(self, tg_arns):
-        elb_client = self.session.client(
-            "elbv2",
-            verify=BOTO3_HTTPS_VERIFIED,
-            Config=Config(retries={"max_attempts": 10}),
-        )
+        elb_client = self.session.client("elbv2", verify=BOTO3_HTTPS_VERIFIED)
         res = elb_client.describe_target_groups(TargetGroupArns=tg_arns)
         return res
 
     def describe_load_balancers(self, lb_arns):
-        elb_client = self.session.client(
-            "elbv2",
-            verify=BOTO3_HTTPS_VERIFIED,
-            Config=Config(retries={"max_attempts": 10}),
-        )
+        elb_client = self.session.client("elbv2", verify=BOTO3_HTTPS_VERIFIED)
         res = elb_client.describe_load_balancers(LoadBalancerArns=lb_arns).get(
             "LoadBalancers", []
         )
         return res
 
     def describe_listeners(self, lb_arn):
-        elb_client = self.session.client(
-            "elbv2",
-            verify=BOTO3_HTTPS_VERIFIED,
-            Config=Config(retries={"max_attempts": 10}),
-        )
+        elb_client = self.session.client("elbv2", verify=BOTO3_HTTPS_VERIFIED)
         res = elb_client.describe_listeners(lb_arn).get("Listeners", [])
         return res
 
