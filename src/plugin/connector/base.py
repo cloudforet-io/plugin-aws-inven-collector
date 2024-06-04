@@ -119,7 +119,7 @@ class ResourceConnector(BaseConnector):
         self._client = self.session.client(
             self.service_name,
             verify=BOTO3_HTTPS_VERIFIED,
-            Config=Config(retries={"max_attempts": 10}),
+            config=Config(retries={"max_attempts": 10}),
         )
         return self._client
 
@@ -130,7 +130,11 @@ class ResourceConnector(BaseConnector):
         self.account_id = account_id
 
     def set_account_id(self):
-        sts_client = self.session.client("sts", verify=BOTO3_HTTPS_VERIFIED)
+        sts_client = self.session.client(
+            "sts",
+            verify=BOTO3_HTTPS_VERIFIED,
+            config=Config(retries={"max_attempts": 10}),
+        )
         self.account_id = sts_client.get_caller_identity()["Account"]
 
     def set_cloud_service_types(self):
