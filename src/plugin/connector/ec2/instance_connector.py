@@ -1,4 +1,3 @@
-from botocore.config import Config
 from spaceone.core.error import ERROR_REQUIRED_PARAMETER
 
 from plugin.conf.cloud_service_conf import *
@@ -16,12 +15,8 @@ class InstanceConnector(ResourceConnector):
         self.service_name = "ec2"
         self.cloud_service_type = "Instance"
         self.rest_service_name = "ec2"
-        self.asg_client = self.session.client(
-            "autoscaling", Config=Config(retries={"max_attempts": 10})
-        )
-        self.elbv2_client = self.session.client(
-            "elbv2", Config=Config(retries={"max_attempts": 10})
-        )
+        self.asg_client = self.session.client("autoscaling")
+        self.elbv2_client = self.session.client("elbv2")
 
     def list_regions(self, **query):
         query = self._generate_query(is_paginate=False, **query)
