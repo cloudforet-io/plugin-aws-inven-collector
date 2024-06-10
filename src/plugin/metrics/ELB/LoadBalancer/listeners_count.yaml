@@ -1,0 +1,30 @@
+---
+metric_id: metric-aws-elb-listeners-count
+name: Listeners Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.ELB.LoadBalancer
+query_options:
+  unwind:
+    path: data.listeners
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.state.code
+      name: State
+    - key: data.type
+      name: Type
+    - key: data.scheme
+      name: Scheme
+    - key: data.listeners.ssl_policy
+      name: SSL Policy
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-elb-loadbalancer
+version: '1.0'
