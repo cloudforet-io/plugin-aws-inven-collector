@@ -1,0 +1,23 @@
+---
+metric_id: metric-aws-s3-bucket-object-count
+name: Object Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.S3.Bucket
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.public_access
+      name: Access
+  fields:
+    value:
+      operator: sum
+      key: data.object_count
+unit: Count
+namespace_id: ns-aws-s3-bucket
+version: '1.0'

@@ -260,7 +260,7 @@ def _add_metric_tasks(services: list) -> list:
         "KMS",
         "Lambda",
         "Route53",
-        # "S3",
+        "S3",
     ]
     return [
         _make_task_wrapper(
