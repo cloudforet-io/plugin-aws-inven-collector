@@ -261,6 +261,8 @@ def _add_metric_tasks(services: list) -> list:
         "Lambda",
         "Route53",
         "S3",
+        "TrustedAdvisor",
+        "PersonalHealthDashboard",
     ]
     return [
         _make_task_wrapper(

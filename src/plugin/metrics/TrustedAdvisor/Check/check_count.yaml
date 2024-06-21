@@ -1,0 +1,19 @@
+---
+metric_id: metric-aws-trusted-advisor-check-count
+name: Check Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.TrustedAdvisor.Check
+query_options:
+  group_by:
+    - key: data.category
+      name: Category
+      default: true
+    - key: data.status
+      name: Status
+      default: true
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-trusted-advisor-check
+version: '1.0'
