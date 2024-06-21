@@ -1,0 +1,27 @@
+---
+metric_id: metric-aws-phd-event-count
+name: Event Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.PersonalHealthDashboard.Event
+query_options:
+  group_by:
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.event_type_category
+      name: Event Category
+    - key: data.status_code
+      name: Status
+      default: true
+    - key: data.event_type_code
+      name: Event Type Code
+    - key: data.event_title
+      name: Event Title
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-personal-health-dashboard-event
+version: '1.0'
