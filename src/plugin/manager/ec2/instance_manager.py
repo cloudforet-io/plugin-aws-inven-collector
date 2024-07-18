@@ -114,10 +114,6 @@ class InstanceManager(ResourceManager):
                     instance_id = instance.get("InstanceId")
                     instance_ip = instance.get("PrivateIpAddress")
 
-                    # instance_information = self.connector.describe_instance_information(
-                    #     instance_id
-                    # )
-
                     server_data = ins_manager.get_server_info(
                         instance, itypes, images, instance_information
                     )
