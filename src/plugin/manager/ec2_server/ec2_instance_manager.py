@@ -9,7 +9,7 @@ class EC2InstanceManager(BaseManager):
         self.ec2_connector = ec2_connector
         self.region = region
 
-    def get_server_info(self, instance, itypes, images):
+    def get_server_info(self, instance, itypes, images, instance_information):
         """
         server_data = {
             "name": ""
@@ -69,8 +69,14 @@ class EC2InstanceManager(BaseManager):
         match_image = self.match_image(instance.get("ImageId"), images)
 
         server_dic = self.get_server_dic(instance)
+        # Add OS detail data.
+        instance_id = instance.get("InstanceId")
+
         os_data = self.get_os_data(
-            match_image, self.get_os_type(instance), self.get_os_details(instance)
+            match_image,
+            self.get_os_type(instance),
+            self.get_os_details(instance),
+            instance_information.get(instance_id, {}),
         )
         aws_data = self.get_aws_data(instance)
         hardware_data = self.get_hardware_data(instance, itypes)
@@ -101,7 +107,7 @@ class EC2InstanceManager(BaseManager):
         }
         return server_data
 
-    def get_os_data(self, image, os_type, os_details):
+    def get_os_data(self, image, os_type, os_details, instance_information):
         os_data = {
             "os_distro": self.get_os_distro(image.get("Name", ""), os_type),
             "os_arch": image.get("Architecture", ""),
@@ -109,6 +115,13 @@ class EC2InstanceManager(BaseManager):
             "details": os_details,
         }
 
+        if platform_type := instance_information.get("platform_type"):
+            os_data["platform_type"] = platform_type
+
+        if platform_name := instance_information.get("platform_name"):
+            os_data["platform_name"] = (
+                f"{platform_name}{instance_information.get('platform_version', '')}"
+            )
         return os_data
 
     def get_aws_data(self, instance):

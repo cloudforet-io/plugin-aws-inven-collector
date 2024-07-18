@@ -104,12 +104,23 @@ class InstanceManager(ResourceManager):
             # Security Group
             sgs = self.connector.list_security_groups()
 
+            # Get instance information using SSM client.
+            instance_information = self.connector.describe_instance_information(
+                instances
+            )
+
             for instance in instances:
                 try:
                     instance_id = instance.get("InstanceId")
                     instance_ip = instance.get("PrivateIpAddress")
 
-                    server_data = ins_manager.get_server_info(instance, itypes, images)
+                    # instance_information = self.connector.describe_instance_information(
+                    #     instance_id
+                    # )
+
+                    server_data = ins_manager.get_server_info(
+                        instance, itypes, images, instance_information
+                    )
                     auto_scaling_group_vo = asg_manager.get_auto_scaling_info(
                         instance_id, auto_scaling_groups, launch_configurations
                     )

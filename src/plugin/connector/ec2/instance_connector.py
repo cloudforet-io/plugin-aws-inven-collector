@@ -22,6 +22,9 @@ class InstanceConnector(ResourceConnector):
         self.elbv2_client = self.session.client(
             "elbv2", config=Config(retries={"max_attempts": 10})
         )
+        self.ssm_client = self.session.client(
+            "ssm", config=Config(retries={"max_attempts": 10})
+        )
 
     def list_regions(self, **query):
         query = self._generate_query(is_paginate=False, **query)
@@ -217,3 +220,33 @@ class InstanceConnector(ResourceConnector):
                 }
             )
         return query
+
+    def describe_instance_information(self, instances) -> dict:
+        response = self.ssm_client.describe_instance_information(
+            Filters=[
+                {
+                    "Key": "InstanceIds",
+                    "Values": self._get_instance_ids_from_instance(instances),
+                },
+            ]
+        )
+
+        instance_information = {}
+        for instance in response.get("InstanceInformationList", []):
+            instance_information.update(
+                {
+                    instance.get("InstanceId"): {
+                        "platform_type": instance.get("PlatformType"),
+                        "platform_name": instance.get("PlatformName"),
+                        "platform_version": instance.get("PlatformVersion"),
+                    }
+                }
+            )
+        return instance_information
+
+    @staticmethod
+    def _get_instance_ids_from_instance(instances: list) -> list:
+        instance_ids = []
+        for instance in instances:
+            instance_ids.append(instance.get("InstanceId"))
+        return instance_ids
