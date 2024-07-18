@@ -221,27 +221,35 @@ class InstanceConnector(ResourceConnector):
             )
         return query
 
-    def describe_instance_information(self, instances) -> dict:
-        response = self.ssm_client.describe_instance_information(
-            Filters=[
-                {
-                    "Key": "InstanceIds",
-                    "Values": self._get_instance_ids_from_instance(instances),
-                },
-            ]
+    def describe_instance_information(self, instances, **query) -> dict:
+        query = self._generate_query(is_paginate=True, **query)
+        query.update(
+            {
+                "Filters": [
+                    {
+                        "Key": "InstanceIds",
+                        "Values": self._get_instance_ids_from_instance(instances),
+                    },
+                ]
+            }
         )
 
+        paginator = self.ssm_client.get_paginator("describe_instance_information")
+        response_iterator = paginator.paginate(**query)
+
         instance_information = {}
-        for instance in response.get("InstanceInformationList", []):
-            instance_information.update(
-                {
-                    instance.get("InstanceId"): {
-                        "platform_type": instance.get("PlatformType"),
-                        "platform_name": instance.get("PlatformName"),
-                        "platform_version": instance.get("PlatformVersion"),
+        for data in response_iterator:
+            for instance in data.get("InstanceInformationList", []):
+                instance_information.update(
+                    {
+                        instance.get("InstanceId"): {
+                            "platform_type": instance.get("PlatformType"),
+                            "platform_name": instance.get("PlatformName"),
+                            "platform_version": instance.get("PlatformVersion"),
+                        }
                     }
-                }
-            )
+                )
+
         return instance_information
 
     @staticmethod
