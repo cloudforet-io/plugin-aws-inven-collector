@@ -2,7 +2,7 @@ from botocore.config import Config
 from spaceone.core.error import ERROR_REQUIRED_PARAMETER
 
 from plugin.conf.cloud_service_conf import *
-from plugin.connector.base import ResourceConnector
+from plugin.connector.base import ResourceConnector, _LOGGER
 
 
 class InstanceConnector(ResourceConnector):
@@ -224,35 +224,41 @@ class InstanceConnector(ResourceConnector):
     def describe_instance_information(self, instances, **query) -> dict:
         instance_information = {}
 
-        for i in range(0, len(instances), 100):
-            instances_chunk = instances[i : i + 100]
-            query = self._generate_query(is_paginate=True, **query)
-            query.update(
-                {
-                    "Filters": [
-                        {
-                            "Key": "InstanceIds",
-                            "Values": self._get_instance_ids_from_instance(
-                                instances_chunk
-                            ),
-                        },
-                    ]
-                }
-            )
-            paginator = self.ssm_client.get_paginator("describe_instance_information")
-            response_iterator = paginator.paginate(**query)
+        try:
+            for i in range(0, len(instances), 100):
+                instances_chunk = instances[i : i + 100]
+                query = self._generate_query(is_paginate=True, **query)
+                query.update(
+                    {
+                        "Filters": [
+                            {
+                                "Key": "InstanceIds",
+                                "Values": self._get_instance_ids_from_instance(
+                                    instances_chunk
+                                ),
+                            },
+                        ]
+                    }
+                )
+                paginator = self.ssm_client.get_paginator(
+                    "describe_instance_information"
+                )
+                response_iterator = paginator.paginate(**query)
 
-            for data in response_iterator:
-                for instance in data.get("InstanceInformationList", []):
-                    instance_information.update(
-                        {
-                            instance.get("InstanceId"): {
-                                "platform_type": instance.get("PlatformType"),
-                                "platform_name": instance.get("PlatformName"),
-                                "platform_version": instance.get("PlatformVersion"),
+                for data in response_iterator:
+                    for instance in data.get("InstanceInformationList", []):
+                        instance_information.update(
+                            {
+                                instance.get("InstanceId"): {
+                                    "platform_type": instance.get("PlatformType"),
+                                    "platform_name": instance.get("PlatformName"),
+                                    "platform_version": instance.get("PlatformVersion"),
+                                }
                             }
-                        }
-                    )
+                        )
+        except Exception as e:
+            _LOGGER.error(f"[instance_information] {e}")
+            instance_information = {}
 
         return instance_information
 
