@@ -112,16 +112,15 @@ class EC2InstanceManager(BaseManager):
             "os_distro": self.get_os_distro(image.get("Name", ""), os_type),
             "os_arch": image.get("Architecture", ""),
             "os_type": os_type,
-            "details": os_details,
         }
 
-        if platform_type := instance_information.get("platform_type"):
-            os_data["platform_type"] = platform_type
-
         if platform_name := instance_information.get("platform_name"):
-            os_data["platform_name"] = (
-                f"{platform_name}{instance_information.get('platform_version', '')}"
-            )
+            if platform_version := instance_information.get("platform_version"):
+                f"{platform_name} {platform_version}"
+            else:
+                os_data["details"] = platform_name
+        else:
+            os_data["details"] = os_details
         return os_data
 
     def get_aws_data(self, instance):

@@ -283,10 +283,6 @@ table:
     - OS Type: data.os.os_type
       is_optional: true
     - OS: data.os.os_distro
-    - Platform Name: data.os.platform_name
-      is_optional: true
-    - Platform Type: data.os.platform_type
-      is_optional: true
     - OS Architecture: data.os.os_arch
       is_optional: true
     - OS Details: data.os.details
@@ -379,8 +375,6 @@ tabs.1:
     - OS Details: data.os.details
     - OS Distribution: data.os.os_distro
     - OS Architecture: data.os.os_arch
-    - Platform Type: data.os.platform_type
-    - Platform Name: data.os.platform_name
 
 
 tabs.2:
