@@ -116,7 +116,7 @@ class EC2InstanceManager(BaseManager):
 
         if platform_name := instance_information.get("platform_name"):
             if platform_version := instance_information.get("platform_version"):
-                f"{platform_name} {platform_version}"
+                os_data["details"] = f"{platform_name} {platform_version}"
             else:
                 os_data["details"] = platform_name
         else:
