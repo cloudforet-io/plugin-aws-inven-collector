@@ -1,7 +1,8 @@
 import copy
 from spaceone.inventory.plugin.collector.lib import *
 from ..base import ResourceManager
-from ...conf.cloud_service_conf import ASSET_URL, INSTANCE_FILTERS
+from ...conf.cloud_service_conf import ASSET_URL, INSTANCE_FILTERS, DEFAULT_VULNERABLE_PORTS
+from ...error.custom import ERROR_VULNERABLE_PORTS
 
 
 class SecurityGroupManager(ResourceManager):
@@ -35,6 +36,9 @@ class SecurityGroupManager(ResourceManager):
     def create_cloud_service(self, region, options, secret_data, schema):
         cloudtrail_resource_type = "AWS::EC2::SecurityGroup"
 
+        # If Port Filter Option Exist
+        vulnerable_ports = options.get("vulnerable_ports", DEFAULT_VULNERABLE_PORTS)
+
         # Get default VPC
         default_vpcs = self._get_default_vpc()
 
@@ -62,7 +66,7 @@ class SecurityGroupManager(ResourceManager):
                             in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
                                 self.custom_security_group_rule_info(
-                                    in_rule_copy, _ip_range, "ip_ranges"
+                                    in_rule_copy, _ip_range, "ip_ranges",vulnerable_ports
                                 )
                             )
 
@@ -73,6 +77,7 @@ class SecurityGroupManager(ResourceManager):
                                     in_rule_copy,
                                     _user_group_pairs,
                                     "user_id_group_pairs",
+                                    vulnerable_ports,
                                 )
                             )
 
@@ -80,7 +85,7 @@ class SecurityGroupManager(ResourceManager):
                             in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
                                 self.custom_security_group_rule_info(
-                                    in_rule_copy, _ip_v6_range, "ipv6_ranges"
+                                    in_rule_copy, _ip_v6_range, "ipv6_ranges",vulnerable_ports
                                 )
                             )
 
@@ -91,7 +96,7 @@ class SecurityGroupManager(ResourceManager):
                             out_rule_copy = copy.deepcopy(out_rule)
                             outbound_rules.append(
                                 self.custom_security_group_rule_info(
-                                    out_rule_copy, _ip_range, "ip_ranges"
+                                    out_rule_copy, _ip_range, "ip_ranges",vulnerable_ports
                                 )
                             )
 
@@ -101,7 +106,7 @@ class SecurityGroupManager(ResourceManager):
                                 self.custom_security_group_rule_info(
                                     out_rule_copy,
                                     _user_group_pairs,
-                                    "user_id_group_pairs",
+                                    "user_id_group_pairs",vulnerable_ports,
                                 )
                             )
 
@@ -109,7 +114,7 @@ class SecurityGroupManager(ResourceManager):
                             out_rule_copy = copy.deepcopy(out_rule)
                             outbound_rules.append(
                                 self.custom_security_group_rule_info(
-                                    out_rule_copy, _ip_v6_range, "ipv6_ranges"
+                                    out_rule_copy, _ip_v6_range, "ipv6_ranges",vulnerable_ports
                                 )
                             )
 
@@ -160,16 +165,16 @@ class SecurityGroupManager(ResourceManager):
                         region_name=region,
                     )
 
-    def custom_security_group_rule_info(self, raw_rule, remote, remote_type):
+    def custom_security_group_rule_info(self, raw_rule, remote, remote_type, vulnerable_ports):
+        protocol_display = self._get_protocol_display(raw_rule.get("IpProtocol"))
         raw_rule.update(
             {
-                "protocol_display": self._get_protocol_display(
-                    raw_rule.get("IpProtocol")
-                ),
+                "protocol_display": protocol_display,
                 "port_display": self._get_port_display(raw_rule),
                 "source_display": self._get_source_display(remote),
                 "description_display": self._get_description_display(remote),
                 remote_type: remote,
+                "vulnerable_ports": self._get_vulnerable_ports(protocol_display, raw_rule, vulnerable_ports)
             }
         )
 
@@ -287,3 +292,23 @@ class SecurityGroupManager(ResourceManager):
                 return _tag.get("Value")
 
         return ""
+
+    @staticmethod
+    def _get_vulnerable_ports(protocol_display: str, raw_rule: dict, vulnerable_ports: str):
+        try:
+            if protocol_display == "ALL":
+                return [int(port.strip()) for port in vulnerable_ports.split(',')]
+
+            to_port = raw_rule.get("ToPort")
+            from_port = raw_rule.get("FromPort")
+
+            if to_port is None or from_port is None:
+                return []
+
+            return [
+                int(port.strip())
+                for port in vulnerable_ports.split(',')
+                if from_port <= int(port.strip()) <= to_port
+            ]
+        except ValueError:
+            raise ERROR_VULNERABLE_PORTS(vulnerable_ports)

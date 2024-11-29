@@ -9,6 +9,7 @@ NUMBER_OF_CONCURRENT = 20
 DEFAULT_REGION = "us-east-1"
 FILTER_FORMAT = []
 BOTO3_HTTPS_VERIFIED = None
+DEFAULT_VULNERABLE_PORTS = "22,3306"
 
 ASSET_URL = "https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws"
 
