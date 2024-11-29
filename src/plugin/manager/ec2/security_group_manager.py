@@ -2,7 +2,7 @@ import copy
 from spaceone.inventory.plugin.collector.lib import *
 from ..base import ResourceManager
 from ...conf.cloud_service_conf import ASSET_URL, INSTANCE_FILTERS, DEFAULT_VULNERABLE_PORTS
-from ...error.custom import ERROR_VULNERABLE_PORTS
+from plugin.error.custom import ERROR_VULNERABLE_PORTS
 
 
 class SecurityGroupManager(ResourceManager):
