@@ -303,18 +303,40 @@ class SecurityGroupManager(ResourceManager):
 
     @staticmethod
     def _get_vulnerable_ports(protocol_display: str, raw_rule: dict, vulnerable_ports: str):
-        try:
-            ports = [int(port.strip()) for port in vulnerable_ports.split(',')]
+        # try:
+        #     ports = [int(port.strip()) for port in vulnerable_ports.split(',')]
+        #
+        #     if protocol_display == "ALL":
+        #         return ports
+        #
+        #     to_port = raw_rule.get("ToPort")
+        #     from_port = raw_rule.get("FromPort")
+        #
+        #     if to_port is None or from_port is None:
+        #         return None
+        #
+        #     filtered_ports = [str(port) for port in ports if from_port <= port <= to_port]
+        #
+        #     return filtered_ports if filtered_ports else None
+        # except ValueError:
+        #     raise ERROR_VULNERABLE_PORTS(vulnerable_ports)
 
-            if protocol_display == "ALL":
-                return ports
+        try:
+            ports = []
 
             to_port = raw_rule.get("ToPort")
             from_port = raw_rule.get("FromPort")
 
-            if to_port is None or from_port is None:
-                return []
+            if protocol_display != "ALL" and (to_port is None or from_port is None):
+                return None
 
-            return [port for port in ports if from_port <= port <= to_port]
+            for port in vulnerable_ports.split(","):
+                target_port = int(port)
+
+                if protocol_display == "ALL":
+                    ports.append(port)
+                elif from_port <= target_port <= to_port:
+                    ports.append(port)
+            return ports if ports else None
         except ValueError:
             raise ERROR_VULNERABLE_PORTS(vulnerable_ports)
