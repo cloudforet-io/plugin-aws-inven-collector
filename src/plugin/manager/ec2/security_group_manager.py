@@ -179,9 +179,6 @@ class SecurityGroupManager(ResourceManager):
             }
         )
 
-        print(raw_rule.get("vulnerable_ports"))
-        print(raw_rule.get("has_vulnerable_ports"))
-
         return raw_rule
 
     def custom_security_group_rule_info(self, raw_rule, remote, remote_type):
