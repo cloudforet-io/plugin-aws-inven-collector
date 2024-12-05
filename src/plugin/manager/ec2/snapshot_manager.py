@@ -43,7 +43,6 @@ class SnapshotManager(ResourceManager):
                 try:
                     if name := self._get_name_from_tags(raw.get("Tags", [])):
                         raw["name"] = name
-
                     raw.update(
                         {
                             "cloudtrail": self.set_cloudtrail(
@@ -67,9 +66,15 @@ class SnapshotManager(ResourceManager):
                             }
                         )
 
+                    print(type(raw.get("StartTime")))
                     self._update_times(raw)
+                    print(raw.get("StartTime"))
+                    print(type(raw.get("StartTime")))
 
                     snapshot_vo = raw
+
+                    print(type(snapshot_vo.get("StartTime")))
+                    print(f"DATA : {snapshot_vo}")
 
                     resource_id = snapshot_vo.get("arn", "")
                     snapshot_id = snapshot_vo.get("SnapshotId", "")
