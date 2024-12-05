@@ -1,2 +1,2 @@
-spaceone-core
 spaceone-api
+boto3
