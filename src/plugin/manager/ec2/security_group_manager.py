@@ -175,7 +175,7 @@ class SecurityGroupManager(ResourceManager):
         raw_rule.update(
             {
                 "vulnerable_ports": ports,
-                "has_vulnerable_ports": "true" if ports else "false"
+                "detected_vulnerable_ports": True if ports else False
             }
         )
 
