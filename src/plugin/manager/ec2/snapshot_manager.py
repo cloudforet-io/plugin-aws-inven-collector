@@ -136,5 +136,6 @@ class SnapshotManager(ResourceManager):
         snapshot_info.update(
             {
                 "StartTime": self.datetime_to_iso8601(snapshot_info.get("StartTime")),
+                "CompletionTime": self.datetime_to_iso8601(snapshot_info.get("CompletionTime")),
             }
         )
