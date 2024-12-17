@@ -2,7 +2,7 @@ import logging
 
 from spaceone.inventory.plugin.collector.lib.server import CollectorPluginServer
 
-from .conf.cloud_service_conf import DEFAULT_VULNERABLE_PORTS, REGION_INFO
+from .conf.cloud_service_conf import DEFAULT_VULNERABLE_PORTS
 from .manager.base import ResourceManager
 
 _LOGGER = logging.getLogger("cloudforet")
