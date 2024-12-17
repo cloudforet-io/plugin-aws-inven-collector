@@ -1,5 +1,4 @@
 import logging
-from zoneinfo import available_timezones
 
 from spaceone.inventory.plugin.collector.lib.server import CollectorPluginServer
 
