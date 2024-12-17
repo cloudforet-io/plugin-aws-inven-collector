@@ -220,8 +220,7 @@ def _validate_service_filter(service_filter, available_services):
 
 
 def _set_region_filter(options, secret_data):
-    # available_regions = ResourceManager.get_region_names(secret_data)
-    available_regions = list(REGION_INFO.keys())
+    available_regions = ResourceManager.get_region_names(secret_data)
 
     if region_filter := options.get("region_filter"):
         _validate_region_filter(region_filter, available_regions)
