@@ -1,7 +1,9 @@
 import logging
+from zoneinfo import available_timezones
+
 from spaceone.inventory.plugin.collector.lib.server import CollectorPluginServer
 
-from .conf.cloud_service_conf import DEFAULT_VULNERABLE_PORTS
+from .conf.cloud_service_conf import DEFAULT_VULNERABLE_PORTS, REGION_INFO
 from .manager.base import ResourceManager
 
 _LOGGER = logging.getLogger("cloudforet")
@@ -219,8 +221,8 @@ def _validate_service_filter(service_filter, available_services):
 
 
 def _set_region_filter(options, secret_data):
-    available_regions = ResourceManager.get_region_names(secret_data)
-
+    # available_regions = ResourceManager.get_region_names(secret_data)
+    available_regions = list(REGION_INFO.keys())
     if region_filter := options.get("region_filter"):
         _validate_region_filter(region_filter, available_regions)
         return region_filter
