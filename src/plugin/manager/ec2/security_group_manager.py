@@ -118,16 +118,19 @@ class SecurityGroupManager(ResourceManager):
                                 )
                             )
 
+                    match_instances = self.get_security_group_map_instances(
+                        raw, instances
+                    )
+
                     raw.update(
                         {
                             "ip_permissions": inbound_rules,
                             "ip_permissions_egress": outbound_rules,
-                            "instances": self.get_security_group_map_instances(
-                                raw, instances
-                            ),
+                            "instances": match_instances,
                             "cloudtrail": self.set_cloudtrail(
                                 region, cloudtrail_resource_type, raw["GroupId"]
                             ),
+                            "stats": {"instances_count": len(match_instances)},
                         }
                     )
                     sg_vo = raw
