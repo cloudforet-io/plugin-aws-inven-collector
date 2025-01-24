@@ -314,17 +314,5 @@ def _create_init_metadata():
                 "inventory.Region",
                 "inventory.ErrorResource",
             ],
-            "options_schema": {
-                "required": ["vulnerable_ports"],
-                "type": "object",
-                "properties": {
-                    "vulnerable_ports": {
-                        "title": "Vulnerable Ports Option",
-                        "type": "string",
-                        "default": DEFAULT_VULNERABLE_PORTS,
-                        "description": "Ex) 22,8080,3306 (Default = 22,3306)",
-                    }
-                },
-            },
         }
     }

@@ -37,7 +37,7 @@ class SecurityGroupManager(ResourceManager):
         cloudtrail_resource_type = "AWS::EC2::SecurityGroup"
 
         # If Port Filter Option Exist
-        vulnerable_ports = options.get("vulnerable_ports", DEFAULT_VULNERABLE_PORTS)
+        vulnerable_ports = options.get("vulnerable_ports")
 
         # Get default VPC
         default_vpcs = self._get_default_vpc()
@@ -173,14 +173,15 @@ class SecurityGroupManager(ResourceManager):
 
         protocol_display = raw_rule.get("protocol_display")
 
-        ports = self._get_vulnerable_ports(protocol_display, raw_rule, vulnerable_ports)
+        if vulnerable_ports:
+            ports = self._get_vulnerable_ports(protocol_display, raw_rule, vulnerable_ports)
 
-        raw_rule.update(
-            {
-                "vulnerable_ports": ports,
-                "detected_vulnerable_ports": True if ports else False
-            }
-        )
+            raw_rule.update(
+                {
+                    "vulnerable_ports": ports,
+                    "detected_vulnerable_ports": True if ports else False
+                }
+            )
 
         return raw_rule
 
