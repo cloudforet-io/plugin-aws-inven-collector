@@ -200,6 +200,7 @@ search:
   - Key Pair: data.compute.keypair
   - Image: data.compute.image
   - Availability Zone: data.compute.az
+  - Launched At: data.compute.launched_at
   - OS Type: data.os.os_type
   - OS Details: data.os.details
   - OS Architecture: data.os.os_arch
@@ -276,6 +277,7 @@ table:
     - Image: data.compute.image
       is_optional: true
     - Availability Zone: data.compute.az
+    - Launched At: data.compute.launched_at
     - Termination Protection: data.aws.termination_protection
       is_optional: true
     - Auto Recovery: data.aws.auto_recovery
