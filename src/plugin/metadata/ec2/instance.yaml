@@ -278,6 +278,7 @@ table:
       is_optional: true
     - Availability Zone: data.compute.az
     - Launched At: data.compute.launched_at
+      is_optional: true
     - Termination Protection: data.aws.termination_protection
       is_optional: true
     - Auto Recovery: data.aws.auto_recovery
