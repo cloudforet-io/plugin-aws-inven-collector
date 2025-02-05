@@ -277,7 +277,7 @@ table:
     - Image: data.compute.image
       is_optional: true
     - Availability Zone: data.compute.az
-    - Launched At: data.compute.launched_at
+    - Launched: data.compute.launched_at
       is_optional: true
     - Termination Protection: data.aws.termination_protection
       is_optional: true
@@ -365,7 +365,7 @@ tabs.0:
     - Security Groups: data.compute.security_groups.display # 상용에서도 똑같이 정상작동하지 않는 부분으로, 추후 수정이 필요함
       reference_key: data.group_id
     - Account ID: data.compute.account
-    - Launched At: data.compute.launched_at
+    - Launched: data.compute.launched_at
       type: datetime
       source_type: iso8601
 
