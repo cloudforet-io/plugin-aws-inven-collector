@@ -89,6 +89,14 @@ class SecurityGroupManager(ResourceManager):
                                 )
                             )
 
+                        for prefix_list_id in in_rule.get("PrefixListIds", []):
+                            in_rule_copy = copy.deepcopy(in_rule)
+                            inbound_rules.append(
+                                self.custom_security_group_inbound_rule_info(
+                                    in_rule_copy, prefix_list_id, "prefix_list_ids",vulnerable_ports
+                                )
+                            )
+
                     # Outbound Rules
                     outbound_rules = []
                     for out_rule in raw.get("IpPermissionsEgress", []):
@@ -294,6 +302,8 @@ class SecurityGroupManager(ResourceManager):
             return group_id
         elif cidrv6 := remote.get("CidrIpv6"):
             return cidrv6
+        elif prefix_list_id := remote.get("PrefixListId"):
+            return prefix_list_id
 
         return ""
 
