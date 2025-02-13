@@ -41,6 +41,12 @@ class SecurityGroupManager(BaseManager):
                 for group_pair in inbound_rule.get("UserIdGroupPairs", []):
                     sg_data.update(self.set_group_pairs_data(group_pair))
                     sg.append(sg_data)
+                for _ip_v6_range in inbound_rule.get("Ipv6Ranges", []):
+                    sg_data.update(self.set_group_pairs_data(_ip_v6_range))
+                    sg.append(sg_data)
+                for prefix_list_id in inbound_rule.get("PrefixListIds", []):
+                    sg_data.update(self.set_group_pairs_data(prefix_list_id))
+                    sg.append(sg_data)
 
             # OUTBOUND
             for outbound_rules in match_sg.get("IpPermissionsEgress", []):
@@ -50,6 +56,12 @@ class SecurityGroupManager(BaseManager):
                     sg.append(sg_data)
                 for group_pair in outbound_rules.get("UserIdGroupPairs", []):
                     sg_data.update(self.set_group_pairs_data(group_pair))
+                    sg.append(sg_data)
+                for _ip_v6_range in outbound_rules.get("Ipv6Ranges", []):
+                    sg_data.update(self.set_group_pairs_data(_ip_v6_range))
+                    sg.append(sg_data)
+                for prefix_list_id in outbound_rules.get("PrefixListIds", []):
+                    sg_data.update(self.set_group_pairs_data(prefix_list_id))
                     sg.append(sg_data)
         return sg
 

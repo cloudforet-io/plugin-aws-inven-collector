@@ -70,12 +70,12 @@ class SecurityGroupManager(ResourceManager):
                                 )
                             )
 
-                        for _user_group_pairs in in_rule.get("UserIdGroupPairs", []):
+                        for _user_group_pair in in_rule.get("UserIdGroupPairs", []):
                             in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
                                 self.custom_security_group_inbound_rule_info(
                                     in_rule_copy,
-                                    _user_group_pairs,
+                                    _user_group_pair,
                                     "user_id_group_pairs",
                                     vulnerable_ports,
                                 )
@@ -123,6 +123,14 @@ class SecurityGroupManager(ResourceManager):
                             outbound_rules.append(
                                 self.custom_security_group_rule_info(
                                     out_rule_copy, _ip_v6_range, "ipv6_ranges"
+                                )
+                            )
+
+                        for prefix_list_id in out_rule.get("PrefixListIds", []):
+                            out_rule_copy = copy.deepcopy(out_rule)
+                            outbound_rules.append(
+                                self.custom_security_group_rule_info(
+                                    out_rule_copy, prefix_list_id, "prefix_list_ids"
                                 )
                             )
 
