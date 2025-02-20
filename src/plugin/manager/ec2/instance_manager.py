@@ -145,6 +145,7 @@ class InstanceManager(ResourceManager):
                         for security_group in instance.get("SecurityGroups", [])
                         if security_group.get("GroupId") is not None
                     ]
+
                     sg_rules_vos = sg_manager.get_security_group_info(sg_ids, sgs)
 
                     if disk_vos:
