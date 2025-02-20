@@ -32,38 +32,29 @@ class SecurityGroupManager(BaseManager):
         )
 
         for match_sg in match_security_groups:
-            # INBOUND
-            for inbound_rule in match_sg.get("IpPermissions", []):
-                sg_data = self.set_sg_base_data(match_sg, "inbound", inbound_rule)
-                for ip_range in inbound_rule.get("IpRanges", []):
-                    sg_data.update(self.set_ip_range_data(ip_range))
-                    sg.append(sg_data)
-                for group_pair in inbound_rule.get("UserIdGroupPairs", []):
-                    sg_data.update(self.set_group_pairs_data(group_pair))
-                    sg.append(sg_data)
-                for _ip_v6_range in inbound_rule.get("Ipv6Ranges", []):
-                    sg_data.update(self.set_group_pairs_data(_ip_v6_range))
-                    sg.append(sg_data)
-                for prefix_list_id in inbound_rule.get("PrefixListIds", []):
-                    sg_data.update(self.set_group_pairs_data(prefix_list_id))
-                    sg.append(sg_data)
-
-            # OUTBOUND
-            for outbound_rules in match_sg.get("IpPermissionsEgress", []):
-                sg_data = self.set_sg_base_data(match_sg, "outbound", outbound_rules)
-                for ip_range in outbound_rules.get("IpRanges", []):
-                    sg_data.update(self.set_ip_range_data(ip_range))
-                    sg.append(sg_data)
-                for group_pair in outbound_rules.get("UserIdGroupPairs", []):
-                    sg_data.update(self.set_group_pairs_data(group_pair))
-                    sg.append(sg_data)
-                for _ip_v6_range in outbound_rules.get("Ipv6Ranges", []):
-                    sg_data.update(self.set_group_pairs_data(_ip_v6_range))
-                    sg.append(sg_data)
-                for prefix_list_id in outbound_rules.get("PrefixListIds", []):
-                    sg_data.update(self.set_group_pairs_data(prefix_list_id))
-                    sg.append(sg_data)
+            sg.extend(self._process_rules(match_sg, "inbound", match_sg.get("IpPermissions", [])))
+            sg.extend(self._process_rules(match_sg, "outbound", match_sg.get("IpPermissionsEgress", [])))
         return sg
+
+    def _process_rules(self, match_sg, direction, rules):
+        processed_rules = []
+        for rule in rules:
+            sg_data = self.set_sg_base_data(match_sg, direction, rule)
+
+            rule_processors = {
+                "IpRanges": self.set_ip_range_data,
+                "UserIdGroupPairs": self.set_group_pairs_data,
+                "Ipv6Ranges": self.set_ip_v6_range_data,
+                "PrefixListIds": self.set_prefix_list_id_data
+            }
+
+            for rule_type, processor in rule_processors.items():
+                for item in rule.get(rule_type, []):
+                    sg_copy = sg_data.copy()
+                    sg_copy.update(processor(item))
+                    processed_rules.append(sg_copy)
+
+        return processed_rules
 
     def set_sg_base_data(self, sg, direction, rule):
         sg_data = {
@@ -95,6 +86,22 @@ class SecurityGroupManager(BaseManager):
         return {
             "remote_id": group_pair.get("GroupId"),
             "remote": group_pair.get("GroupId"),
+            "description": group_pair.get("Description", ""),
+        }
+
+    @staticmethod
+    def set_ip_v6_range_data(group_pair):
+        return {
+            "remote_id": group_pair.get("CidrIpv6"),
+            "remote": group_pair.get("CidrIpv6"),
+            "description": group_pair.get("Description", ""),
+        }
+
+    @staticmethod
+    def set_prefix_list_id_data(group_pair):
+        return {
+            "remote_id": group_pair.get("PrefixListId"),
+            "remote": group_pair.get("PrefixListId"),
             "description": group_pair.get("Description", ""),
         }
 
