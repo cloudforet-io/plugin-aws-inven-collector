@@ -224,7 +224,6 @@ search:
   - Account ID: account
   - Cloud Service Group: cloud_service_group
   - Cloud Service Type: cloud_service_type
-  - Last Collected: updated_at
     type: datetime
     source_type: iso8601
 
