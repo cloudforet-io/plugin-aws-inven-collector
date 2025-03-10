@@ -220,6 +220,8 @@ table:
       is_optional: true
     - Health Check Grace Period (sec): data.HealthCheckGracePeriod
       is_optional: true
+    - Launch Template Version: data.launch_template.version
+      is_optional: true
     - Instances ID: data.instances.InstanceId
       is_optional: true
     - Instances Lifecycle: data.instances.lifecycle
@@ -232,7 +234,7 @@ table:
       is_optional: true
     - Instances type: data.instances.InstanceType
       is_optional: true
-    - Instances type: data.instances.AvailabilityZone
+    - Availability Zone: data.instances.AvailabilityZone
       is_optional: true
     - LoadBalancers ARNs: data.load_balancer_arns
       is_optional: true
