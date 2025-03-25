@@ -195,6 +195,17 @@ class ResourceConnector(BaseConnector):
         _session = get_session(secret_data, DEFAULT_REGION)
         ec2_client = _session.client("ec2", verify=BOTO3_HTTPS_VERIFIED)
 
+        try:
+            _LOGGER.debug("for test")
+            _LOGGER.debug("secret_data: "+ secret_data)
+            _LOGGER.debug("result : "+ list(
+            map(
+                lambda region_info: region_info.get("RegionName"),
+                ec2_client.describe_regions().get("Regions"),
+            )))
+        except Exception as e:
+            _LOGGER.error(e)
+
         return list(
             map(
                 lambda region_info: region_info.get("RegionName"),
