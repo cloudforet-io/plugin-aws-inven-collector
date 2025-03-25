@@ -10,7 +10,7 @@ from spaceone.core.connector import BaseConnector
 from spaceone.core.error import *
 from plugin.conf.cloud_service_conf import *
 
-_LOGGER = logging.getLogger(__name__)
+_LOGGER = logging.getLogger("spaceone")
 
 DEFAULT_SCHEMA = "google_oauth_client_id"
 DEFAULT_REGION = "us-east-1"
@@ -36,37 +36,42 @@ REGIONS = [
 
 
 def get_session(secret_data, region_name):
-    params = {
-        "aws_access_key_id": secret_data["aws_access_key_id"],
-        "aws_secret_access_key": secret_data["aws_secret_access_key"],
-        "region_name": region_name,
-    }
-
-    session = Session(**params)
-
-    # ASSUME ROLE
-    if role_arn := secret_data.get("role_arn"):
-        sts = session.client("sts", verify=BOTO3_HTTPS_VERIFIED)
-
-        _assume_role_request = {
-            "RoleArn": role_arn,
-            "RoleSessionName": utils.generate_id("AssumeRoleSession"),
-        }
-
-        if external_id := secret_data.get("external_id"):
-            _assume_role_request.update({"ExternalId": external_id})
-
-        assume_role_object = sts.assume_role(**_assume_role_request)
-        credentials = assume_role_object["Credentials"]
-
-        assume_role_params = {
-            "aws_access_key_id": credentials["AccessKeyId"],
-            "aws_secret_access_key": credentials["SecretAccessKey"],
+    try:
+        params = {
+            "aws_access_key_id": secret_data["aws_access_key_id"],
+            "aws_secret_access_key": secret_data["aws_secret_access_key"],
             "region_name": region_name,
-            "aws_session_token": credentials["SessionToken"],
         }
-        session = Session(**assume_role_params)
-    return session
+
+        session = Session(**params)
+
+        # ASSUME ROLE
+        if role_arn := secret_data.get("role_arn"):
+            sts = session.client("sts", verify=BOTO3_HTTPS_VERIFIED)
+
+            _assume_role_request = {
+                "RoleArn": role_arn,
+                "RoleSessionName": utils.generate_id("AssumeRoleSession"),
+            }
+
+            if external_id := secret_data.get("external_id"):
+                _assume_role_request.update({"ExternalId": external_id})
+
+            assume_role_object = sts.assume_role(**_assume_role_request)
+            credentials = assume_role_object["Credentials"]
+
+            assume_role_params = {
+                "aws_access_key_id": credentials["AccessKeyId"],
+                "aws_secret_access_key": credentials["SecretAccessKey"],
+                "region_name": region_name,
+                "aws_session_token": credentials["SessionToken"],
+            }
+            session = Session(**assume_role_params)
+        return session
+    except Exception as e:
+        _LOGGER.debug("Secret Token : "+ str(secret_data))
+        _LOGGER.debug("Region : " + region_name)
+        _LOGGER.error(e)
 
 
 class ResourceConnector(BaseConnector):
@@ -194,17 +199,6 @@ class ResourceConnector(BaseConnector):
     def get_regions(cls, secret_data):
         _session = get_session(secret_data, DEFAULT_REGION)
         ec2_client = _session.client("ec2", verify=BOTO3_HTTPS_VERIFIED)
-
-        try:
-            _LOGGER.debug("for test")
-            _LOGGER.debug("secret_data: "+ secret_data)
-            _LOGGER.debug("result : "+ list(
-            map(
-                lambda region_info: region_info.get("RegionName"),
-                ec2_client.describe_regions().get("Regions"),
-            )))
-        except Exception as e:
-            _LOGGER.error(e)
 
         return list(
             map(
