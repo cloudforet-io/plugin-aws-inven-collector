@@ -11,7 +11,7 @@ from spaceone.inventory.plugin.collector.lib import *
 from plugin.conf.cloud_service_conf import REGION_INFO
 from plugin.connector.base import ResourceConnector
 
-_LOGGER = logging.getLogger(__name__)
+_LOGGER = logging.getLogger("spaceone")
 CURRENT_DIR = os.path.dirname(__file__)
 METRIC_DIR = os.path.join(CURRENT_DIR, "../metrics/")
 

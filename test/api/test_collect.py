@@ -6,7 +6,7 @@ from spaceone.tester import TestCase, print_json
 from google.protobuf.json_format import MessageToDict
 import pprint
 
-_LOGGER = logging.getLogger(__name__)
+_LOGGER = Logger(__name__)
 
 AKI = os.environ.get("AWS_ACCESS_KEY_ID", None)
 SAK = os.environ.get("AWS_SECRET_ACCESS_KEY", None)
