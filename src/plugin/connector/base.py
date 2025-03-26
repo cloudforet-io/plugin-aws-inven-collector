@@ -36,42 +36,37 @@ REGIONS = [
 
 
 def get_session(secret_data, region_name):
-    try:
-        params = {
-            "aws_access_key_id": secret_data["aws_access_key_id"],
-            "aws_secret_access_key": secret_data["aws_secret_access_key"],
-            "region_name": region_name,
+    params = {
+        "aws_access_key_id": secret_data["aws_access_key_id"],
+        "aws_secret_access_key": secret_data["aws_secret_access_key"],
+        "region_name": region_name,
+    }
+
+    session = Session(**params)
+
+    # ASSUME ROLE
+    if role_arn := secret_data.get("role_arn"):
+        sts = session.client("sts", verify=BOTO3_HTTPS_VERIFIED)
+
+        _assume_role_request = {
+            "RoleArn": role_arn,
+            "RoleSessionName": utils.generate_id("AssumeRoleSession"),
         }
 
-        session = Session(**params)
+        if external_id := secret_data.get("external_id"):
+            _assume_role_request.update({"ExternalId": external_id})
 
-        # ASSUME ROLE
-        if role_arn := secret_data.get("role_arn"):
-            sts = session.client("sts", verify=BOTO3_HTTPS_VERIFIED)
+        assume_role_object = sts.assume_role(**_assume_role_request)
+        credentials = assume_role_object["Credentials"]
 
-            _assume_role_request = {
-                "RoleArn": role_arn,
-                "RoleSessionName": utils.generate_id("AssumeRoleSession"),
-            }
-
-            if external_id := secret_data.get("external_id"):
-                _assume_role_request.update({"ExternalId": external_id})
-
-            assume_role_object = sts.assume_role(**_assume_role_request)
-            credentials = assume_role_object["Credentials"]
-
-            assume_role_params = {
-                "aws_access_key_id": credentials["AccessKeyId"],
-                "aws_secret_access_key": credentials["SecretAccessKey"],
-                "region_name": region_name,
-                "aws_session_token": credentials["SessionToken"],
-            }
-            session = Session(**assume_role_params)
-        return session
-    except Exception as e:
-        _LOGGER.debug("Secret Token : "+ str(secret_data))
-        _LOGGER.debug("Region : " + region_name)
-        _LOGGER.error(e)
+        assume_role_params = {
+            "aws_access_key_id": credentials["AccessKeyId"],
+            "aws_secret_access_key": credentials["SecretAccessKey"],
+            "region_name": region_name,
+            "aws_session_token": credentials["SessionToken"],
+        }
+        session = Session(**assume_role_params)
+    return session
 
 
 class ResourceConnector(BaseConnector):
