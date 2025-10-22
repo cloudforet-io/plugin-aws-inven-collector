@@ -91,7 +91,7 @@ class LoadBalancerManager(BaseManager):
 
         for target_group in target_groups:
             target_group_arn = target_group.get("TargetGroupArn")
-            target_type = target_group.get("TargetType")  # instance | ip | lambda
+            target_type = target_group.get("TargetType")  # instance | ip | lambda_model
 
             for th in target_group.get("target_healths"):
                 target = th.get("Target", {})

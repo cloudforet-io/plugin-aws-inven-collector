@@ -1,0 +1,165 @@
+search:
+  fields:
+    - Cluster Name: data.cache_cluster_id
+    - ARN: data.arn
+    - Status: data.cache_cluster_status
+      type: text
+      labels:
+        - available: "available"
+        - creating: "creating"
+        - modifying: "modifying"
+        - deleting: "deleting"
+        - snapshotting: "snapshotting"
+        - create-failed: "create-failed"
+        - restore-failed: "restore-failed"
+    - Nodes: data.num_cache_nodes
+      data_type: "integer"
+    - Node Type: instance_type
+    - Zone: data.preferred_availability_zone
+    - Configuration Endpoint: data.configuration_endpoint_display
+    - Configuration Endpoint Address: data.configuration_endpoint.address
+    - Configuration Endpoint Port: data.configuration_endpoint.port
+    - Engine: data.engine
+    - Engine Version: data.engine_version
+    - Cache Node Type: data.cache_node_type
+    - Description: data.description
+    - Automatic Failover: data.automatic_failover
+    - Snapshot Retention Limit: data.snapshot_retention_limit
+    - Replication Group ID: data.replication_group_id
+    - Snapshot Window: data.snapshot_window
+    - Subnet Group Name: data.cache_subnet_group_name
+    - Auth Token Enabled: data.auth_token_enabled
+      data_type: "boolean"
+    - Transit Encryption Enabled: data.transit_encryption_enabled
+      data_type: "boolean"
+    - At Rest Encryption Enabled: data.at_rest_encryption_enabled
+      data_type: "boolean"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.cache_cluster_id
+    desc: true
+  fields:
+    - Cluster Name: data.cache_cluster_id
+    - Status: data.cache_cluster_status
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - modifying: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - snapshotting: yellow.500
+          type: state
+        - create-failed: red.500
+          type: state
+        - restore-failed: red.500
+          type: state
+    - Nodes: data.num_cache_nodes
+    - Node Type: instance_type
+    - Zone: data.preferred_availability_zone
+    - Configuration Endpoint: data.configuration_endpoint_display
+    - Engine: data.engine
+    - Engine Version: data.engine_version
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Description
+  type: item
+  fields:
+    - Cluster Name: data.cache_cluster_id
+    - ARN: data.arn
+    - Status: data.cache_cluster_status
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - modifying: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - snapshotting: yellow.500
+          type: state
+        - create-failed: red.500
+          type: state
+        - restore-failed: red.500
+          type: state
+    - Configuration Endpoint: data.configuration_endpoint_display
+    - Engine: data.engine
+    - Engine Version: data.engine_version
+    - Node Type: data.cache_node_type
+    - Number of Nodes: data.num_cache_nodes
+    - Availability Zone: data.preferred_availability_zone
+    - Parameter Group: data.cache_parameter_group.cache_parameter_group_name
+    - Subnet Group: data.cache_subnet_group_name
+    - Security Groups: data.security_groups.security_group_id
+      type: badge
+      outline_color: violet.500
+    - Notification ARN: data.notification_configuration.topic_arn
+    - Maintenance Window: data.preferred_maintenance_window
+    - Backup Retention Period: data.snapshot_retention_limit
+    - Backup Window: data.snapshot_window
+    - Auto Minor Version Upgrade: data.auto_minor_version_upgrade
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Auth Token Enabled: data.auth_token_enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Transit Encryption: data.transit_encryption_enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - At Rest Encryption: data.at_rest_encryption_enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Creation Time: data.cache_cluster_create_time
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: Nodes
+  type: table
+  root_path: data.nodes
+  fields:
+    - Node Name: node_name
+    - Status: status
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - modifying: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+    - Port: port
+    - Endpoint: endpoint
+    - Parameter Group Status: parameter_group_status
+      type: enum
+      enums:
+        - in-sync: green.500
+          type: state
+        - applying: yellow.500
+          type: state
+        - pending-reboot: yellow.500
+          type: state
+    - Created On: created_on
+      type: datetime
+      source_type: iso8601

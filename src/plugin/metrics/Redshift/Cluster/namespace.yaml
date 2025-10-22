@@ -1,0 +1,8 @@
+---
+namespace_id: ns-aws-redshift-cluster
+name: Redshift/Cluster
+category: ASSET
+resource_type: inventory.CloudService:aws.Redshift.Cluster
+group: aws
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-redshift.svg'
+version: '1.1'

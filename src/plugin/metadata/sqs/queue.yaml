@@ -1,0 +1,71 @@
+search:
+  fields:
+    - ARN: data.arn
+    - URL: data.url
+    - Maximum Message Size (Bytes): data.maximum_message_size
+      data_type: "integer"
+    - Approximate Number of Messages: data.approximate_number_of_messages
+      data_type: "integer"
+    - Last Modified Time: data.last_modified_timestamp
+      data_type: "datetime"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.name
+    desc: true
+  fields:
+    - Name: data.name
+    - URL: data.url
+    - Approximate Number of Messages: data.approximate_number_of_messages
+    - FIFO Queue: data.fifo_queue
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Content Based Deduplication: data.content_based_duplication
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Queue
+  type: item
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - URL: data.url
+    - FIFO Queue: data.fifo_queue
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Content Based Deduplication: data.content_based_duplication
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Approximate Number Of Messages: data.approximate_number_of_messages
+    - Approximate Number Of Messages Delayed: data.approximate_number_of_messages_delayed
+    - Approximate Number Of Messages Not Visible: data.approximate_number_of_messages_not_visible
+    - Delay Seconds: data.delay_seconds
+    - Maximum Message Size: data.maximum_message_size
+      display_unit: B
+      source_unit: B
+      type: size
+    - Message Retention Period: data.message_retention_period
+    - Receive Message Wait Time Seconds: data.receive_message_wait_time_seconds
+    - Visibility Timeout: data.visibility_timeout
+    - Created Time: data.created_timestamp
+      type: datetime
+      source_type: timestamp
+      source_format: seconds
+    - Last Modified Time: data.last_modified_timestamp
+      type: datetime
+      source_type: timestamp
+      source_format: seconds

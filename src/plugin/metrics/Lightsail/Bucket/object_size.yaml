@@ -1,0 +1,25 @@
+---
+metric_id: metric-aws-lightsail-bucket-object-size
+name: Object Size
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.Lightsail.Bucket
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.bundle_id
+      name: Bundle ID
+    - key: data.state.code
+      name: State
+  fields:
+    value:
+      operator: sum
+      key: data.object_count
+unit: Bytes
+namespace_id: ns-aws-lightsail-bucket
+version: '1.0'

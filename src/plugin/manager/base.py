@@ -8,7 +8,11 @@ from spaceone.core.manager import BaseManager
 from spaceone.core import utils
 from spaceone.inventory.plugin.collector.lib import *
 
-from plugin.conf.cloud_service_conf import REGION_INFO
+from plugin.conf.cloud_service_conf import (
+    REGION_INFO,
+    CLOUDWATCH_CONFIG,
+    CLOUDTRAIL_CONFIG,
+)
 from plugin.connector.base import ResourceConnector
 
 _LOGGER = logging.getLogger("spaceone")
@@ -20,6 +24,18 @@ __all__ = ["ResourceManager"]
 
 class ResourceManager(BaseManager):
     cloud_service_group = None
+
+    EXCLUDE_REGION = {
+        "DocumentDB": [
+            "us-west-1",
+            "af-south-1",
+            "ap-east-1",
+            "ap-southeast-3",
+            "ap-northeast-3",
+            "eu-north-1",
+            "me-south-1",
+        ]
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,7 +49,7 @@ class ResourceManager(BaseManager):
         self, region: str, options: dict, secret_data: dict, schema: str
     ) -> List[dict]:
         _LOGGER.debug(
-            f"[collect_resources] collect Field resources (options: {options})"
+            f"[collect_resources] collect Field resources (group: {self.cloud_service_group}, type: {self.cloud_service_type}, region: {region}, options: {options})"
         )
         target_connector = ResourceConnector.get_connector(
             self.cloud_service_group, self.cloud_service_type
@@ -92,7 +108,7 @@ class ResourceManager(BaseManager):
             )
 
     def set_cloudwatch(
-        self, namespace: str, dimension_name: str, resource_id: str, region_name: str
+        self, service_group: str, resource_id: str = None, region_name: str = None
     ) -> dict:
         """
         data.cloudwatch: {
@@ -110,13 +126,24 @@ class ResourceManager(BaseManager):
             "region_name": region_name
         }
         """
+        config = CLOUDWATCH_CONFIG.get(service_group, {})
+
+        if not config:
+            return None
 
         cloudwatch_data = {
             "region_name": region_name,
             "metrics_info": self.set_metrics_info(
-                namespace, dimension_name, resource_id
+                config.get("namespace"), config.get("dimension_name"), resource_id
             ),
         }
+
+        # 추가 namespace들 처리
+        for additional_ns in config.get("additional_namespaces", []):
+            additional_metric_info = self.set_metrics_info(
+                additional_ns, config.get("dimension_name"), resource_id
+            )
+            cloudwatch_data["metrics_info"].extend(additional_metric_info)
 
         return cloudwatch_data
 
@@ -197,20 +224,26 @@ class ResourceManager(BaseManager):
 
     @staticmethod
     def set_cloudtrail(
-        region_name: str, resource_type: str, resource_name: str
+        service_group: str, resource_name: str, region_name: str = None
     ) -> dict:
-        cloudtrail = {
+        """
+        Global config를 사용한 CloudTrail 설정
+        """
+        config = CLOUDTRAIL_CONFIG.get(service_group, {})
+
+        if not config:
+            return None
+
+        return {
             "LookupAttributes": [
                 {
-                    "AttributeKey": "ResourceName",
+                    "AttributeKey": config.get("lookup_attribute"),
                     "AttributeValue": resource_name,
                 }
             ],
             "region_name": region_name,
-            "resource_type": resource_type,
+            "resource_type": config.get("resource_type"),
         }
-
-        return cloudtrail
 
     @staticmethod
     def get_reference(resource_id: str, link: str) -> dict:
@@ -269,3 +302,9 @@ class ResourceManager(BaseManager):
     @abc.abstractmethod
     def create_cloud_service(self, region, options, secret_data, schema):
         raise NotImplementedError("method `create_cloud_service` should be implemented")
+
+    @classmethod
+    def get_available_regions(cls, secret_data, service_name):
+        return ResourceConnector.get_available_regions(
+            secret_data=secret_data, service_name=service_name
+        )

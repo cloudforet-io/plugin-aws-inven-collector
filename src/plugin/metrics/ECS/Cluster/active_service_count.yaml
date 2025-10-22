@@ -1,0 +1,31 @@
+---
+metric_id: metric-aws-ecs-cluster-active-service-count
+name: Active Service Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.ECS.Cluster
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.services.service_arn
+      name: Service ARN
+    - key: data.services.service_name
+      name: Service Name
+    - key: data.services.launch_type
+      name: Launch Type
+    - key: data.services.role_arn
+      name: Role ARN
+    - key: data.services.scheduling_strategy
+      name: Scheduling Strategy
+  fields:
+    value:
+      operator: count
+      key: data.services
+unit: Count
+namespace_id: ns-aws-ecs-cluster
+version: '1.0'

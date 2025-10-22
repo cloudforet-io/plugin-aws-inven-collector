@@ -1,0 +1,97 @@
+search:
+  fields:
+    - Repository ID: data.registry_id
+    - Repository Name: data.repository_name
+    - Repository ARN: data.repository_arn
+    - Repository URI: data.repository_uri
+    - Image Tag Mutability: data.image_tag_mutability
+      type: text
+      labels:
+        - MUTABLE: "MUTABLE"
+        - IMMUTABLE: "IMMUTABLE"
+    - Scan On Push: data.image_scanning_configuration.scan_on_push
+      data_type: "boolean"
+    - Image URI: data.images.image_uri
+    - Image Tag: data.images.image_tags_display
+    - Scan Status: data.images.image_scan_status.status
+      type: text
+      labels:
+        - COMPLETE: "COMPLETE"
+        - IN_PROGRESS: "IN_PROGRESS"
+        - FAILED: "FAILED"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.repository_name
+    desc: true
+  fields:
+    - Repository Name: data.repository_name
+    - Repository URI: data.repository_uri
+    - Image Tag Mutability: data.image_tag_mutability
+      type: enum
+      enums:
+        - MUTABLE: indigo.500
+        - IMMUTABLE: coral.600
+    - Scan On Push: data.image_scanning_configuration.scan_on_push
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Created: data.created_at
+      type: datetime
+    - Repository ARN: data.repository_arn
+      is_optional: true
+    - Repository ID: data.registry_id
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Repository
+  type: item
+  fields:
+    - Repository Name: data.repository_name
+    - Repository ARN: data.repository_arn
+    - Repository URI: data.repository_uri
+    - Repository ID: data.registry_id
+    - Image Tag Mutability: data.image_tag_mutability
+      type: enum
+      enums:
+        - MUTABLE: indigo.500
+        - IMMUTABLE: coral.600
+    - Scan On Push: data.image_scanning_configuration.scan_on_push
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Created: data.created_at
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: Images
+  type: table
+  root_path: data.images
+  fields:
+    - Image Tag: image_tags_display
+      type: badge
+      outline_color: violet.500
+    - Image URI: image_uri
+    - Image Size: image_size_in_bytes
+      display_unit: MB
+      source_unit: B
+      type: size
+    - Digest: image_digest
+    - Scan Status: image_scan_status.status
+      type: enum
+      enums:
+        - COMPLETE: green.500
+          type: state
+        - IN_PROGRESS: yellow.500
+          type: state
+        - FAILED: red.500
+          type: state
+    - Pushed At: image_pushed_at
+      type: datetime
+      source_type: iso8601

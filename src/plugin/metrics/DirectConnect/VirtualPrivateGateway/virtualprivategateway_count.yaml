@@ -1,0 +1,32 @@
+---
+metric_id: metric-aws-directconnect-virtualprivategateway-count
+name: Virtual Private Gateway Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.DirectConnect.VirtualPrivateGateway
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.state
+      name: State
+    - key: data.vpn_gateway_id
+      name: VPN Gateway ID
+    - key: data.vpc_id
+      name: VPC ID
+    - key: data.vpn_gateway_type
+      name: VPN Gateway Type
+    - key: data.amazon_side_asn
+      name: Amazon Side ASN
+    - key: data.tags
+      name: Tags
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-directconnect-virtualprivategateway
+version: '1.0'

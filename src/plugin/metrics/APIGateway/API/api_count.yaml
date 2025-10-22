@@ -1,0 +1,31 @@
+---
+metric_id: metric-aws-apigateway-api-count
+name: API Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.APIGateway.API
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: instance_type
+      name: Protocol
+      default: true
+    - key: data.endpoint_type
+      name: Endpoint Type
+    - key: data.api_key_source
+      name: API Key Source
+    - key: data.description
+      name: Description
+    - key: data.resources.path
+      name: Resource Paths
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-apigateway-api
+version: '1.0'

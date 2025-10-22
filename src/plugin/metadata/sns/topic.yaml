@@ -1,0 +1,61 @@
+search:
+  fields:
+    - Topic ARN: data.topic_arn
+    - Subscription ARN: data.subscriptions.subscription_arn
+    - Endpoint: data.subscriptions.endpoint
+    - Protocol: data.subscriptions.protocol
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.name
+    desc: true
+  fields:
+    - Name: data.name
+    - Display Name: data.display_name
+    - Subscription Confirmed: data.subscription_confirmed
+    - Subscription Pending: data.subscriptions_pending
+    - Subscription Deleted: data.subscription_deleted
+    - ARN: data.topic_arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: SNS
+  type: item
+  fields:
+    - Name: data.name
+    - Display Name: data.display_name
+    - ARN: data.topic_arn
+    - Topic Owner: data.owner
+
+tabs.1:
+  name: Subscriptions
+  type: table
+  root_path: data.subscriptions
+  fields:
+    - Subscription ARN: subscription_arn
+    - Endpoint: endpoint
+    - Protocol: protocol
+      type: enum
+      enums:
+        - http: indigo.500
+        - https: coral.600
+        - email: green.500
+        - email-json: yellow.500
+        - sqs: violet.500
+        - lambda: blue.400
+
+tabs.2:
+  name: Encryptions
+  type: item
+  root_path: data.kms
+  fields:
+    - Encryption: encryption
+      type: enum
+      enums:
+        - Configured: indigo.500
+    - Description: description
+    - Custom Master Key (CMK): alias
+    - CMK ARN: arn

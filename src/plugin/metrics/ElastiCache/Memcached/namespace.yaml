@@ -1,0 +1,8 @@
+---
+namespace_id: ns-aws-elasticache-memcached
+name: ElastiCache/Memcached
+category: ASSET
+resource_type: inventory.CloudService:aws.ElastiCache.Memcached
+group: aws
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-elasticache.svg'
+version: '1.1'

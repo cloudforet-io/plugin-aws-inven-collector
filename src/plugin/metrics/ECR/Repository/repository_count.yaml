@@ -12,6 +12,16 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
+    - key: data.repository_uri
+      name: URI
+    - key: data.repository_arn
+      name: Registry ARN
+    - key: data.image_tag_mutability
+      name: Image Tag Mutability
+    - key: data.image_scanning_configuration.scan_on_push
+      name: Image Scanning on Push
+    - key: data.registry_id
+      name: Repository ID
   fields:
     value:
       operator: count

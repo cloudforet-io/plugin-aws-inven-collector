@@ -1,0 +1,33 @@
+---
+metric_id: metric-aws-ecs-cluster-running-task-count
+name: Running Task Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.ECS.Cluster
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.tasks.task_arn
+      name: Task ARN
+    - key: data.tasks.task
+      name: Task Name
+    - key: data.tasks.availability_zone
+      name: Availability Zone
+    - key: data.tasks.health_status
+      name: Health Status
+    - key: data.tasks.cpu
+      name: CPU
+    - key: data.tasks.memory
+      name: Memory
+  fields:
+    value:
+      operator: count
+      key: data.tasks
+unit: Count
+namespace_id: ns-aws-ecs-cluster
+version: '1.0'

@@ -1,0 +1,45 @@
+search:
+  fields:
+    - Layer Name: data.layer_name
+    - Layer ARN: data.layer_arn
+    - Version: data.version
+      data_type: "integer"
+    - Description: data.latest_matching_version.description
+    - Compatible Runtimes: data.latest_matching_version.compatible_runtimes
+    - License Info: data.latest_matching_version.license_info
+    - Created Date: data.latest_matching_version.created_date
+      data_type: "datetime"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.layer_name
+    desc: true
+  fields:
+    - Layer Name: data.layer_name
+    - Version: data.version
+    - Compatible Runtimes: data.latest_matching_version.compatible_runtimes
+      type: badge
+      outline_color: violet.500
+    - Description: data.latest_matching_version.description
+    - License Info: data.latest_matching_version.license_info
+    - Layer ARN: data.layer_arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Layers
+  type: item
+  fields:
+    - Layer Name: data.layer_name
+    - Layer ARN: data.layer_arn
+    - Version: data.version
+    - Description: data.latest_matching_version.description
+    - Compatible Runtimes: data.latest_matching_version.compatible_runtimes
+      type: badge
+      outline_color: violet.500
+    - License Info: data.latest_matching_version.license_info
+    - Created Date: data.latest_matching_version.created_date
+      type: datetime
+      source_type: iso8601

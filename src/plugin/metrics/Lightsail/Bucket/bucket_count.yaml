@@ -1,0 +1,65 @@
+---
+metric_id: metric-aws-lightsail-bucket-count
+name: Bucket Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.Lightsail.Bucket
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.state.name
+      name: State
+      default: true
+    - key: data.arn
+      name: ARN
+    - key: data.resource_type
+      name: Resource Type
+    - key: data.support_code
+      name: Support Code
+    - key: data.location.availability_zone
+      name: Availability Zone
+    - key: data.location.region_name
+      name: Region
+    - key: data.object_versioning
+      name: Object Versioning
+    - key: data.readonly_access_accounts
+      name: Readonly Access Accounts
+    - key: data.readwrite_access_accounts
+      name: Readwrite Access Accounts
+    - key: data.url
+      name: URL
+    - key: data.able_to_update_bundle
+      name: Able To Update Bundle
+    - key: data.bundle_id
+      name: Bundle ID
+    - key: data.created_at
+      name: Created At
+    - key: data.location.region_name
+      name: Region
+    - key: data.name
+      name: Name
+    - key: data.primary_endpoint
+      name: Primary Endpoint
+    - key: data.resource_type
+      name: Resource Type
+    - key: data.state.code
+      name: State Code
+    - key: data.state.name
+      name: State Name
+    - key: data.support_code
+      name: Support Code
+    - key: data.tags
+      name: Tags
+    - key: data.url
+      name: URL
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-lightsail-bucket
+version: '1.0'

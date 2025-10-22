@@ -1,0 +1,62 @@
+search:
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - State: data.state
+    - Progress: data.progress
+    - From Resource Name: data.from_resource_name
+    - From Resource ARN: data.from_resource_arn
+    - From Blueprint ID: data.from_blueprint_id
+    - From Bundle ID: data.from_bundle_id
+    - Size In GB: data.size_in_gb
+      data_type: "integer"
+    - Support Code: data.support_code
+    - Availability Zone: data.location.availability_zone
+    - Region: data.location.region_name
+    - Resource Type: data.resource_type
+    - Created At: data.created_at
+      data_type: "datetime"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.name
+    desc: true
+  fields:
+    - Name: data.name
+    - State: data.state
+    - Progress: data.progress
+    - From Resource Name: data.from_resource_name
+    - Size In GB: data.size_in_gb
+      display_unit: GB
+      source_unit: GB
+      type: size
+    - Availability Zone: data.location.availability_zone
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Snapshot
+  type: item
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - State: data.state
+    - Progress: data.progress
+    - From Resource Name: data.from_resource_name
+    - From Resource ARN: data.from_resource_arn
+    - From Blueprint ID: data.from_blueprint_id
+    - From Bundle ID: data.from_bundle_id
+    - Size In GB: data.size_in_gb
+      display_unit: GB
+      source_unit: GB
+      type: size
+    - Support Code: data.support_code
+    - Availability Zone: data.location.availability_zone
+    - Region: data.location.region_name
+    - Resource Type: data.resource_type
+    - Created At: data.created_at
+      type: datetime
+      source_type: iso8601

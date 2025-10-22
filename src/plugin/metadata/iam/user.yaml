@@ -1,0 +1,153 @@
+search:
+  fields:
+    - User Name: data.user_name
+    - User ID: data.user_id
+    - User ARN: data.arn
+    - Path: data.path
+    - Groups: data.groups_display
+    - Access Key Age: data.access_key_age_display
+    - Last Activity: data.last_activity
+    - MFA: data.mfa_device
+      type: text
+      labels:
+        - Virtual: "Virtual"
+        - Not enabled: "Not enabled"
+    - Creation Time: data.create_date
+      data_type: "datetime"
+    - Last Accessed At: data.password_last_used
+      data_type: "datetime"
+    - Policy Name: data.policies.policy_name
+    - Policy Type: data.policies.policy_type
+      type: text
+      labels:
+        - AWS Managed: "AWS Managed"
+        - Local Managed: "Local Managed"
+    - Group Name: data.groups.group_name
+    - Access Key ID: data.access_key.key_id
+    - Access Key Status: data.access_key.status
+      type: text
+      labels:
+        - Active: "Active"
+        - Inactive: "Inactive"
+    - SSH Key ID: data.ssh_public_key.key_id
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.user_name
+    desc: true
+  fields:
+    - User Name: data.user_name
+    - User ID: data.user_id
+    - Path: data.path
+    - Groups: data.groups_display
+    - Access Key Age: data.access_key_age_display
+    - Last Activity: data.last_activity
+    - MFA: data.mfa_device
+      type: enum
+      enums:
+        - Virtual: indigo.500
+        - Not enabled: coral.600
+    - Creation Time: data.create_date
+      type: datetime
+    - User ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: User
+  type: item
+  fields:
+    - User Name: data.user_name
+    - User ID: data.user_id
+    - User ARN: data.arn
+    - Path: data.path
+    - Groups: data.groups_display
+    - Access Key Age: data.access_key_age_display
+    - Last Activity: data.last_activity
+    - MFA: data.mfa_device
+      type: enum
+      enums:
+        - Virtual: indigo.500
+        - Not enabled: coral.600
+    - Creation Time: data.create_date
+      type: datetime
+      source_type: iso8601
+    - Last Accessed At: data.password_last_used
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: Permissions
+  type: table
+  root_path: data.policies
+  fields:
+    - Policy Name: policy_name
+    - Policy Type: policy_type
+      type: enum
+      enums:
+        - AWS Managed: indigo.500
+        - Local Managed: coral.600
+    - Description: description
+    - Creation Time: create_date
+      type: datetime
+      source_type: iso8601
+
+tabs.2:
+  name: Groups
+  type: table
+  root_path: data.groups
+  fields:
+    - Group Name: group_name
+    - Policy Name: attached_policy_name
+      type: badge
+      outline_color: violet.500
+    - Creation Time: create_date
+      type: datetime
+      source_type: iso8601
+
+tabs.3:
+  name: Sign-in Credentials
+  type: item
+  fields:
+    - Summary: data.sign_in_credential.summary
+      type: badge
+      outline_color: violet.500
+    - Console Password: data.sign_in_credential.console_password
+      type: enum
+      enums:
+        - Enabled: indigo.500
+        - Disabled: coral.600
+    - Assigned MFA Device: data.sign_in_credential.assigned_mfa_device
+
+tabs.4:
+  name: Access Keys
+  type: table
+  root_path: data.access_key
+  fields:
+    - Access Key ID: key_id
+    - Creation Time: create_date
+      type: datetime
+      source_type: iso8601
+    - Last Used: last_update_date_display
+    - Status: status
+      type: enum
+      enums:
+        - Active: indigo.500
+        - Inactive: coral.600
+
+tabs.5:
+  name: SSH Keys for AWS CodeCommit
+  type: table
+  root_path: data.ssh_public_key
+  fields:
+    - SSH Key ID: key_id
+    - Uploaded At: upload_date
+      type: datetime
+      source_type: iso8601
+    - Status: status
+      type: enum
+      enums:
+        - Active: indigo.500
+        - Inactive: coral.600

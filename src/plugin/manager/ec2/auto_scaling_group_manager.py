@@ -54,10 +54,10 @@ class AutoScalingGroupManager(ResourceManager):
         return cloud_service_type_results
 
     def create_cloud_service(self, region, options, secret_data, schema):
+        yield from self._collect_auto_scaling_groups(options, region)
+
+    def _collect_auto_scaling_groups(self, options, region):
         self.cloud_service_type = "AutoScalingGroup"
-        cloudwatch_namespace = "AWS/AutoScaling"
-        cloudwatch_dimension_name = "AutoScalingGroupName"
-        cloudtrail_resource_type = "AWS::AutoScaling::AutoScalingGroup"
         account_id = options.get("account_id", "")
         self.connector.load_account_id(account_id)
         pre_collect_list = [
@@ -129,15 +129,14 @@ class AutoScalingGroupManager(ResourceManager):
                                 raw.get("Instances", [])
                             ),
                             "cloudwatch": self.set_cloudwatch(
-                                cloudwatch_namespace,
-                                cloudwatch_dimension_name,
+                                self.cloud_service_group,
                                 raw["AutoScalingGroupName"],
                                 region,
                             ),
                             "cloudtrail": self.set_cloudtrail(
-                                region,
-                                cloudtrail_resource_type,
+                                self.cloud_service_group,
                                 raw["AutoScalingGroupName"],
+                                region,
                             ),
                         }
                     )
@@ -229,7 +228,7 @@ class AutoScalingGroupManager(ResourceManager):
                         cloud_service_group=self.cloud_service_group,
                         provider=self.provider,
                         data=auto_scaling_group_vo,
-                        account=account_id,
+                        account=options.get("account_id"),
                         tags=self.convert_tags_to_dict_type(raw.get("Tags", [])),
                         region_code=region,
                         reference=reference,
@@ -449,7 +448,6 @@ class AutoScalingGroupManager(ResourceManager):
 
         response = self.connector.get_launch_configurations()
         self.connector.set_account_id()
-        account_id = self.connector.get_account_id()
         result_list = []
         for data in response:
             for raw in data.get("LaunchConfigurations", []):
@@ -457,9 +455,9 @@ class AutoScalingGroupManager(ResourceManager):
                     raw.update(
                         {
                             "cloudtrail": self.set_cloudtrail(
-                                region,
-                                cloudtrail_resource_type,
+                                self.cloud_service_group,
                                 raw["LaunchConfigurationName"],
+                                region,
                             )
                         }
                     )
@@ -482,7 +480,7 @@ class AutoScalingGroupManager(ResourceManager):
                         cloud_service_group=self.cloud_service_group,
                         provider=self.provider,
                         data=launch_configuration_vo,
-                        account=account_id,
+                        account=options.get("account_id"),
                         region_code=region,
                         reference=reference,
                     )
@@ -540,9 +538,9 @@ class AutoScalingGroupManager(ResourceManager):
                                 + str(match_lt_version.get("VersionNumber")),
                             ),
                             "cloudtrail": self.set_cloudtrail(
-                                region,
-                                cloudtrail_resource_type,
+                                self.cloud_service_group,
                                 raw["LaunchTemplateName"],
+                                region,
                             ),
                         }
                     )
@@ -563,7 +561,7 @@ class AutoScalingGroupManager(ResourceManager):
                         cloud_service_group=self.cloud_service_group,
                         provider=self.provider,
                         data=launch_template_vo,
-                        account=account_id,
+                        account=options.get("account_id"),
                         tags=self.convert_tags_to_dict_type(raw.get("Tags", [])),
                         region_code=region,
                         reference=reference,

@@ -1,0 +1,103 @@
+search:
+  fields:
+    - Policy Name: data.policy_name
+    - Policy ID: data.policy_id
+    - Policy ARN: data.arn
+    - Path: data.path
+    - Description: data.description
+    - Policy Type: data.policy_type
+      type: text
+      labels:
+        - AWS Managed: "AWS Managed"
+        - Local Managed: "Local Managed"
+    - Attachment Count: data.attachment_count
+      data_type: "integer"
+    - Is Attachable: data.is_attachable
+      data_type: "boolean"
+    - Default Version ID: data.default_version_id
+    - Permissions Boundary Usage Count: data.permissions_boundary_usage_count
+      data_type: "integer"
+    - Creation Time: data.create_date
+      data_type: "datetime"
+    - Update Time: data.update_date
+      data_type: "datetime"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.policy_name
+    desc: true
+  fields:
+    - Policy Name: data.policy_name
+    - Policy ID: data.policy_id
+    - Path: data.path
+    - Description: data.description
+    - Policy Type: data.policy_type
+      type: enum
+      enums:
+        - AWS Managed: indigo.500
+        - Local Managed: coral.600
+    - Attachment Count: data.attachment_count
+    - Is Attachable: data.is_attachable
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Creation Time: data.create_date
+      type: datetime
+    - Policy ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Policy
+  type: item
+  fields:
+    - Policy Name: data.policy_name
+    - Policy ID: data.policy_id
+    - Policy ARN: data.arn
+    - Path: data.path
+    - Description: data.description
+    - Policy Type: data.policy_type
+      type: enum
+      enums:
+        - AWS Managed: indigo.500
+        - Local Managed: coral.600
+    - Attachment Count: data.attachment_count
+    - Is Attachable: data.is_attachable
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Default Version ID: data.default_version_id
+    - Permissions Boundary Usage Count: data.permissions_boundary_usage_count
+    - Creation Time: data.create_date
+      type: datetime
+      source_type: iso8601
+    - Update Time: data.update_date
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: Policy Usage
+  type: table
+  root_path: data.policy_usage
+  fields:
+    - Name: name
+    - Type: type
+
+tabs.2:
+  name: Permission Versions
+  type: table
+  root_path: data.permission_versions
+  fields:
+    - Version ID: version_id
+    - Is Default Version: is_default_version
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Creation Time: create_date
+      type: datetime
+      source_type: iso8601

@@ -1,0 +1,90 @@
+search:
+  fields:
+    - Role Name: data.role_name
+    - Role ID: data.role_id
+    - Role ARN: data.arn
+    - Path: data.path
+    - Description: data.description
+    - Max Session Duration: data.max_session_duration
+    - Assume Role Policy Document: data.assume_role_policy_document
+    - Creation Time: data.create_date
+      data_type: "datetime"
+    - Last Accessed At: data.role_last_used.last_used_date
+      data_type: "datetime"
+    - Policy Name: data.attached_permission.policy_name
+    - Policy Type: data.attached_permission.policy_type
+      type: text
+      labels:
+        - AWS Managed: "AWS Managed"
+        - Local Managed: "Local Managed"
+    - Instance Profile Name: data.instance_profiles.instance_profile_name
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.role_name
+    desc: true
+  fields:
+    - Role Name: data.role_name
+    - Role ID: data.role_id
+    - Path: data.path
+    - Description: data.description
+    - Max Session Duration: data.max_session_duration
+    - Creation Time: data.create_date
+      type: datetime
+    - Role ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Role
+  type: item
+  fields:
+    - Role Name: data.role_name
+    - Role ID: data.role_id
+    - Role ARN: data.arn
+    - Path: data.path
+    - Description: data.description
+    - Max Session Duration: data.max_session_duration
+    - Assume Role Policy Document: data.assume_role_policy_document
+    - Creation Time: data.create_date
+      type: datetime
+      source_type: iso8601
+    - Last Accessed At: data.role_last_used.last_used_date
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: Permissions
+  type: table
+  root_path: data.attached_permission
+  fields:
+    - Policy Name: policy_name
+    - Policy ID: policy_id
+    - Policy Type: policy_type
+      type: enum
+      enums:
+        - AWS Managed: indigo.500
+        - Local Managed: coral.600
+    - Policy ARN: arn
+    - Permission Usage Count: attachment_count
+    - Description: description
+    - Creation Time: create_date
+      type: datetime
+      source_type: iso8601
+    - Updated At: update_date
+      type: datetime
+      source_type: iso8601
+
+tabs.2:
+  name: Instance Profiles
+  type: table
+  root_path: data.instance_profiles
+  fields:
+    - Instance Profile Name: instance_profile_name
+    - Instance Profile ARN: arn
+    - Path: path
+    - Creation Time: create_date
+      type: datetime
+      source_type: iso8601

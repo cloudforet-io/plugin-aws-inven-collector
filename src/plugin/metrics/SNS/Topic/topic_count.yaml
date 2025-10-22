@@ -1,0 +1,24 @@
+---
+metric_id: metric-aws-sns-topic-count
+name: Topic Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.SNS.Topic
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.display_name
+      name: Display Name
+    - key: data.subscriptions_confirmed
+      name: Subscriptions Confirmed
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-sns-topic
+version: '1.0'

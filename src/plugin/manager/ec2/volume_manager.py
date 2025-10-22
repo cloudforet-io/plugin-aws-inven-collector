@@ -34,11 +34,11 @@ class VolumeManager(ResourceManager):
         return result
 
     def create_cloud_service(self, region, options, secret_data, schema):
-        cloudtrail_resource_type = "AWS::EC2::Volume"
+        yield from self._collect_volumes(options, region)
+
+    def _collect_volumes(self, options, region):
         account_id = options.get("account_id", "")
         self.connector.load_account_id(account_id)
-        cloudwatch_namespace = "AWS/EBS"
-        cloudwatch_dimension_name = "VolumeId"
         results = self.connector.get_volumes()
 
         for data in results:
@@ -54,13 +54,12 @@ class VolumeManager(ResourceManager):
                         {
                             "attribute": attr,
                             "cloudwatch": self.set_cloudwatch(
-                                cloudwatch_namespace,
-                                cloudwatch_dimension_name,
+                                self.cloud_service_group,
                                 raw["VolumeId"],
                                 region,
                             ),
                             "cloudtrail": self.set_cloudtrail(
-                                region, cloudtrail_resource_type, raw["VolumeId"]
+                                self.cloud_service_group, raw["VolumeId"], region
                             ),
                             "size": self.get_size_gb_to_bytes(raw.get("Size", 0)),
                             "arn": self.generate_arn(
@@ -101,7 +100,7 @@ class VolumeManager(ResourceManager):
                         instance_size=float(volume_vo.get("size", 0)),
                         provider=self.provider,
                         data=volume_vo,
-                        account=account_id,
+                        account=options.get("account_id"),
                         tags=self.convert_tags_to_dict_type(raw.get("Tags", [])),
                         region_code=region,
                         reference=reference,

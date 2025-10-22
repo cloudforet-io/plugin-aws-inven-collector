@@ -1,0 +1,8 @@
+---
+namespace_id: ns-aws-ecs-cluster
+name: ECS/Cluster
+category: ASSET
+resource_type: inventory.CloudService:aws.ECS.Cluster
+group: aws
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-ecs.svg'
+version: '1.1'

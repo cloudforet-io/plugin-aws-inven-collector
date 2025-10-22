@@ -12,8 +12,8 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.public_access
-      name: Access
+    - key: data.public_access_block_configuration.block_public_acls
+      name: Block Public ACLs
   fields:
     value:
       operator: sum

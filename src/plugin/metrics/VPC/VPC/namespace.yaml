@@ -1,0 +1,8 @@
+---
+namespace_id: ns-aws-vpc-vpc
+name: VPC/VPC
+category: ASSET
+resource_type: inventory.CloudService:aws.VPC.VPC
+group: aws
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-vpc.svg'
+version: '1.1'

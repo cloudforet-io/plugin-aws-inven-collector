@@ -4,6 +4,8 @@ from ...conf.cloud_service_conf import *
 from spaceone.core.utils import *
 from spaceone.inventory.plugin.collector.lib import *
 
+from ...model.api_gateway.api_gateway import RestAPI, HTTPWebsocket
+
 
 class ApiGatewayManager(ResourceManager):
     cloud_service_group = "APIGateway"
@@ -31,21 +33,11 @@ class ApiGatewayManager(ResourceManager):
     def create_cloud_service(
         self, region: str, options: dict, secret_data: dict, schema: str
     ) -> List[dict]:
-        collect_list = [
-            self._collect_rest_apis,
-            self._collect_websockets,
-        ]
-        self.connector.set_account_id()
-        for pre_collect in collect_list:
-            yield from pre_collect(region)
+        yield from self._collect_rest_apis(options, region)
+        yield from self._collect_websockets(options, region)
 
-    def _collect_rest_apis(self, region: str) -> List[dict]:
-        cloudwatch_namespace = "AWS/ApiGateway"
-        cloudwatch_dimension_name = "ApiName"
-        cloudtrail_resource_type = "AWS::ApiGateway::RestApi"
-
+    def _collect_rest_apis(self, options: dict, region: str) -> List[dict]:
         results = self.connector.get_rest_apis()
-        account_id = self.connector.get_account_id()
         for data in results:
             for raw in data.get("items", []):
                 try:
@@ -75,16 +67,12 @@ class ApiGatewayManager(ResourceManager):
                                 resource_id=f"{raw.get('id')}/*",
                             ),
                             "cloudwatch": self.set_cloudwatch(
-                                cloudwatch_namespace,
-                                cloudwatch_dimension_name,
+                                self.cloud_service_group,
                                 raw.get("id"),
                                 region,
                             ),
                             "cloudtrail": self.set_cloudtrail(
-                                region, cloudtrail_resource_type, raw["id"]
-                            ),
-                            "launched_at": self.datetime_to_iso8601(
-                                raw.get("createdDate")
+                                self.cloud_service_group, raw["id"], region
                             ),
                         }
                     )
@@ -94,15 +82,15 @@ class ApiGatewayManager(ResourceManager):
                     # Converting datetime type attributes to ISO8601 format needed to meet protobuf format
                     self._update_times(raw)
 
-                    rest_api_vo = raw
+                    rest_api_vo = RestAPI(raw, strict=False)
                     cloud_service = make_cloud_service(
                         name=rest_api_vo.get("name", ""),
                         cloud_service_type=self.cloud_service_type,
                         cloud_service_group=self.cloud_service_group,
                         provider=self.provider,
-                        data=rest_api_vo,
+                        data=rest_api_vo.to_primitive(),
                         instance_type=rest_api_vo.get("protocol"),
-                        account=account_id,
+                        account=options.get("account_id"),
                         reference=reference,
                         tags=raw.get("tags", {}),
                         region_code=region,
@@ -118,10 +106,8 @@ class ApiGatewayManager(ResourceManager):
                         region_name=region,
                     )
 
-    def _collect_websockets(self, region: str) -> List[dict]:
-        cloudtrail_resource_type = "AWS::ApiGateway::RestApi"
+    def _collect_websockets(self, options: dict, region: str) -> List[dict]:
         results = self.connector.get_apis()
-        account_id = self.connector.get_account_id()
         for data in results:
             for raw in data.get("Items", []):
                 try:
@@ -137,10 +123,7 @@ class ApiGatewayManager(ResourceManager):
                                 resource_id=raw.get("ApiId"),
                             ),
                             "cloudtrail": self.set_cloudtrail(
-                                region, cloudtrail_resource_type, raw["ApiId"]
-                            ),
-                            "launched_at": self.datetime_to_iso8601(
-                                raw.get("CreatedDate")
+                                self.cloud_service_group, raw["ApiId"], region
                             ),
                         }
                     )
@@ -150,15 +133,15 @@ class ApiGatewayManager(ResourceManager):
                     # Converting datetime type attributes to ISO8601 format needed to meet protobuf format
                     self._update_times(raw)
 
-                    http_websocket_vo = raw
+                    http_websocket_vo = HTTPWebsocket(raw, strict=False)
                     cloud_service = make_cloud_service(
                         name=http_websocket_vo.get("Name", ""),
                         cloud_service_type=self.cloud_service_type,
                         cloud_service_group=self.cloud_service_group,
                         provider=self.provider,
-                        data=http_websocket_vo,
+                        data=http_websocket_vo.to_primitive(),
                         instance_type=http_websocket_vo.get("protocol"),
-                        account=account_id,
+                        account=options.get("account_id"),
                         reference=reference,
                         tags=raw.get("Tags", {}),
                         region_code=region,

@@ -1,0 +1,182 @@
+search:
+  fields:
+    - Cluster Name: data.name
+    - Cluster ARN: data.arn
+    - Status: data.status
+      type: text
+      labels:
+        - ACTIVE: "ACTIVE"
+        - CREATING: "CREATING"
+        - DELETING: "DELETING"
+        - FAILED: "FAILED"
+        - UPDATING: "UPDATING"
+    - Version: data.version
+    - Endpoint: data.endpoint
+    - Role ARN: data.role_arn
+    - VPC ID: data.resources_vpc_config.vpc_id
+    - Subnets: data.resources_vpc_config.subnet_ids
+    - Public Access CIDRs: data.resources_vpc_config.public_access_cidrs
+    - Cluster Security Group ID: data.resources_vpc_config.cluster_security_group_id
+    - Endpoint Public Access: data.resources_vpc_config.endpoint_public_access
+      data_type: "boolean"
+    - Endpoint Private Access: data.resources_vpc_config.endpoint_private_access
+      data_type: "boolean"
+    - Node Group ARNs: data.node_groups.nodegroup_arn
+    - Node Group Names: data.node_groups.nodegroup_name
+    - Node Role ARNs: data.node_groups.node_role
+    - OIDC Issuer: data.identity.oidc.issuer
+    - Platform Version: data.platform_version
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.name
+    desc: true
+  fields:
+    - Cluster Name: data.name
+    - Status: data.status
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - CREATING: yellow.500
+          type: state
+        - DELETING: yellow.500
+          type: state
+        - FAILED: red.500
+          type: state
+        - UPDATING: yellow.500
+          type: state
+    - Version: data.version
+    - Endpoint: data.endpoint
+    - Role ARN: data.role_arn
+    - VPC ID: data.resources_vpc_config.vpc_id
+    - Platform Version: data.platform_version
+    - Cluster ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Cluster
+  type: item
+  fields:
+    - Cluster Name: data.name
+    - Cluster ARN: data.arn
+    - Status: data.status
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - CREATING: yellow.500
+          type: state
+        - DELETING: yellow.500
+          type: state
+        - FAILED: red.500
+          type: state
+        - UPDATING: yellow.500
+          type: state
+    - Version: data.version
+    - Endpoint: data.endpoint
+    - Role ARN: data.role_arn
+    - Certificate Authority: data.certificate_authority.data
+    - Platform Version: data.platform_version
+    - Client Request Token: data.client_request_token
+
+tabs.1:
+  name: VPC Configuration
+  type: item
+  fields:
+    - VPC ID: data.resources_vpc_config.vpc_id
+    - Subnets: data.resources_vpc_config.subnet_ids
+      type: badge
+      outline_color: violet.500
+    - Security Groups: data.resources_vpc_config.security_group_ids
+      type: badge
+      outline_color: violet.500
+    - Cluster Security Group ID: data.resources_vpc_config.cluster_security_group_id
+    - Endpoint Public Access: data.resources_vpc_config.endpoint_public_access
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Endpoint Private Access: data.resources_vpc_config.endpoint_private_access
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Public Access CIDRs: data.resources_vpc_config.public_access_cidrs
+      type: badge
+      outline_color: violet.500
+
+tabs.2:
+  name: Node Groups
+  type: table
+  root_path: data.node_groups
+  fields:
+    - Group Name: nodegroup_name
+    - Status: status
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - CREATING: yellow.500
+          type: state
+        - UPDATING: yellow.500
+          type: state
+        - DELETING: yellow.500
+          type: state
+        - CREATE_FAILED: red.500
+          type: state
+        - DELETE_FAILED: red.500
+          type: state
+        - DEGRADED: red.500
+          type: state
+    - Instance Types: instance_types
+      type: badge
+      outline_color: violet.500
+    - Subnets: subnets
+      type: badge
+      outline_color: violet.500
+    - Disk Size: disk_size
+    - AMI Type: ami_type
+    - Node Role: node_role
+
+tabs.3:
+  name: Cluster Logging
+  type: table
+  root_path: data.logging.cluster_logging
+  fields:
+    - Types: types
+      type: badge
+      outline_color: violet.500
+    - Enabled: enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+
+tabs.4:
+  name: Updates
+  type: table
+  root_path: data.updates
+  fields:
+    - Update ID: id
+    - Status: status
+      type: enum
+      enums:
+        - Successful: green.500
+          type: state
+        - InProgress: yellow.500
+          type: state
+        - Failed: red.500
+          type: state
+        - Cancelled: gray.400
+          type: state
+    - Type: type
+    - Submission Time: created_at
+      type: datetime
+      source_type: iso8601
+    - Error: errors.error_code
+      type: badge
+      outline_color: violet.500

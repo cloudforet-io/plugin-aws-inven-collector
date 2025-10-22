@@ -1,3 +1,4 @@
+MAX_WORKERS = 20
 SUPPORTED_FEATURES = ["garbage_collection"]
 SUPPORTED_RESOURCE_TYPE = [
     "inventory.CloudService",
@@ -13,58 +14,29 @@ DEFAULT_VULNERABLE_PORTS = "22,3306"
 
 ASSET_URL = "https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws"
 
-RESOURCES = [
-    "cloudformation",
-    "cloudwatch",
-    "dynamodb",
-    "ec2",
-    "glacier",
-    "iam",
-    "opsworks",
-    "s3",
-    "sns",
-    "sqs",
-]
-
 PAGINATOR_MAX_ITEMS = 10000
 PAGINATOR_PAGE_SIZE = 50
 
 DEFAULT_API_RETRIES = 10
 
-# CLOUD_SERVICE_GROUP_MAP = {
-#     'IAM': IAMManager,
-#     'DynamoDB': DynamoDBManager,
-#     'Lambda': LambdaManager,
-#     'CloudFront': CloudFrontManager,
-#     'RDS': RDSManager,
-#     'Route53': Route53Manager,
-#     'S3': S3Manager,
-#     'AutoScalingGroup': AutoScalingManager,
-#     'ElastiCache': ElastiCacheManager,
-#     'APIGateway': APIGatewayManager,
-#     'DirectConnect': DirectConnectManager,
-#     'EFS': EFSManager,
-#     'DocumentDB': DocumentDBManager,
-#     'ECS': ECSManager,
-#     'Redshift': RedshiftManager,
-#     'EKS': EKSManager,
-#     'SQS': SQSManager,
-#     'KMS': KMSManager,
-#     'ECR': ECRManager,
-#     'CloudTrail': CloudTrailManager,
-#     'SNS': SNSManager,
-#     'SecretsManager': SecretsManagerManager,
-#     'ELB': ELBManager,
-#     'EIP': EIPManager,
-#     'EBS': EBSManager,
-#     'VPC': VPCManager,
-#     'EC2': EC2Manager,
-#     'ACM': ACMManager,
-#     'KinesisDataStream': KinesisDataStreamManager,
-#     'MSK': MSKManager,
-#     'KinesisFirehose': KinesisFirehoseManager,
-#     'Lightsail': LightsailManager
-# }
+METRIC_SERVICES = [
+    "CertificateManager",  # "ACM",
+    "CloudFront",
+    "CloudTrail",
+    "DocumentDB",
+    "EC2",
+    "ECR",
+    "EFS",
+    "EKS",
+    "ELB",
+    "IAM",
+    "KMS",
+    "Lambda",
+    "Route53",
+    "S3",
+    "TrustedAdvisor",
+    "PersonalHealthDashboard",
+]
 
 REGION_INFO = {
     "us-east-1": {
@@ -328,24 +300,24 @@ REGION_INFO = {
         "tags": {
             "latitude": "3.1390",
             "longitude": "101.6869",
-            "continent": "asia_pacific"
-        }
+            "continent": "asia_pacific",
+        },
     },
     "mx-central-1": {
         "name": "Mexico (Central)",
         "tags": {
             "latitude": "20.5888",
             "longitude": "-100.3899",
-            "continent": "north_america"
-        }
+            "continent": "north_america",
+        },
     },
     "ap-southeast-6": {
         "name": "Asia Pacific (Thailand)",
         "tags": {
             "latitude": "13.7563",
             "longitude": "100.5018",
-            "continent": "asia_pacific"
-        }
+            "continent": "asia_pacific",
+        },
     },
     "global": {"name": "Global"},
 }
@@ -364,3 +336,393 @@ INSTANCE_FILTERS = [
     "SecurityGroups",
     "Tags",
 ]
+
+# 글로벌 서비스 목록 (정확한 기준으로 관리)
+GLOBAL_SERVICES = {
+    "IAM",
+    "Route53",
+    "CloudFront",
+    "S3",
+    "ACM",
+    "CloudTrail",
+    "TrustedAdvisor",
+    "PersonalHealthDashboard",
+}
+
+SERVICE_NAME_MAP = {
+    "ACM": "acm",
+    "EC2": "ec2",
+    "AutoScaling": "autoscaling",
+    "DynamoDB": "dynamodb",
+    "DocumentDB": "docdb",
+    "DirectConnect": "directconnect",
+    "CloudTrail": "cloudtrail",
+    "CloudFront": "cloudfront",
+    "APIGateway": "apigateway",
+    "CertificateManager": "acm",
+    "ECR": "ecr",
+    "EFS": "efs",
+    "EKS": "eks",
+    "ELB": "elb",
+    "IAM": "iam",
+    "KMS": "kms",
+    "Lambda": "lambda_model",
+    "Route53": "route53",
+    "S3": "s3",
+    "MSK": "kafka",
+    "RDS": "rds",
+    "Redshift": "redshift",
+    "ElastiCache": "elasticache",
+    "SNS": "sns",
+    "SQS": "sqs",
+    "SecretsManager": "secretsmanager",
+    "KinesisDataStream": "kinesis",
+    "KinesisFirehose": "firehose",
+    "LightSail": "lightsail",
+    "VPC": "vpc",
+    "EIP": "eip",
+    "TrustedAdvisor": "support",
+    "PersonalHealthDashboard": "health",
+}
+
+CLOUDWATCH_CONFIG = {
+    "ACM": {
+        "namespace": "AWS/CertificateManager",
+        "dimension_name": "CertificateArn",
+    },
+    "APIGateway": {
+        "namespace": "AWS/ApiGateway",
+        "dimension_name": "ApiName",
+    },
+    "CloudFront": {
+        "namespace": "AWS/CloudFront",
+        "dimension_name": "DistributionId",
+    },
+    "CloudTrail": {
+        "namespace": "CloudTrailMetrics",
+        "dimension_name": None,
+    },
+    "CloudWatch": {
+        "namespace": "CloudWatchMetrics",
+        "dimension_name": None,
+    },
+    "DirectConnect": {
+        "namespace": "AWS/DX",
+        "dimension_name": "ConnectionId",
+    },
+    "DocumentDB": {
+        "namespace": "AWS/DocDB",
+        "dimension_name": "DBClusterIdentifier",
+    },
+    "DynamoDB": {
+        "namespace": "AWS/DynamoDB",
+        "dimension_name": "TableName",
+    },
+    "EC2": {
+        "namespace": "AWS/EC2",
+        "dimension_name": "InstanceId",
+    },
+    "ECR": {
+        "namespace": "AWS/ECR",
+        "dimension_name": "RepositoryName",
+    },
+    "ECS": {
+        "namespace": "AWS/ECS",
+        "dimension_name": "ClusterName",
+    },
+    "EFS": {
+        "namespace": "AWS/EFS",
+        "dimension_name": "FileSystemId",
+    },
+    "EIP": {
+        "namespace": "AWS/EC2",
+        "dimension_name": "AllocationId",
+    },
+    "EKS": {
+        "namespace": "AWS/EKS",
+        "dimension_name": "ClusterName",
+    },
+    "ELB": {
+        "namespace": "AWS/ELB",
+        "dimension_name": "LoadBalancerName",
+    },
+    "ElastiCache": {
+        "namespace": "AWS/ElastiCache",
+        "dimension_name": "CacheClusterId",
+    },
+    "IAM": {
+        "namespace": "AWS/IAM",
+        "dimension_name": None,
+    },
+    "KMS": {
+        "namespace": "AWS/KMS",
+        "dimension_name": "KeyId",
+    },
+    "Kinesis": {
+        "namespace": "AWS/Kinesis",
+        "dimension_name": "StreamName",
+    },
+    "Lambda": {
+        "namespace": "AWS/Lambda",
+        "dimension_name": "FunctionName",
+    },
+    "Lightsail": {
+        "namespace": "AWS/LightSail",
+        "dimension_name": "InstanceName",
+    },
+    "MSK": {
+        "namespace": "AWS/Kafka",
+        "dimension_name": "Cluster Name",
+    },
+    "RDS": {
+        "namespace": "AWS/RDS",
+        "dimension_name": "DBInstanceIdentifier",
+    },
+    "Redshift": {
+        "namespace": "AWS/Redshift",
+        "dimension_name": "ClusterIdentifier",
+    },
+    "Route53": {
+        "namespace": "AWS/Route53",
+        "dimension_name": "HostedZoneId",
+    },
+    "S3": {
+        "namespace": "AWS/S3",
+        "dimension_name": "BucketName",
+    },
+    "SNS": {
+        "namespace": "AWS/SNS",
+        "dimension_name": "TopicName",
+    },
+    "SQS": {
+        "namespace": "AWS/SQS",
+        "dimension_name": "QueueName",
+    },
+    "SecretsManager": {
+        "namespace": "AWS/SecretsManager",
+        "dimension_name": "SecretName",
+    },
+    "VPC": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "VpcId",
+    },
+    "CustomerGateway": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "CustomerGatewayId",
+    },
+    "EgressOnlyInternetGateway": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "EgressOnlyInternetGatewayId",
+    },
+    "Endpoint": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "VpcEndpointId",
+    },
+    "InternetGateway": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "InternetGatewayId",
+    },
+    "NatGateway": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "NatGatewayId",
+    },
+    "NetworkAcl": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "NetworkAclId",
+    },
+    "PeeringConnection": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "VpcPeeringConnectionId",
+    },
+    "RouteTable": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "RouteTableId",
+    },
+    "Subnet": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "SubnetId",
+    },
+    "TransitGateway": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "TransitGatewayId",
+    },
+    "VpnConnection": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "VpnConnectionId",
+    },
+    "VpnGateway": {
+        "namespace": "AWS/VPC",
+        "dimension_name": "VpnGatewayId",
+    },
+}
+
+CLOUDTRAIL_CONFIG = {
+    "ACM": {
+        "resource_type": "AWS::CertificateManager::Certificate",
+        "lookup_attribute": "ResourceName",
+    },
+    "APIGateway": {
+        "resource_type": "AWS::ApiGateway::RestApi",
+        "lookup_attribute": "ResourceName",
+    },
+    "CloudFront": {
+        "resource_type": "AWS::CloudFront::Distribution",
+        "lookup_attribute": "ResourceName",
+    },
+    "CloudTrail": {
+        "resource_type": "AWS::CloudTrail::Trail",
+        "lookup_attribute": "ResourceName",
+    },
+    "CloudWatch": {
+        "resource_type": "AWS::CloudWatch::Alarm",
+        "lookup_attribute": "ResourceName",
+    },
+    "DirectConnect": {
+        "resource_type": "AWS::DirectConnect::Connection",
+        "lookup_attribute": "ResourceName",
+    },
+    "DocumentDB": {
+        "resource_type": "AWS::DocDB::DBCluster",
+        "lookup_attribute": "ResourceName",
+    },
+    "DynamoDB": {
+        "resource_type": "AWS::DynamoDB::Table",
+        "lookup_attribute": "ResourceName",
+    },
+    "EC2": {
+        "resource_type": "AWS::EC2::Instance",
+        "lookup_attribute": "ResourceName",
+    },
+    "ECR": {
+        "resource_type": "AWS::ECR::Repository",
+        "lookup_attribute": "ResourceName",
+    },
+    "ECS": {
+        "resource_type": "AWS::ECS::Cluster",
+        "lookup_attribute": "ResourceName",
+    },
+    "EFS": {
+        "resource_type": "AWS::EFS::FileSystem",
+        "lookup_attribute": "ResourceName",
+    },
+    "EIP": {
+        "resource_type": "AWS::EC2::EIP",
+        "lookup_attribute": "ResourceName",
+    },
+    "EKS": {
+        "resource_type": "AWS::EKS::Cluster",
+        "lookup_attribute": "ResourceName",
+    },
+    "ELB": {
+        "resource_type": "AWS::ElasticLoadBalancing::LoadBalancer",
+        "lookup_attribute": "ResourceName",
+    },
+    "ElastiCache": {
+        "resource_type": "AWS::ElastiCache::CacheCluster",
+        "lookup_attribute": "ResourceName",
+    },
+    "IAM": {
+        "resource_type": "AWS::IAM::User",
+        "lookup_attribute": "ResourceName",
+    },
+    "KMS": {
+        "resource_type": "AWS::KMS::Key",
+        "lookup_attribute": "ResourceName",
+    },
+    "Kinesis": {
+        "resource_type": "AWS::Kinesis::Stream",
+        "lookup_attribute": "ResourceName",
+    },
+    "Lambda": {
+        "resource_type": "AWS::Lambda::Function",
+        "lookup_attribute": "ResourceName",
+    },
+    "Lightsail": {
+        "resource_type": "AWS::Lightsail::Instance",
+        "lookup_attribute": "ResourceName",
+    },
+    "MSK": {
+        "resource_type": "AWS::MSK::Cluster",
+        "lookup_attribute": "ResourceName",
+    },
+    "RDS": {
+        "resource_type": "AWS::RDS::DBInstance",
+        "lookup_attribute": "ResourceName",
+    },
+    "Redshift": {
+        "resource_type": "AWS::Redshift::Cluster",
+        "lookup_attribute": "ResourceName",
+    },
+    "Route53": {
+        "resource_type": "AWS::Route53::HostedZone",
+        "lookup_attribute": "ResourceName",
+    },
+    "S3": {
+        "resource_type": "AWS::S3::Bucket",
+        "lookup_attribute": "ResourceName",
+    },
+    "SNS": {
+        "resource_type": "AWS::SNS::Topic",
+        "lookup_attribute": "ResourceName",
+    },
+    "SQS": {
+        "resource_type": "AWS::SQS::Queue",
+        "lookup_attribute": "ResourceName",
+    },
+    "SecretsManager": {
+        "resource_type": "AWS::SecretsManager::Secret",
+        "lookup_attribute": "ResourceName",
+    },
+    "VPC": {
+        "resource_type": "AWS::EC2::VPC",
+        "lookup_attribute": "ResourceName",
+    },
+    "CustomerGateway": {
+        "resource_type": "AWS::EC2::CustomerGateway",
+        "lookup_attribute": "ResourceName",
+    },
+    "EgressOnlyInternetGateway": {
+        "resource_type": "AWS::EC2::EgressOnlyInternetGateway",
+        "lookup_attribute": "ResourceName",
+    },
+    "Endpoint": {
+        "resource_type": "AWS::EC2::VPCEndpoint",
+        "lookup_attribute": "ResourceName",
+    },
+    "InternetGateway": {
+        "resource_type": "AWS::EC2::InternetGateway",
+        "lookup_attribute": "ResourceName",
+    },
+    "NatGateway": {
+        "resource_type": "AWS::EC2::NatGateway",
+        "lookup_attribute": "ResourceName",
+    },
+    "NetworkAcl": {
+        "resource_type": "AWS::EC2::NetworkAcl",
+        "lookup_attribute": "ResourceName",
+    },
+    "PeeringConnection": {
+        "resource_type": "AWS::EC2::VPCPeeringConnection",
+        "lookup_attribute": "ResourceName",
+    },
+    "RouteTable": {
+        "resource_type": "AWS::EC2::RouteTable",
+        "lookup_attribute": "ResourceName",
+    },
+    "Subnet": {
+        "resource_type": "AWS::EC2::Subnet",
+        "lookup_attribute": "ResourceName",
+    },
+    "TransitGateway": {
+        "resource_type": "AWS::EC2::TransitGateway",
+        "lookup_attribute": "ResourceName",
+    },
+    "VpnConnection": {
+        "resource_type": "AWS::EC2::VPNConnection",
+        "lookup_attribute": "ResourceName",
+    },
+    "VpnGateway": {
+        "resource_type": "AWS::EC2::VPNGateway",
+        "lookup_attribute": "ResourceName",
+    },
+}

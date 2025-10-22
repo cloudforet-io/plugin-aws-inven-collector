@@ -1,0 +1,123 @@
+search:
+  fields:
+    - VPC Endpoint ID: data.vpc_endpoint_id
+    - VPC Endpoint Type: data.vpc_endpoint_type
+    - VPC ID: data.vpc_id
+    - Service Name: data.service_name
+    - State: data.state
+      type: text
+      labels:
+        - pendingAcceptance: "Pending Acceptance"
+        - pending: "Pending"
+        - available: "Available"
+        - deleting: "Deleting"
+        - deleted: "Deleted"
+        - rejected: "Rejected"
+        - failed: "Failed"
+        - expired: "Expired"
+    - Policy Document: data.policy_document
+    - Route Table IDs: data.route_table_ids
+    - Subnet IDs: data.subnet_ids
+    - Groups: data.groups
+    - Private DNS Enabled: data.private_dns_enabled
+      data_type: "boolean"
+    - Requester Managed: data.requester_managed
+      data_type: "boolean"
+    - Network Interface IDs: data.network_interface_ids
+    - DNS Entries: data.dns_entries
+    - Creation Timestamp: data.creation_timestamp
+      data_type: "datetime"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.vpc_endpoint_id
+    desc: true
+  fields:
+    - VPC Endpoint ID: data.vpc_endpoint_id
+    - VPC Endpoint Type: data.vpc_endpoint_type
+    - VPC ID: data.vpc_id
+    - Service Name: data.service_name
+    - State: data.state
+      type: enum
+      enums:
+        - pendingAcceptance: yellow.500
+          type: state
+        - pending: yellow.500
+          type: state
+        - available: green.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+        - rejected: red.500
+          type: state
+        - failed: red.500
+          type: state
+        - expired: gray.400
+          type: state
+    - Private DNS Enabled: data.private_dns_enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Endpoint
+  type: item
+  fields:
+    - VPC Endpoint ID: data.vpc_endpoint_id
+    - VPC Endpoint Type: data.vpc_endpoint_type
+    - VPC ID: data.vpc_id
+    - Service Name: data.service_name
+    - State: data.state
+      type: enum
+      enums:
+        - pendingAcceptance: yellow.500
+          type: state
+        - pending: yellow.500
+          type: state
+        - available: green.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+        - rejected: red.500
+          type: state
+        - failed: red.500
+          type: state
+        - expired: gray.400
+          type: state
+    - Policy Document: data.policy_document
+    - Route Table IDs: data.route_table_ids
+      type: badge
+      outline_color: violet.500
+    - Subnet IDs: data.subnet_ids
+      type: badge
+      outline_color: violet.500
+    - Groups: data.groups
+      type: badge
+      outline_color: violet.500
+    - Private DNS Enabled: data.private_dns_enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Requester Managed: data.requester_managed
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Network Interface IDs: data.network_interface_ids
+      type: badge
+      outline_color: violet.500
+    - DNS Entries: data.dns_entries
+      type: badge
+      outline_color: violet.500
+    - Creation Timestamp: data.creation_timestamp
+      type: datetime
+      source_type: iso8601

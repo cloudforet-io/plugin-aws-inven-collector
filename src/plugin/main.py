@@ -1,9 +1,13 @@
 import logging
+import concurrent.futures
 
 from spaceone.inventory.plugin.collector.lib.server import CollectorPluginServer
+from spaceone.inventory.plugin.collector.lib import make_error_response
 
-from .conf.cloud_service_conf import DEFAULT_VULNERABLE_PORTS
 from .manager.base import ResourceManager
+from .manager.job_manager import JobManager
+
+from .conf.cloud_service_conf import MAX_WORKERS
 
 _LOGGER = logging.getLogger("spaceone")
 
@@ -25,7 +29,17 @@ def collector_init(params: dict) -> dict:
             'metadata': 'dict'
         }
     """
-    return _create_init_metadata()
+
+    return {
+        "metadata": {
+            "supported_resource_type": [
+                "inventory.CloudService",
+                "inventory.CloudServiceType",
+                "inventory.Region",
+                "inventory.ErrorResource",
+            ],
+        }
+    }
 
 
 @app.route("Collector.verify")
@@ -44,6 +58,30 @@ def collector_verify(params: dict) -> None:
         None
     """
     pass
+
+
+@app.route("Job.get_tasks")
+def job_get_tasks(params: dict) -> dict:
+    """Get job tasks
+
+    Args:
+        params (JobGetTaskRequest): {
+            'options': 'dict',      # Required
+            'secret_data': 'dict',  # Required
+            'domain_id': 'str'
+        }
+
+    Returns:
+        TasksResponse: {
+            'tasks': 'list'
+        }
+
+    """
+    options = params.get("options", {})
+    secret_data = params.get("secret_data", {})
+
+    job_mgr = JobManager(options, secret_data)
+    return job_mgr.get_tasks()
 
 
 @app.route("Collector.collect")
@@ -115,34 +153,48 @@ def collector_collect(params):
     options = params["options"]
     secret_data = params["secret_data"]
     schema = params.get("schema")
-    task_options = params.get("task_options") or {}
+    task_options = params.get("task_options", {})
     resource_type = task_options.get("resource_type")
 
     if resource_type == "inventory.CloudServiceType":
         services = task_options.get("services")
         for service in services:
-            resource_mgrs = ResourceManager.get_manager_by_service(service)
-            for resource_mgr in resource_mgrs:
-                results = resource_mgr().collect_cloud_service_types()
-                for result in results:
-                    yield result
+            for manager_class in ResourceManager.get_manager_by_service(service):
+                manager = manager_class()
+                yield from manager.collect_cloudn_service_types()
 
     elif resource_type == "inventory.CloudService":
         service = task_options.get("service")
         region = task_options.get("region")
-        resource_mgrs = ResourceManager.get_manager_by_service(service)
         account_id = ResourceManager.get_account_id(secret_data, region)
         options["account_id"] = account_id
-        for resource_mgr in resource_mgrs:
-            results = resource_mgr().collect_resources(
-                region, options, secret_data, schema
-            )
-            for result in results:
-                # print(
-                #     "-------------------------RESULTS--------------------------------"
-                # )
-                # print(result)
-                yield result
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            manager_classes = list(ResourceManager.get_manager_by_service(service))
+
+            futures = []
+            for manager_class in manager_classes:
+                future = executor.submit(
+                    lambda mc: list(
+                        mc().collect_resources(region, options, secret_data, schema)
+                    ),
+                    manager_class,
+                )
+                futures.append(future)
+
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    result = future.result()
+                    for item in result:
+                        yield item
+                except Exception as e:
+                    _LOGGER.error(f"Error collecting resources: {e}")
+                    yield make_error_response(
+                        error=e,
+                        provider="aws",
+                        cloud_service_group=service,
+                        cloud_service_type="",
+                    )
 
     elif resource_type == "inventory.Region":
         regions = task_options.get("regions")
@@ -153,166 +205,3 @@ def collector_collect(params):
         services = task_options.get("services")
         for service in services:
             yield from ResourceManager.collect_metrics(service)
-
-
-@app.route("Job.get_tasks")
-def job_get_tasks(params: dict) -> dict:
-    """Get job tasks
-
-    Args:
-        params (JobGetTaskRequest): {
-            'options': 'dict',      # Required
-            'secret_data': 'dict',  # Required
-            'domain_id': 'str'
-        }
-
-    Returns:
-        TasksResponse: {
-            'tasks': 'list'
-        }
-
-    """
-    tasks = []
-    options = params.get("options", {})
-    secret_data = params.get("secret_data", {})
-
-    services = _set_service_filter(options)
-    regions = _set_region_filter(options, secret_data)
-
-    # create task 1: task for collecting only cloud service type metadata
-    tasks.extend(_add_cloud_service_type_tasks(services))
-
-    # create task 2: task for collecting only cloud service region metadata
-    tasks.extend(_add_cloud_service_region_tasks(regions))
-
-    # create task 3: task for collecting only metrics
-    tasks.extend(_add_metric_tasks(services))
-
-    # create task 4: task for collecting only cloud service group metadata
-    tasks.extend(_add_cloud_service_group_tasks(services, regions))
-
-    return {"tasks": tasks}
-
-
-def _set_service_filter(options):
-    """
-    1. service_filter type check (is it an array?)
-    2. service_filter 내용물 자체 check (it could have sth that is not valid, like ECD instead of EC2
-    """
-
-    available_services = ResourceManager.get_service_names()
-
-    if service_filter := options.get("service_filter"):
-        _validate_service_filter(service_filter, available_services)
-        return service_filter
-    else:
-        return available_services
-
-
-def _validate_service_filter(service_filter, available_services):
-    if not isinstance(service_filter, list):
-        raise ValueError(
-            f"Services input is supposed to be a list type! Your input is {service_filter}."
-        )
-    for each_service in service_filter:
-        if each_service not in available_services:
-            raise ValueError("Not a valid service!")
-
-
-def _set_region_filter(options, secret_data):
-    available_regions = ResourceManager.get_region_names(secret_data)
-
-    if region_filter := options.get("region_filter"):
-        _validate_region_filter(region_filter, available_regions)
-        return region_filter
-    else:
-        return available_regions
-
-
-def _validate_region_filter(region_filter, available_regions):
-    if not isinstance(region_filter, list):
-        raise ValueError(
-            f"Regions input is supposed to be a list type! Your input is {region_filter}."
-        )
-    for each_region in region_filter:
-        if each_region not in available_regions:
-            raise ValueError("Not a valid region!")
-
-
-def _add_cloud_service_type_tasks(services: list) -> list:
-    return [
-        _make_task_wrapper(
-            resource_type="inventory.CloudServiceType", services=services
-        )
-    ]
-
-
-def _add_metric_tasks(services: list) -> list:
-    # Specific cloud_service_group list.
-    metric_services = [
-        "CertificateManager",  # "ACM",
-        "CloudFront",
-        "CloudTrail",
-        "DocumentDB",
-        "EC2",
-        "ECR",
-        "EFS",
-        "EKS",
-        "ELB",
-        "IAM",
-        "KMS",
-        "Lambda",
-        "Route53",
-        "S3",
-        "TrustedAdvisor",
-        "PersonalHealthDashboard",
-    ]
-    return [
-        _make_task_wrapper(
-            resource_type="inventory.Metric",
-            services=metric_services,
-            # resource_type="inventory.Metric", services = services     # origin
-        )
-    ]
-
-
-def _add_cloud_service_region_tasks(regions: list) -> list:
-    return [_make_task_wrapper(resource_type="inventory.Region", regions=regions)]
-
-
-def _add_cloud_service_group_tasks(services, regions):
-    tasks = []
-    """
-    TODO: Certain services are not available in certain regions.
-    
-    """
-    for service in services:
-        for region in regions:
-            tasks.append(
-                _make_task_wrapper(
-                    resource_type="inventory.CloudService",
-                    service=service,
-                    region=region,
-                )
-            )
-    return tasks
-
-
-def _make_task_wrapper(**kwargs) -> dict:
-    task_options = {"task_options": {}}
-    for key, value in kwargs.items():
-        task_options["task_options"][key] = value
-    return task_options
-
-
-def _create_init_metadata():
-    return {
-        "metadata": {
-            "supported_resource_type": [
-                "inventory.CloudService",
-                "inventory.CloudServiceType",
-                "inventory.Region",
-                "inventory.ErrorResource",
-            ],
-        }
-    }

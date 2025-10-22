@@ -1,0 +1,114 @@
+search:
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - Bundle ID: data.bundle_id
+    - Blueprint: data.blueprint_name
+    - CPU Core: data.hardware.cpu_count
+      data_type: "integer"
+    - Memory: data.hardware.ram_size_in_gb
+      data_type: "float"
+    - Availability Zone: data.location.availability_zone
+    - Public IP: data.public_ip_address
+    - Private IP: data.private_ip_address
+    - Support Code: data.support_code
+    - Is Static IP: data.is_static_ip
+      data_type: "boolean"
+    - Username: data.username
+    - SSH Key Name: data.ssh_key_name
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.name
+    desc: true
+  fields:
+    - Name: data.name
+    - State: data.state.name
+      type: enum
+      enums:
+        - running: green.500
+          type: state
+        - provisioning: yellow.500
+          type: state
+        - stopped: red.500
+          type: state
+    - Core: data.hardware.cpu_count
+    - Memory: data.hardware.ram_size_in_gb
+      display_unit: GB
+      source_unit: GB
+      type: size
+    - Availability Zone: data.location.availability_zone
+    - Public IP: data.public_ip_address
+    - Private IP: data.private_ip_address
+    - Blueprint: data.blueprint_name
+      is_optional: true
+    - Bundle ID: data.bundle_id
+      is_optional: true
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Instance
+  type: item
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - Support Code: data.support_code
+    - Created At: data.created_at
+      type: datetime
+      source_type: iso8601
+    - Availability Zone: data.location.availability_zone
+    - Region: data.location.region_name
+    - Blue Print ID: data.blueprint_id
+    - Blue Print Name: data.blueprint_name
+    - Bundle ID: data.bundle_id
+    - Static IP: data.is_static_ip
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Private IP: data.private_ip_address
+    - Public IP: data.public_ip_address
+    - IPv6: data.ipv6_address
+      type: badge
+      outline_color: violet.500
+    - State: data.state.name
+    - User Name: data.username
+    - SSH Key Name: data.ssh_key_name
+
+tabs.1:
+  name: Snapshot Time
+  type: table
+  root_path: data.add_ons
+  fields:
+    - Name: name
+    - Status: status
+    - Snapshot Time Of Day: snapshot_time_of_day
+    - Next Snapshot Time Of Day: next_snapshot_time_of_day
+
+tabs.2:
+  name: Hardware
+  type: table
+  root_path: data.hardware
+  fields:
+    - CPU Count: cpu_count
+    - Disks: disks.name
+      type: badge
+      outline_color: violet.500
+    - Ram: ram_size_in_gb
+      display_unit: GB
+      source_unit: GB
+      type: size
+
+tabs.3:
+  name: Networking
+  type: table
+  root_path: data.networking
+  fields:
+    - Monthly Transfer: monthly_transfer.gb_per_month_allocated
+    - Ports: ports.common_name
+      type: badge
+      outline_color: violet.500

@@ -1,0 +1,31 @@
+---
+metric_id: metric-aws-ecr-repository-image-count
+name: Image Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.ECR.Repository
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.images.image_uri
+      name: Image URI
+    - key: data.images.image_tag
+      name: Image Tag
+    - key: data.images.image_digest
+      name: Image Digest
+    - key: data.images.image_pushed_at
+      name: Image Pushed At
+    - key: data.images.image_size_in_bytes
+      name: Image Size
+  fields:
+    value:
+      operator: count
+      key: data.images
+unit: Count
+namespace_id: ns-aws-ecr-repository
+version: '1.0'

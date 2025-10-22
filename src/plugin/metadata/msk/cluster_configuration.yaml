@@ -1,0 +1,42 @@
+search:
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - Description: data.description
+    - Kafka Versions List: data.kafka_versions_list
+    - Latest Revision: data.latest_revision
+    - State: data.state
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.name
+    desc: true
+  fields:
+    - Name: data.name
+    - Description: data.description
+    - Kafka Versions List: data.kafka_versions_list
+      type: badge
+      outline_color: violet.500
+    - Latest Revision: data.latest_revision
+    - State: data.state
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Configuration
+  type: item
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - Description: data.description
+    - Kafka Versions List: data.kafka_versions_list
+      type: badge
+      outline_color: violet.500
+    - Latest Revision: data.latest_revision
+    - State: data.state
+    - Creation Time: data.creation_time
+      type: datetime
+      source_type: iso8601

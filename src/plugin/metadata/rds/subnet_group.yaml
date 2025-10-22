@@ -1,0 +1,46 @@
+search:
+  fields:
+    - ARN: data.arn
+    - DB Subnet Group Name: data.subnet_group.db_subnet_group_name
+    - DB Subnet Group Description: data.subnet_group.db_subnet_group_description
+    - VPC ID: data.subnet_group.vpc_id
+    - Subnet Group Status: data.subnet_group.subnet_group_status
+    - Subnet IDs: data.subnet_group.subnets.subnet_identifier
+    - Subnet Availability Zone: data.subnet_group.subnets.subnet_availability_zone.name
+    - Subnet Status: data.subnet_group.subnets.subnet_status
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.subnet_group.db_subnet_group_name
+    desc: true
+  fields:
+    - DB Subnet Group Name: data.subnet_group.db_subnet_group_name
+    - VPC ID: data.subnet_group.vpc_id
+    - Subnet Group Status: data.subnet_group.subnet_group_status
+    - Subnet IDs: data.subnet_group.subnets.subnet_identifier
+      type: badge
+      outline_color: violet.500
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Subnet Group
+  type: item
+  fields:
+    - ARN: data.arn
+    - DB Subnet Group Name: data.subnet_group.db_subnet_group_name
+    - DB Subnet Group Description: data.subnet_group.db_subnet_group_description
+    - VPC ID: data.subnet_group.vpc_id
+    - Subnet Group Status: data.subnet_group.subnet_group_status
+
+tabs.1:
+  name: Subnets
+  type: table
+  root_path: data.subnet_group.subnets
+  fields:
+    - Subnet Identifier: subnet_identifier
+    - Subnet Availability Zone: subnet_availability_zone.name
+    - Subnet Status: subnet_status

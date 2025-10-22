@@ -1,0 +1,233 @@
+search:
+  fields:
+    - Load Balancer Name: data.load_balancer_name
+    - Load Balancer ARN: data.load_balancer_arn
+    - DNS Name: data.dns_name
+    - State: data.state.code
+      type: text
+      labels:
+        - active: "active"
+        - provisioning: "provisioning"
+        - active_impaired: "active_impaired"
+        - failed: "failed"
+    - Type: instance_type
+      type: text
+      labels:
+        - application: "Application"
+        - network: "Network"
+    - Scheme: data.scheme
+      type: text
+      labels:
+        - internet-facing: "Internet Facing"
+        - internal: "Internal"
+    - VPC ID: data.vpc_id
+    - Availability Zone: data.availability_zones.zone_name
+    - Subnet ID: data.availability_zones.subnet_id
+    - Hosted Zone: data.canonical_hosted_zone_id
+    - Protocol: data.listeners.protocol
+      type: text
+      labels:
+        - HTTP: "HTTP"
+        - HTTPS: "HTTPS"
+        - TCP: "TCP"
+        - UDP: "UDP"
+        - TLS: "TLS"
+        - TCP_UDP: "TCP/UDP"
+    - Port: data.listeners.port
+      data_type: "integer"
+    - Deletion Protection: data.attributes.deletion_protection_enabled
+      data_type: "boolean"
+    - Cross-Zone Load Balancing: data.attributes.load_balancing_cross_zone_enabled
+      data_type: "boolean"
+    - Security Group ID: data.security_groups
+    - Listener ARN: data.listeners.listener_arn
+    - Target Group ARN: data.target_groups.target_group_arn
+    - Target Group Name: data.target_groups.target_group_name
+    - Instance ID: data.instances.instance_id
+    - Instance Name: data.instances.instance_name
+    - Instance State: data.instances.state
+    - Security Policy: data.listeners.ssl_policy
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.load_balancer_name
+    desc: true
+  fields:
+    - Load Balancer Name: data.load_balancer_name
+    - DNS Name: data.dns_name
+    - State: data.state.code
+      type: enum
+      enums:
+        - active: green.500
+          type: state
+        - provisioning: yellow.500
+          type: state
+        - active_impaired: red.500
+          type: state
+        - failed: red.500
+          type: state
+    - Type: instance_type
+      type: enum
+      enums:
+        - network: indigo.500
+        - application: coral.600
+    - Scheme: data.scheme
+      type: enum
+      enums:
+        - internet-facing: indigo.500
+        - internal: coral.600
+    - VPC ID: data.vpc_id
+    - Availability Zones: data.availability_zones.zone_name
+      type: badge
+      outline_color: violet.500
+    - Security Groups: data.security_groups
+      type: badge
+      outline_color: violet.500
+    - Load Balancer ARN: data.load_balancer_arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Load Balancer
+  type: item
+  fields:
+    - Load Balancer Name: data.load_balancer_name
+    - Load Balancer ARN: data.load_balancer_arn
+    - DNS Name: data.dns_name
+    - State: data.state.code
+      type: enum
+      enums:
+        - active: green.500
+          type: state
+        - provisioning: yellow.500
+          type: state
+        - active_impaired: red.500
+          type: state
+        - failed: red.500
+          type: state
+    - Type: data.type
+    - Scheme: data.scheme
+      type: enum
+      enums:
+        - internet-facing: indigo.500
+        - internal: coral.600
+    - VPC ID: data.vpc_id
+    - IP Address Type: data.ip_address_type
+    - Hosted Zone: data.canonical_hosted_zone_id
+    - Creation Time: data.created_time
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: Attributes
+  type: item
+  fields:
+    - Deletion Protection: data.attributes.deletion_protection_enabled
+    - Cross-Zone Load Balancing: data.attributes.load_balancing_cross_zone_enabled
+    - Idle Timeout Seconds: data.attributes.idle_timeout_seconds
+    - Routing HTTP2 Enabled: data.attributes.routing_http2_enabled
+    - Routing HTTP Drop Invalid Header Fields: data.attributes.routing_http_drop_invalid_header_fields_enabled
+    - Routing HTTP Desync Mitigation Mode: data.attributes.routing_http_desync_mitigation_mode
+    - WAF Fail Open Enabled: data.attributes.waf_fail_open_enabled
+    - Access Logs: data.attributes.access_logs_s3_enabled
+    - Access Logs S3 Prefix: data.attributes.access_logs_s3_prefix
+    - Access Logs S3 Bucket: data.attributes.access_logs_s3_bucket
+
+tabs.2:
+  name: Listeners
+  type: table
+  root_path: data.listeners
+  fields:
+    - Protocol: protocol
+      type: enum
+      enums:
+        - HTTP: blue.400
+        - HTTPS: indigo.500
+        - TCP: coral.600
+        - TLS: green.500
+        - UDP: yellow.500
+        - TCP_UDP: violet.500
+    - Port: port
+    - Default Actions Target Group ARN: default_actions.target_group_arn
+      type: badge
+      outline_color: violet.500
+    - Security Policy: ssl_policy
+    - Certificates: certificates.certificate_arn
+      type: badge
+      outline_color: violet.500
+
+tabs.3:
+  name: Listener Rules
+  type: table
+  root_path: data.listener_rules
+  fields:
+    - Protocol: protocol
+      type: enum
+      enums:
+        - HTTP: blue.400
+        - HTTPS: indigo.500
+        - TCP: coral.600
+        - TLS: green.500
+        - UDP: yellow.500
+        - TCP_UDP: violet.500
+    - Port: port
+    - Priority: priority
+    - Conditions: conditions
+      type: badge
+      outline_color: violet.500
+    - Actions: actions
+      type: badge
+      outline_color: violet.500
+    - Rule ARN: rule_arn
+
+tabs.4:
+  name: Target Groups
+  type: table
+  root_path: data.target_groups
+  fields:
+    - Name: target_group_name
+    - ARN: target_group_arn
+    - Protocol: protocol
+      type: enum
+      enums:
+        - HTTP: blue.400
+        - HTTPS: indigo.500
+        - TCP: coral.600
+        - TLS: green.500
+        - UDP: yellow.500
+        - TCP_UDP: violet.500
+    - Port: port
+    - Target Type: target_type
+      type: enum
+      enums:
+        - instance: indigo.500
+        - ip: coral.600
+        - lambda: green.500
+
+tabs.5:
+  name: Instances
+  type: table
+  root_path: data.instances
+  fields:
+    - Instance ID: instance_id
+    - Instance Name: instance_name
+    - State: state.name
+      type: enum
+      enums:
+        - running: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+        - stopping: yellow.500
+          type: state
+        - shutting-down: gray.400
+          type: state
+        - stopped: red.500
+          type: state
+    - Target Group ARN: target_group_arn
+    - Target Group Name: target_group_name
+    - VPC ID: vpc_id
+    - Subnet ID: subnet_id
+    - Private IP: private_ip_address

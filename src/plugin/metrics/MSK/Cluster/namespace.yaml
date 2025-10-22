@@ -1,0 +1,8 @@
+---
+namespace_id: ns-aws-msk-cluster
+name: MSK/Cluster
+category: ASSET
+resource_type: inventory.CloudService:aws.MSK.Cluster
+group: aws
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-msk.svg'
+version: '1.1'

@@ -1,0 +1,54 @@
+search:
+  fields:
+    - Route Table ID: data.route_table_id
+    - VPC ID: data.vpc_id
+    - Main: data.main
+      data_type: "boolean"
+    - Routes: data.routes
+    - Associations: data.associations
+    - Owner ID: data.owner_id
+    - Route Table ARN: data.route_table_arn
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.route_table_id
+    desc: true
+  fields:
+    - Route Table ID: data.route_table_id
+    - VPC ID: data.vpc_id
+    - Main: data.main
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Routes: data.routes
+      type: badge
+      outline_color: violet.500
+    - Associations: data.associations
+      type: badge
+      outline_color: violet.500
+    - Route Table ARN: data.route_table_arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Route Table
+  type: item
+  fields:
+    - Route Table ID: data.route_table_id
+    - VPC ID: data.vpc_id
+    - Main: data.main
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Routes: data.routes
+      type: badge
+      outline_color: violet.500
+    - Associations: data.associations
+      type: badge
+      outline_color: violet.500
+    - Owner ID: data.owner_id
+    - Route Table ARN: data.route_table_arn

@@ -1,0 +1,156 @@
+search:
+  fields:
+    - KMS ID: data.key_id
+    - ARN: data.arn
+    - Alias: data.alias_name
+    - Enabled: data.enabled
+      data_type: "boolean"
+    - Key Status: data.key_state
+      type: text
+      labels:
+        - Enabled: "Enabled"
+        - Disabled: "Disabled"
+        - PendingDeletion: "Pending Deletion"
+        - PendingImport: "Pending Import"
+        - Unavailable: "Unavailable"
+    - Key Algorithms: data.encryption_algorithms
+    - Origin: data.origin
+      type: text
+      labels:
+        - AWS_KMS: "KMS"
+        - EXTERNAL: "EXTERNAL"
+        - AWS_CLOUDHSM: "CLOUD HSM"
+    - Key Manager: data.key_manager
+      type: text
+      labels:
+        - AWS: "AWS"
+        - CUSTOMER: "CUSTOMER"
+    - Key Usage: data.key_usage
+    - Customer Master Key Spec: data.customer_master_key_spec
+    - Custom Key Store ID: data.custom_key_store_id
+    - Cloud HSM Cluster ID: data.cloud_hsm_cluster_id
+    - Description: data.description
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.key_id
+    desc: true
+  fields:
+    - KMS ID: data.key_id
+    - Alias: data.alias_name
+    - Status: data.key_state
+      type: enum
+      enums:
+        - Enabled: green.500
+          type: state
+        - Disabled: gray.400
+          type: state
+        - PendingDeletion: yellow.500
+          type: state
+        - PendingImport: yellow.500
+          type: state
+        - Unavailable: red.500
+          type: state
+    - Enabled: data.enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Origin: data.origin
+      type: enum
+      enums:
+        - AWS_KMS: indigo.500
+        - EXTERNAL: coral.600
+        - AWS_CLOUDHSM: green.500
+    - Key Manager: data.key_manager
+      type: enum
+      enums:
+        - AWS: indigo.500
+        - CUSTOMER: coral.600
+    - Key Usage: data.key_usage
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Keys
+  type: item
+  fields:
+    - KMS ID: data.key_id
+    - ARN: data.arn
+    - Alias: data.alias_name
+    - Enabled: data.enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Key Status: data.key_state
+      type: enum
+      enums:
+        - Enabled: green.500
+          type: state
+        - Disabled: gray.400
+          type: state
+        - PendingDeletion: yellow.500
+          type: state
+        - PendingImport: yellow.500
+          type: state
+        - Unavailable: red.500
+          type: state
+    - Description: data.description
+    - Key Algorithms: data.encryption_algorithms
+      type: badge
+      outline_color: violet.500
+    - Signing Algorithms: data.signing_algorithms
+      type: badge
+      outline_color: violet.500
+    - Origin: data.origin
+      type: enum
+      enums:
+        - AWS_KMS: indigo.500
+        - EXTERNAL: coral.600
+        - AWS_CLOUDHSM: green.500
+    - Key Manager: data.key_manager
+      type: enum
+      enums:
+        - AWS: indigo.500
+        - CUSTOMER: coral.600
+    - CMK Auto Rotation: data.key_rotated
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Key Usage: data.key_usage
+      type: enum
+      enums:
+        - SIGN_VERIFY: indigo.500
+        - ENCRYPT_DECRYPT: coral.600
+    - Expiration Model: data.expiration_model
+      type: enum
+      enums:
+        - KEY_MATERIAL_EXPIRES: indigo.500
+        - KEY_MATERIAL_DOES_NOT_EXPIRE: coral.600
+    - Customer Master Key Spec: data.customer_master_key_spec
+      type: enum
+      enums:
+        - RSA_2048: indigo.500
+        - RSA_3072: coral.600
+        - RSA_4096: green.500
+        - ECC_NIST_P256: yellow.500
+        - ECC_NIST_P384: violet.500
+        - ECC_NIST_P521: blue.400
+        - ECC_SECG_P256K1: red.500
+        - SYMMETRIC_DEFAULT: gray.400
+    - Custom Key Store ID: data.custom_key_store_id
+    - Cloud HSM Cluster ID: data.cloud_hsm_cluster_id
+    - Creation Time: data.creation_date
+      type: datetime
+      source_type: iso8601
+    - Deletion Date: data.deletion_date
+      type: datetime
+      source_type: iso8601
+    - Valid To: data.valid_to
+      type: datetime
+      source_type: iso8601

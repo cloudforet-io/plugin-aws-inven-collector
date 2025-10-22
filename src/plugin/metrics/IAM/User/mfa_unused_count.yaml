@@ -1,0 +1,38 @@
+---
+metric_id: metric-aws-iam-user-mfa-unused-count
+name: MFA Unused Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.IAM.User
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.user_name
+      name: User Name
+    - key: data.arn
+      name: ARN
+    - key: data.user_id
+      name: User ID
+    - key: data.path
+      name: Path
+    - key: data.create_date
+      name: Creation Date
+    - key: data.password_last_used
+      name: Password Last Used
+    - key: data.access_key_last_used
+      name: Access Key Last Used
+    - key: data.sign_in_credential.console_password
+      name: Console Password
+    - key: data.mfa_device
+      name: MFA Device
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-iam-user
+version: '1.0'

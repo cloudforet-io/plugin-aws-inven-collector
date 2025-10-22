@@ -1,0 +1,68 @@
+search:
+  fields:
+    - Internet Gateway ID: data.internet_gateway_id
+    - State: data.state
+      type: text
+      labels:
+        - available: "Available"
+        - pending: "Pending"
+        - attaching: "Attaching"
+        - attached: "Attached"
+        - detaching: "Detaching"
+        - detached: "Detached"
+    - VPC ID: data.vpc_id
+    - Owner ID: data.owner_id
+    - Internet Gateway ARN: data.internet_gateway_arn
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.internet_gateway_id
+    desc: true
+  fields:
+    - Internet Gateway ID: data.internet_gateway_id
+    - State: data.state
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+        - attaching: yellow.500
+          type: state
+        - attached: green.500
+          type: state
+        - detaching: yellow.500
+          type: state
+        - detached: gray.400
+          type: state
+    - VPC ID: data.vpc_id
+    - Owner ID: data.owner_id
+    - Internet Gateway ARN: data.internet_gateway_arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Internet Gateway
+  type: item
+  fields:
+    - Internet Gateway ID: data.internet_gateway_id
+    - State: data.state
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+        - attaching: yellow.500
+          type: state
+        - attached: green.500
+          type: state
+        - detaching: yellow.500
+          type: state
+        - detached: gray.400
+          type: state
+    - VPC ID: data.vpc_id
+    - Owner ID: data.owner_id
+    - Internet Gateway ARN: data.internet_gateway_arn

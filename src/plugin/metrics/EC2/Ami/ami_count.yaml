@@ -12,15 +12,37 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.Public
-      name: Is Public
-    - key: data.State
-      name: Status
-    - key: data.Platform
+    - key: data.state
+      name: State
+    - key: data.architecture
+      name: Architecture
+    - key: data.platform
       name: Platform
+    - key: data.image_type
+      name: Image Type
+    - key: data.owner_id
+      name: Owner ID
+    - key: data.owner_alias
+      name: Owner Alias
+    - key: data.name
+      name: Name
+    - key: data.description
+      name: Description
+    - key: data.creation_date
+      name: Creation Date
+    - key: data.public
+      name: Public
+    - key: data.virtualization_type
+      name: Virtualization Type
+    - key: data.hypervisor
+      name: Hypervisor
+    - key: data.root_device_type
+      name: Root Device Type
+    - key: data.root_device_name
+      name: Root Device Name
   fields:
     value:
       operator: count
-unit: count
+unit: Count
 namespace_id: ns-aws-ec2-ami
 version: '1.0'

@@ -1,0 +1,53 @@
+search:
+  fields:
+    - Access Key ID: data.key_id
+    - User Name: data.user_name
+    - Status: data.status
+      type: text
+      labels:
+        - Active: "Active"
+        - Inactive: "Inactive"
+    - Creation Time: data.create_date
+      data_type: "datetime"
+    - Last Used Date: data.last_update_date_display
+    - Last Used Service: data.last_used_service
+    - Last Used Region: data.last_used_region
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.key_id
+    desc: true
+  fields:
+    - Access Key ID: data.key_id
+    - User Name: data.user_name
+    - Status: data.status
+      type: enum
+      enums:
+        - Active: indigo.500
+        - Inactive: coral.600
+    - Creation Time: data.create_date
+      type: datetime
+    - Last Used Date: data.last_update_date_display
+    - Last Used Service: data.last_used_service
+    - Last Used Region: data.last_used_region
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Access Key
+  type: item
+  fields:
+    - Access Key ID: data.key_id
+    - User Name: data.user_name
+    - Status: data.status
+      type: enum
+      enums:
+        - Active: indigo.500
+        - Inactive: coral.600
+    - Creation Time: data.create_date
+      type: datetime
+      source_type: iso8601
+    - Last Used Date: data.last_update_date_display
+    - Last Used Service: data.last_used_service
+    - Last Used Region: data.last_used_region

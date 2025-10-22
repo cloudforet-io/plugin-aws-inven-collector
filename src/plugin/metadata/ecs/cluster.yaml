@@ -1,0 +1,187 @@
+search:
+  fields:
+    - Cluster Name: data.cluster_name
+    - Cluster ARN: data.cluster_arn
+    - Status: data.status
+      type: text
+      labels:
+        - ACTIVE: "ACTIVE"
+        - PROVISIONING: "PROVISIONING"
+        - DEPROVISIONING: "DEPROVISIONING"
+        - INACTIVE: "INACTIVE"
+        - FAILED: "FAILED"
+    - Active Services Count: data.active_services_count
+      data_type: "integer"
+    - Running Tasks Count: data.running_tasks_count
+      data_type: "integer"
+    - Pending Tasks Count: data.pending_tasks_count
+      data_type: "integer"
+    - Registered Instances Count: data.registered_container_instances_count
+      data_type: "integer"
+    - Service Name: data.services.service_name
+    - Service ARN: data.services.service_arn
+    - Service Type: data.services.scheduling_strategy
+      type: text
+      labels:
+        - REPLICA: "REPLICA"
+        - DAEMON: "DAEMON"
+    - Task Name: data.tasks.task
+    - Task Definition: data.tasks.task_definition
+    - Task Definition ARN: data.tasks.task_definition_arn
+    - Container Instance ID: data.container_instances.ec2_instance_id
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.cluster_name
+    desc: true
+  fields:
+    - Cluster Name: data.cluster_name
+    - Status: data.status
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - PROVISIONING: yellow.500
+          type: state
+        - DEPROVISIONING: yellow.500
+          type: state
+        - INACTIVE: gray.400
+          type: state
+        - FAILED: red.500
+          type: state
+    - Active Services: data.active_services_count
+    - Running Tasks: data.running_tasks_count
+    - Pending Tasks: data.pending_tasks_count
+    - Registered Instances: data.registered_container_instances_count
+    - Cluster ARN: data.cluster_arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Cluster
+  type: item
+  fields:
+    - Cluster Name: data.cluster_name
+    - Cluster ARN: data.cluster_arn
+    - Status: data.status
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - PROVISIONING: yellow.500
+          type: state
+        - DEPROVISIONING: yellow.500
+          type: state
+        - INACTIVE: gray.400
+          type: state
+        - FAILED: red.500
+          type: state
+    - Active Services: data.active_services_count
+    - Running Tasks: data.running_tasks_count
+    - Pending Tasks: data.pending_tasks_count
+    - Registered Instances: data.registered_container_instances_count
+    - Capacity Providers: data.capacity_providers
+      type: badge
+      outline_color: violet.500
+    - Attachments Status: data.attachments_status
+
+tabs.1:
+  name: Services
+  type: table
+  root_path: data.services
+  fields:
+    - Service Name: service_name
+    - Status: status
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - INACTIVE: gray.400
+          type: state
+        - DRAINING: yellow.500
+          type: state
+    - Service Type: scheduling_strategy
+      type: enum
+      enums:
+        - REPLICA: indigo.500
+        - DAEMON: coral.600
+    - Task Definition: task_definition
+    - Desired Tasks: desired_count
+    - Running Tasks: running_count
+    - Launch Type: launch_type
+      type: enum
+      enums:
+        - EC2: blue.400
+        - FARGATE: indigo.500
+    - Platform Version: platform_version
+
+tabs.2:
+  name: Tasks
+  type: table
+  root_path: data.tasks
+  fields:
+    - Task: task
+    - Task Definition: task_definition
+    - Last Status: last_status
+      type: enum
+      enums:
+        - RUNNING: green.500
+          type: state
+        - STOPPED: red.500
+          type: state
+        - PENDING: yellow.500
+          type: state
+    - Desired Status: desired_status
+      type: enum
+      enums:
+        - RUNNING: green.500
+          type: state
+        - STOPPED: red.500
+          type: state
+    - Started By: started_by
+    - Group: group
+    - Container Instance: container_instance_arn
+    - Launch Type: launch_type
+      type: enum
+      enums:
+        - EC2: blue.400
+        - FARGATE: indigo.500
+    - Platform Version: platform_version
+    - Health Status: health_status
+      type: enum
+      enums:
+        - HEALTHY: green.500
+          type: state
+        - UNHEALTHY: red.500
+          type: state
+        - UNKNOWN: yellow.500
+          type: state
+
+tabs.3:
+  name: Container Instances
+  type: table
+  root_path: data.container_instances
+  fields:
+    - Container Instance: container_instance_arn
+    - EC2 Instance: ec2_instance_id
+    - Agent Connected: agent_connected
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Running Tasks Count: running_tasks_count
+    - Pending Tasks Count: pending_tasks_count
+    - Agent Version: version_info.agent_version
+    - Docker Version: version_info.docker_version
+    - Status: status
+    - Agent Update Status: agent_update_status
+      type: enum
+      enums:
+        - PENDING: yellow.500
+        - STAGING: blue.400
+        - STAGED: indigo.500
+        - UPDATING: coral.600
+        - UPDATED: green.500
+        - FAILED: red.500

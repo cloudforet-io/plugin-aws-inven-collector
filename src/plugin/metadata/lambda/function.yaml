@@ -1,0 +1,184 @@
+search:
+  fields:
+    - Function Name: data.name
+    - ARN: data.arn
+    - Package Type: data.package_type
+    - Runtime: data.runtime
+    - State: data.state.type
+      type: text
+      labels:
+        - Active: "Active"
+        - Pending: "Pending"
+        - Inactive: "Inactive"
+        - Failed: "Failed"
+    - State Reason: data.state.reason
+    - State Reason Code: data.state.reason_code
+    - Role ARN: data.role
+    - Handler: data.handler
+    - Code Size: instance_size
+      data_type: "integer"
+    - Description: data.description
+    - Timeout: data.time_out
+      data_type: "integer"
+    - Memory Size: data.memory_size
+      data_type: "integer"
+    - Code SHA256: data.code_sha256
+    - KMS Key ARN: data.kms_key_arn
+    - Master ARN: data.master_arn
+    - Revision ID: data.revision_id
+    - Last Update Status: data.last_update.type
+      type: text
+      labels:
+        - Successful: "Successful"
+        - Failed: "Failed"
+        - InProgress: "InProgress"
+    - Last Update State Reason: data.last_update.reason
+    - Last Modified: data.last_modified
+      data_type: "datetime"
+    - VPC ID: data.vpc_config.vpc_id
+    - Subnet IDs: data.vpc_config.subnet_ids
+    - Security Group IDs: data.vpc_config.security_group_ids
+    - Layers ARN: data.layers.arn
+    - Dead Letter Target Name: data.dead_letter_config.target_name
+    - Dead Letter Target ARN: data.dead_letter_config.target_arn
+    - Trace Config Mode: data.trace_config.mode
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.name
+    desc: true
+  fields:
+    - Function Name: data.name
+    - Package Type: data.package_type
+    - Runtime: data.runtime
+      type: badge
+      outline_color: violet.500
+    - State: data.state.type
+      type: enum
+      enums:
+        - Active: green.500
+          type: state
+        - Pending: yellow.500
+          type: state
+        - Inactive: gray.400
+          type: state
+        - Failed: red.500
+          type: state
+    - Code Size: instance_size
+      display_unit: MB
+      source_unit: B
+      type: size
+    - Memory Size: data.memory_size
+      display_unit: MB
+      source_unit: MB
+      type: size
+    - Description: data.description
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Functions
+  type: item
+  fields:
+    - Function Name: data.name
+    - ARN: data.arn
+    - Package Type: data.package_type
+    - Runtime: data.runtime
+      type: badge
+      outline_color: violet.500
+    - State: data.state.type
+      type: enum
+      enums:
+        - Active: green.500
+          type: state
+        - Pending: yellow.500
+          type: state
+        - Inactive: gray.400
+          type: state
+        - Failed: red.500
+          type: state
+    - State Reason: data.state.reason
+    - State Reason Code: data.state.reason_code
+      type: enum
+      enums:
+        - Creating: yellow.500
+        - Restoring: yellow.500
+        - Idle: yellow.500
+        - EniLimitExceeded: red.500
+        - InsufficientRolePermissions: red.500
+        - InvalidConfiguration: red.500
+        - InternalError: red.500
+        - SubnetOutOfIPAddresses: red.500
+        - InvalidSubnet: red.500
+        - InvalidSecurityGroup: red.500
+        - ImageDeleted: red.500
+        - ImageAccessDenied: red.500
+        - InvalidImage: red.500
+        - KMSKeyAccessDenied: red.500
+        - KMSKeyNotFound: red.500
+        - InvalidStateKMSKey: red.500
+        - DisabledKMSKey: red.500
+        - EFSIOError: red.500
+        - EFSMountConnectivityError: red.500
+        - EFSMountFailure: red.500
+        - EFSMountTimeout: red.500
+        - InvalidRuntime: red.500
+        - InvalidZipFileException: red.500
+        - FunctionError: red.500
+    - Role: data.role
+    - Handler: data.handler
+    - Code Size: data.code_size
+    - Description: data.description
+    - Timeout: data.time_out
+    - Memory Size: data.memory_size
+    - Code SHA 256: data.code_sha256
+    - KMS Key ARN: data.kms_key_arn
+    - Master ARN: data.master_arn
+    - Revision ID: data.revision_id
+    - Last Update Status: data.last_update.type
+      type: enum
+      enums:
+        - Successful: green.500
+          type: state
+        - Failed: red.500
+          type: state
+        - InProgress: yellow.500
+          type: state
+    - Last Update State Reason: data.last_update.reason
+    - Last Modified: data.last_modified
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: VPC
+  type: item
+  fields:
+    - VPC ID: data.vpc_config.vpc_id
+    - Subnet IDs: data.vpc_config.subnet_ids
+      type: badge
+      outline_color: violet.500
+    - Security Group IDs: data.vpc_config.security_group_ids
+      type: badge
+      outline_color: violet.500
+
+tabs.2:
+  name: Environment Variables
+  type: table
+  root_path: data.environment_variables
+  fields:
+    - Key: key
+    - Value: value
+
+tabs.3:
+  name: Layers
+  type: table
+  root_path: data.layers
+  fields:
+    - Layer ARN: arn
+    - Code Size: code_size
+      display_unit: MB
+      source_unit: B
+      type: size

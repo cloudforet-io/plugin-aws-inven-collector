@@ -1,0 +1,33 @@
+---
+metric_id: metric-aws-dynamodb-table-read-capacity
+name: Read Capacity
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.DynamoDB.Table
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.table_status
+      name: Status
+    - key: data.partition_key_display
+      name: Partition Key
+    - key: data.sort_key_display
+      name: Sort Key
+    - key: data.index_count
+      name: Indexes
+    - key: data.encryption_type
+      name: Encryption Type
+    - key: data.billing_mode_summary.billing_mode
+      name: Billing Mode
+  fields:
+    value:
+      operator: sum
+      key: data.total_read_capacity
+unit: Count
+namespace_id: ns-aws-dynamodb-table
+version: '1.0'

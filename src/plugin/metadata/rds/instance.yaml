@@ -1,0 +1,233 @@
+search:
+  fields:
+    - ARN: data.arn
+    - DB Instance Identifier: data.instance.db_instance_identifier
+    - Engine: data.instance.engine
+    - Engine Version: data.instance.engine_version
+    - Status: data.instance.db_instance_status
+      type: text
+      labels:
+        - available: "Available"
+        - creating: "Creating"
+        - deleting: "Deleting"
+        - maintenance: "Maintenance"
+        - modifying: "Modifying"
+        - rebooting: "Rebooting"
+        - renaming: "Renaming"
+        - starting: "Starting"
+        - stopping: "Stopping"
+        - upgrading: "Upgrading"
+        - failed: "Failed"
+        - inaccessible-encryption-credentials: "Inaccessible Encryption Credentials"
+        - restore-error: "Restore Error"
+        - stopped: "Stopped"
+        - storage-full: "Storage Full"
+    - Instance Class: data.instance.db_instance_class
+    - VPC ID: data.instance.db_subnet_group.vpc_id
+    - Availability Zone: data.instance.availability_zone
+    - Multi-AZ: data.instance.multi_az
+      data_type: "boolean"
+    - Endpoint: data.instance.endpoint.address
+    - Port: data.instance.endpoint.port
+      data_type: "integer"
+    - Master Username: data.instance.master_username
+    - Allocated Storage: data.instance.allocated_storage
+      data_type: "integer"
+    - Storage Type: data.instance.storage_type
+    - Storage Encrypted: data.instance.storage_encrypted
+      data_type: "boolean"
+    - KMS Key ID: data.instance.kms_key_id
+    - Backup Retention Period: data.instance.backup_retention_period
+      data_type: "integer"
+    - Preferred Backup Window: data.instance.preferred_backup_window
+    - Preferred Maintenance Window: data.instance.preferred_maintenance_window
+    - Auto Minor Version Upgrade: data.instance.auto_minor_version_upgrade
+      data_type: "boolean"
+    - Deletion Protection: data.instance.deletion_protection
+      data_type: "boolean"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.instance.db_instance_identifier
+    desc: true
+  fields:
+    - DB Instance Identifier: data.instance.db_instance_identifier
+    - Engine: data.instance.engine
+    - Status: data.instance.db_instance_status
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - maintenance: yellow.500
+          type: state
+        - modifying: yellow.500
+          type: state
+        - rebooting: yellow.500
+          type: state
+        - renaming: yellow.500
+          type: state
+        - starting: yellow.500
+          type: state
+        - stopping: yellow.500
+          type: state
+        - upgrading: yellow.500
+          type: state
+        - failed: red.500
+          type: state
+        - inaccessible-encryption-credentials: red.500
+          type: state
+        - restore-error: red.500
+          type: state
+        - stopped: red.500
+          type: state
+        - storage-full: red.500
+          type: state
+    - Instance Class: data.instance.db_instance_class
+    - VPC ID: data.instance.db_subnet_group.vpc_id
+    - Availability Zone: data.instance.availability_zone
+    - Multi-AZ: data.instance.multi_az
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Summary
+  type: item
+  fields:
+    - DB Instance Identifier: data.instance.db_instance_identifier
+    - Engine: data.instance.engine
+    - Engine Version: data.instance.engine_version
+    - Status: data.instance.db_instance_status
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - maintenance: yellow.500
+          type: state
+        - modifying: yellow.500
+          type: state
+        - rebooting: yellow.500
+          type: state
+        - renaming: yellow.500
+          type: state
+        - starting: yellow.500
+          type: state
+        - stopping: yellow.500
+          type: state
+        - upgrading: yellow.500
+          type: state
+        - failed: red.500
+          type: state
+        - inaccessible-encryption-credentials: red.500
+          type: state
+        - restore-error: red.500
+          type: state
+        - stopped: red.500
+          type: state
+        - storage-full: red.500
+          type: state
+    - Instance Class: data.instance.db_instance_class
+    - VPC ID: data.instance.db_subnet_group.vpc_id
+    - Availability Zone: data.instance.availability_zone
+    - Multi-AZ: data.instance.multi_az
+
+tabs.1:
+  name: Connectivity
+  type: item
+  fields:
+    - Endpoint: data.instance.endpoint.address
+    - Port: data.instance.endpoint.port
+    - Availability Zone: data.instance.availability_zone
+    - VPC: data.instance.db_subnet_group.vpc_id
+    - Subnet Group: data.instance.db_subnet_group.db_subnet_group_name
+    - Publicly Accessible: data.instance.publicly_accessible
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Security Groups: data.instance.vpc_security_groups
+      type: badge
+      outline_color: violet.500
+
+tabs.2:
+  name: Configuration
+  type: item
+  fields:
+    - ARN: data.instance.db_instance_arn
+    - Resource ID: data.instance.dbi_resource_id
+    - Engine Version: data.instance.engine_version
+    - DB Parameter Group: data.instance.db_parameter_groups
+    - Option Group: data.instance.option_group_memberships
+    - DB Subnet Group: data.instance.db_subnet_group.db_subnet_group_name
+    - Deletion Protection: data.instance.deletion_protection
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - IAM DB Authentication: data.instance.iam_database_authentication_enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Master Username: data.instance.master_username
+    - Multi AZ: data.instance.multi_az
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Encrypted: data.instance.storage_encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - KMS Key: data.instance.kms_key_id
+    - Auto Minor Version Upgrade: data.instance.auto_minor_version_upgrade
+    - Created Time: data.instance.instance_create_time
+      type: datetime
+      source_type: iso8601
+
+tabs.3:
+  name: Storage
+  type: item
+  fields:
+    - Allocated Storage: data.instance.allocated_storage
+    - Storage Type: data.instance.storage_type
+    - Storage Encrypted: data.instance.storage_encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - KMS Key ID: data.instance.kms_key_id
+    - IOPS: data.instance.iops
+    - Storage Throughput: data.instance.storage_throughput
+
+tabs.4:
+  name: Backup
+  type: item
+  fields:
+    - Backup Retention Period: data.instance.backup_retention_period
+    - Preferred Backup Window: data.instance.preferred_backup_window
+    - Copy Tags to Snapshots: data.instance.copy_tags_to_snapshot
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Latest Restorable Time: data.instance.latest_restorable_time
+      type: datetime
+      source_type: iso8601
+
+tabs.5:
+  name: Maintenance
+  type: item
+  fields:
+    - Preferred Maintenance Window: data.instance.preferred_maintenance_window

@@ -1,6 +1,6 @@
 ---
 metric_id: metric-aws-documentdb-cluster-count
-name: Cluster Count
+name: DocumentDB Cluster Count
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.DocumentDB.Cluster
 query_options:
@@ -14,10 +14,33 @@ query_options:
         reference_key: region_code
     - key: data.status
       name: Status
+      default: true
     - key: data.engine
       name: Engine
     - key: data.engine_version
       name: Version
+    - key: data.instance_count
+      name: Instances
+    - key: data.endpoint
+      name: Endpoint
+    - key: data.reader_endpoint
+      name: Reader Endpoint
+    - key: data.port
+      name: Port
+    - key: data.multi_az
+      name: Multi AZ
+    - key: data.availability_zones
+      name: Availability Zones
+    - key: data.parameter_group
+      name: DB Cluster Parameter Group
+    - key: data.db_cluster_parameter_group
+      name: Parameter Group
+    - key: data.subnet_group
+      name: Subnet Group
+    - key: data.db_subnet_group
+      name: DB Subnet Group
+    - key: data.master_username
+      name: Master Username
   fields:
     value:
       operator: count

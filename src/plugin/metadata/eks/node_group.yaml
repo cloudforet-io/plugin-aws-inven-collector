@@ -1,0 +1,147 @@
+search:
+  fields:
+    - Node Group Name: data.nodegroup_name
+    - Node Group ARN: data.nodegroup_arn
+    - Status: data.status
+      type: text
+      labels:
+        - ACTIVE: "ACTIVE"
+        - CREATING: "CREATING"
+        - UPDATING: "UPDATING"
+        - DELETING: "DELETING"
+        - CREATE_FAILED: "CREATE_FAILED"
+        - DELETE_FAILED: "DELETE_FAILED"
+        - DEGRADED: "DEGRADED"
+    - EKS Cluster Name: data.cluster_name
+    - EKS Cluster ARN: data.cluster_arn
+    - Version: data.version
+    - Instance Type: data.instance_types
+    - Subnet: data.subnets
+    - Node Role: data.node_role
+    - Disk Size: data.disk_size
+      data_type: "integer"
+    - AMI Type: data.ami_type
+    - Release Version: data.release_version
+    - Modification Time: data.modified_at
+      data_type: "datetime"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.nodegroup_name
+    desc: true
+  fields:
+    - Node Group Name: data.nodegroup_name
+    - Status: data.status
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - CREATING: yellow.500
+          type: state
+        - UPDATING: yellow.500
+          type: state
+        - DELETING: yellow.500
+          type: state
+        - CREATE_FAILED: red.500
+          type: state
+        - DELETE_FAILED: red.500
+          type: state
+        - DEGRADED: red.500
+          type: state
+    - EKS Cluster Name: data.cluster_name
+    - Version: data.version
+    - Instance Types: data.instance_types
+      type: badge
+      outline_color: violet.500
+    - Disk Size: data.disk_size
+    - AMI Type: data.ami_type
+    - Node Role: data.node_role
+    - Node Group ARN: data.nodegroup_arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Node Group
+  type: item
+  fields:
+    - Node Group Name: data.nodegroup_name
+    - Node Group ARN: data.nodegroup_arn
+    - Status: data.status
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - CREATING: yellow.500
+          type: state
+        - UPDATING: yellow.500
+          type: state
+        - DELETING: yellow.500
+          type: state
+        - CREATE_FAILED: red.500
+          type: state
+        - DELETE_FAILED: red.500
+          type: state
+        - DEGRADED: red.500
+          type: state
+    - EKS Cluster Name: data.cluster_name
+    - EKS Cluster ARN: data.cluster_arn
+    - Version: data.version
+    - Release Version: data.release_version
+    - Instance Types: data.instance_types
+      type: badge
+      outline_color: violet.500
+    - Subnets: data.subnets
+      type: badge
+      outline_color: violet.500
+    - AMI Type: data.ami_type
+    - Node Role: data.node_role
+    - Labels: data.labels.string
+    - Disk Size: data.disk_size
+    - Creation Time: data.created_at
+      type: datetime
+      source_type: iso8601
+    - Modification Time: data.modified_at
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: Scaling Config
+  type: item
+  fields:
+    - Min Size: data.scaling_config.min_size
+    - Max Size: data.scaling_config.max_size
+    - Desired Size: data.scaling_config.desired_size
+
+tabs.2:
+  name: Resources
+  type: item
+  fields:
+    - Auto Scaling Group Name: data.resources.auto_scaling_groups.name
+      type: badge
+      outline_color: violet.500
+    - Auto Scaling Group ARN: data.resources.auto_scaling_groups.arn
+      type: badge
+      outline_color: violet.500
+    - Remote Access Security Group: data.resources.remote_access_security_group
+
+tabs.3:
+  name: Remote Access
+  type: item
+  fields:
+    - EC2 SSH Key: data.remote_access.ec2_ssh_key
+    - Source Security Groups: data.remote_access.source_security_groups
+      type: badge
+      outline_color: violet.500
+
+tabs.4:
+  name: Health
+  type: table
+  root_path: data.health.issues
+  fields:
+    - Code: code
+    - Message: message
+    - Resource IDs: resource_ids
+      type: badge
+      outline_color: violet.500

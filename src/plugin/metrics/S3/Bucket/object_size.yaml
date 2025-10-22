@@ -12,12 +12,12 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.public_access
-      name: Access
+    - key: data.public_access_block_configuration.block_public_acls
+      name: Block Public ACLs
   fields:
     value:
       operator: sum
-      key: data.size
+      key: instance_size
 unit: Bytes
 namespace_id: ns-aws-s3-bucket
 version: '1.0'

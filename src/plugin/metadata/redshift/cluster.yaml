@@ -1,0 +1,303 @@
+search:
+  fields:
+    - Cluster Identifier: data.cluster_identifier
+    - Status: data.cluster_status
+      type: text
+      labels:
+        - available: "Available"
+        - prep-for-resize: "Prep For Resize"
+        - resize-cleanup: "Resize Cleanup"
+        - cancelling-resize: "Cancelling Resize"
+        - creating: "Creating"
+        - deleting: "Deleting"
+        - final-snapshot: "Final Snapshot"
+        - modifying: "Modifying"
+        - rebooting: "Rebooting"
+        - renaming: "Renaming"
+        - resizing: "Resizing"
+        - rotating-keys: "Rotating Keys"
+        - updating-hsm: "Updating HSM"
+        - paused: "Paused"
+        - hardware-failure: "Hardware Failure"
+        - incompatible-hsm: "Incompatible HSM"
+        - incompatible-network: "Incompatible Network"
+        - incompatible-parameters: "Incompatible Parameters"
+        - incompatible-restore: "Incompatible Restore"
+        - storage-full: "Storage Full"
+    - Cluster Version: data.cluster_version
+    - Nodes: data.number_of_nodes
+      data_type: "integer"
+    - Node Type: instance_type
+    - Endpoint: data.endpoint.address
+    - Port: data.endpoint.port
+      data_type: "integer"
+    - VPC ID: data.vpc_id
+    - Availability Zone: data.availability_zone
+    - Cluster Revision Number: data.cluster_revision_number
+    - Preferred Maintenance Window: data.preferred_maintenance_window
+    - Next maintenance window start time: data.next_maintenance_window_start_time
+      data_type: "datetime"
+    - DB Name: data.db_name
+    - Allow Version Upgrade: data.allow_version_upgrade
+      data_type: "boolean"
+    - Encrypted: data.encrypted
+      data_type: "boolean"
+    - KMS Key ID: data.kms_key_id
+    - Publicly Accessible: data.publicly_accessible
+      data_type: "boolean"
+    - Automated Snapshot Retention Period: data.automated_snapshot_retention_period
+      data_type: "integer"
+    - Subnet Group Name: data.cluster_subnet_group_name
+    - Master Username: data.master_username
+    - IAM Role ARNs: data.iam_roles.iam_role_arn
+    - Security Groups: data.vpc_security_groups.vpc_security_group_id
+    - HSM Status: data.hsm_status
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.cluster_identifier
+    desc: true
+  fields:
+    - Cluster: data.cluster_identifier
+    - Status: data.cluster_status
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - prep-for-resize: yellow.500
+          type: state
+        - resize-cleanup: yellow.500
+          type: state
+        - cancelling-resize: yellow.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - final-snapshot: yellow.500
+          type: state
+        - modifying: yellow.500
+          type: state
+        - rebooting: yellow.500
+          type: state
+        - renaming: yellow.500
+          type: state
+        - resizing: yellow.500
+          type: state
+        - rotating-keys: yellow.500
+          type: state
+        - updating-hsm: yellow.500
+          type: state
+        - paused: gray.400
+          type: state
+        - hardware-failure: red.500
+          type: state
+        - incompatible-hsm: red.500
+          type: state
+        - incompatible-network: red.500
+          type: state
+        - incompatible-parameters: red.500
+          type: state
+        - incompatible-restore: red.500
+          type: state
+        - storage-full: red.500
+          type: state
+    - Cluster Version: data.cluster_version
+    - Node Count: data.number_of_nodes
+    - Node Type: data.node_type
+    - Endpoint: data.endpoint.address
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Clusters
+  type: item
+  fields:
+    - Cluster: data.cluster_identifier
+    - Status: data.cluster_status
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - prep-for-resize: yellow.500
+          type: state
+        - resize-cleanup: yellow.500
+          type: state
+        - cancelling-resize: yellow.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - final-snapshot: yellow.500
+          type: state
+        - modifying: yellow.500
+          type: state
+        - rebooting: yellow.500
+          type: state
+        - renaming: yellow.500
+          type: state
+        - resizing: yellow.500
+          type: state
+        - rotating-keys: yellow.500
+          type: state
+        - updating-hsm: yellow.500
+          type: state
+        - paused: gray.400
+          type: state
+        - hardware-failure: red.500
+          type: state
+        - incompatible-hsm: red.500
+          type: state
+        - incompatible-network: red.500
+          type: state
+        - incompatible-parameters: red.500
+          type: state
+        - incompatible-restore: red.500
+          type: state
+        - storage-full: red.500
+          type: state
+    - Endpoint: data.endpoint.address
+    - Cluster Version: data.cluster_version
+    - Cluster Availability Status: data.cluster_availability_status
+      type: enum
+      enums:
+        - Available: green.500
+          type: state
+        - Maintenance: yellow.500
+          type: state
+        - Modifying: yellow.500
+          type: state
+        - Unavailable: gray.400
+          type: state
+        - Failed: red.500
+          type: state
+    - Node Count: data.number_of_nodes
+    - Node Type: data.node_type
+    - Automated Snapshot Retention Period: data.automated_snapshot_retention_period
+    - Manual Snapshot Retention Period: data.manual_snapshot_retention_period
+    - Allow Version Upgrade: data.allow_version_upgrade
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Cluster Revision Number: data.cluster_revision_number
+
+tabs.1:
+  name: Database configurations
+  type: item
+  fields:
+    - Database Name: data.db_name
+    - Port: data.endpoint.port
+    - Master User Name: data.master_username
+    - Encrypted: data.encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+
+tabs.2:
+  name: Network and Security
+  type: item
+  fields:
+    - VPC ID: data.vpc_id
+    - Availability Zone: data.availability_zone
+    - Subnet Group: data.cluster_subnet_group_name
+    - Security Groups: data.vpc_security_groups.vpc_security_group_id
+      type: badge
+      outline_color: violet.500
+    - Enhanced VPC Routing: data.enhanced_vpc_routing
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Publicly Accessible: data.publicly_accessible
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+
+tabs.3:
+  name: Parameter Groups
+  type: table
+  root_path: data.cluster_parameter_groups
+  fields:
+    - Parameter Group Name: parameter_group_name
+    - Apply status: parameter_apply_status
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+
+tabs.4:
+  name: Nodes
+  type: table
+  root_path: data.cluster_nodes
+  fields:
+    - Node Role: node_role
+    - Private IP: private_ip_address
+    - Public IP: public_ip_address
+
+tabs.5:
+  name: Snapshots
+  type: table
+  root_path: data.snapshots
+  fields:
+    - Snapshot Identifier: snapshot_identifier
+    - Snapshot Type: snapshot_type
+    - Status: status
+      type: enum
+      enums:
+        - active: green.500
+          type: state
+    - Size(MB): total_backup_size_in_mega_bytes
+    - Actual Incremental Size(MB): actual_incremental_backup_size_in_mega_bytes
+    - Encrypted: encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Creation Time: snapshot_create_time
+      type: datetime
+      source_type: iso8601
+
+tabs.6:
+  name: Snapshot Schedules
+  type: table
+  root_path: data.snapshot_schedules
+  fields:
+    - Schedule Identifier: schedule_identifier
+    - Schedule Description: schedule_description
+    - Schedule Definition: schedule_definitions
+    - State: associated_state
+      type: enum
+      enums:
+        - active: green.500
+          type: state
+
+tabs.7:
+  name: Scheduled Actions
+  type: table
+  root_path: data.scheduled_actions
+  fields:
+    - Action name: scheduled_action_name
+    - Description: scheduled_action_description
+    - Schedule: schedule
+    - IAM Role: iam_role
+    - State: state
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - DISABLED: gray.400
+          type: state
+    - Next Invocations: next_invocations
+      type: datetime
+      source_type: iso8601
+    - Start Time: start_time
+      type: datetime
+      source_type: iso8601
+    - End Time: end_time
+      type: datetime
+      source_type: iso8601

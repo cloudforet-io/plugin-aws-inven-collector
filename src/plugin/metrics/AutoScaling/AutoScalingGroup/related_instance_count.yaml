@@ -1,0 +1,31 @@
+---
+metric_id: metric-aws-autoscaling-autoscalinggroup-related-instance-count
+name: Related Instance Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.AutoScaling.AutoScalingGroup
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.instances.instance_id
+      name: Instance ID
+    - key: data.instances.lifecycle
+      name: Instance Lifecycle
+    - key: data.instances.health_status
+      name: Instance Health Status
+    - key: data.instances.instance_type
+      name: Instance Type
+    - key: data.instances.availability_zone
+      name: Instance Availability Zone
+  fields:
+    value:
+      operator: count
+      key: data.instances
+unit: Count
+namespace_id: ns-aws-autoscaling-autoscalinggroup
+version: '1.0'

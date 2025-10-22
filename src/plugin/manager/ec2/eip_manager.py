@@ -33,7 +33,9 @@ class EIPManager(ResourceManager):
         return result
 
     def create_cloud_service(self, region, options, secret_data, schema):
-        cloudtrail_resource_type = "AWS::EC2::EIP"
+        yield from self._collect_eips(options, region)
+
+    def _collect_eips(self, options, region):
         results = self.connector.get_addresses()
         account_id = options.get("account_id", "")
         self.connector.load_account_id(account_id)
@@ -71,7 +73,7 @@ class EIPManager(ResourceManager):
                         ),
                         "name": self._get_name_from_tags(_ip.get("Tags", [])),
                         "cloudtrail": self.set_cloudtrail(
-                            region, cloudtrail_resource_type, _ip["AllocationId"]
+                            self.cloud_service_group, _ip["AllocationId"], region
                         ),
                     }
                 )
@@ -88,7 +90,7 @@ class EIPManager(ResourceManager):
                     cloud_service_group=self.cloud_service_group,
                     provider=self.provider,
                     data=eip_vo,
-                    account=account_id,
+                    account=options.get("account_id"),
                     tags=self.convert_tags_to_dict_type(_ip.get("Tags", [])),
                     region_code=region,
                     reference=reference,

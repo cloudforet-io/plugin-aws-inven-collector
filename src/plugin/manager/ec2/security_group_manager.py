@@ -1,7 +1,11 @@
 import copy
 from spaceone.inventory.plugin.collector.lib import *
 from ..base import ResourceManager
-from ...conf.cloud_service_conf import ASSET_URL, INSTANCE_FILTERS, DEFAULT_VULNERABLE_PORTS
+from ...conf.cloud_service_conf import (
+    ASSET_URL,
+    INSTANCE_FILTERS,
+    DEFAULT_VULNERABLE_PORTS,
+)
 from plugin.error.custom import ERROR_VULNERABLE_PORTS
 
 
@@ -34,8 +38,9 @@ class SecurityGroupManager(ResourceManager):
         return result
 
     def create_cloud_service(self, region, options, secret_data, schema):
-        cloudtrail_resource_type = "AWS::EC2::SecurityGroup"
+        yield from self._collect_security_groups(options, region)
 
+    def _collect_security_groups(self, options, region):
         # If Port Filter Option Exist
         vulnerable_ports = options.get("vulnerable_ports")
 
@@ -66,7 +71,10 @@ class SecurityGroupManager(ResourceManager):
                             in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
                                 self.custom_security_group_inbound_rule_info(
-                                    in_rule_copy, _ip_range, "ip_ranges",vulnerable_ports
+                                    in_rule_copy,
+                                    _ip_range,
+                                    "ip_ranges",
+                                    vulnerable_ports,
                                 )
                             )
 
@@ -85,7 +93,10 @@ class SecurityGroupManager(ResourceManager):
                             in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
                                 self.custom_security_group_inbound_rule_info(
-                                    in_rule_copy, _ip_v6_range, "ipv6_ranges",vulnerable_ports
+                                    in_rule_copy,
+                                    _ip_v6_range,
+                                    "ipv6_ranges",
+                                    vulnerable_ports,
                                 )
                             )
 
@@ -93,7 +104,10 @@ class SecurityGroupManager(ResourceManager):
                             in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
                                 self.custom_security_group_inbound_rule_info(
-                                    in_rule_copy, prefix_list_id, "prefix_list_ids",vulnerable_ports
+                                    in_rule_copy,
+                                    prefix_list_id,
+                                    "prefix_list_ids",
+                                    vulnerable_ports,
                                 )
                             )
 
@@ -144,7 +158,7 @@ class SecurityGroupManager(ResourceManager):
                             "ip_permissions_egress": outbound_rules,
                             "instances": match_instances,
                             "cloudtrail": self.set_cloudtrail(
-                                region, cloudtrail_resource_type, raw["GroupId"]
+                                self.cloud_service_group, raw["GroupId"], region
                             ),
                             "stats": {"instances_count": len(match_instances)},
                         }
@@ -161,7 +175,7 @@ class SecurityGroupManager(ResourceManager):
                         cloud_service_group=self.cloud_service_group,
                         provider=self.provider,
                         data=sg_vo,
-                        account=account_id,
+                        account=options.get("account_id"),
                         tags=self.convert_tags_to_dict_type(raw.get("Tags", [])),
                         region_code=region,
                         reference=reference,
@@ -184,18 +198,22 @@ class SecurityGroupManager(ResourceManager):
                         region_name=region,
                     )
 
-    def custom_security_group_inbound_rule_info(self, raw_rule, remote, remote_type, vulnerable_ports):
+    def custom_security_group_inbound_rule_info(
+        self, raw_rule, remote, remote_type, vulnerable_ports
+    ):
         raw_rule = self.custom_security_group_rule_info(raw_rule, remote, remote_type)
 
         protocol_display = raw_rule.get("protocol_display")
 
         if vulnerable_ports:
-            ports = self._get_vulnerable_ports(protocol_display, raw_rule, vulnerable_ports)
+            ports = self._get_vulnerable_ports(
+                protocol_display, raw_rule, vulnerable_ports
+            )
 
             raw_rule.update(
                 {
                     "vulnerable_ports": ports,
-                    "detected_vulnerable_ports": True if ports else False
+                    "detected_vulnerable_ports": True if ports else False,
                 }
             )
 
@@ -331,7 +349,9 @@ class SecurityGroupManager(ResourceManager):
         return ""
 
     @staticmethod
-    def _get_vulnerable_ports(protocol_display: str, raw_rule: dict, vulnerable_ports: str):
+    def _get_vulnerable_ports(
+        protocol_display: str, raw_rule: dict, vulnerable_ports: str
+    ):
         try:
             ports = []
 
