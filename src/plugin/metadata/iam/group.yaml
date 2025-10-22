@@ -1,0 +1,90 @@
+search:
+  fields:
+    - Group Name: data.group_name
+    - Group ID: data.group_id
+    - Group ARN: data.arn
+    - Path: data.path
+    - User Count: data.user_count
+      data_type: "integer"
+    - Creation Time: data.create_date
+      data_type: "datetime"
+    - User Name: data.users.user_name
+    - Access Key Age: data.users.access_key_age_display
+    - Last Activity: data.users.last_activity
+    - MFA: data.users.mfa_device
+      type: text
+      labels:
+        - Virtual: "Virtual"
+        - Not enabled: "Not enabled"
+    - Policy Name: data.attached_permission.policy_name
+    - Policy Type: data.attached_permission.policy_type
+      type: text
+      labels:
+        - AWS Managed: "AWS Managed"
+        - Local Managed: "Local Managed"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.group_name
+    desc: true
+  fields:
+    - Group Name: data.group_name
+    - Group ID: data.group_id
+    - Path: data.path
+    - User Count: data.user_count
+    - Creation Time: data.create_date
+      type: datetime
+    - Group ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Group
+  type: item
+  fields:
+    - Group Name: data.group_name
+    - Group ID: data.group_id
+    - Group ARN: data.arn
+    - Path: data.path
+    - User Count: data.user_count
+    - Creation Time: data.create_date
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: Users
+  type: table
+  root_path: data.users
+  fields:
+    - User Name: user_name
+    - Access Key Age: access_key_age_display
+    - Last Activity: last_activity
+    - MFA: mfa_device
+      type: enum
+      enums:
+        - Virtual: indigo.500
+        - Not enabled: coral.600
+
+tabs.2:
+  name: Permissions
+  type: table
+  root_path: data.attached_permission
+  fields:
+    - Policy Name: policy_name
+    - Policy ID: policy_id
+    - Policy Type: policy_type
+      type: enum
+      enums:
+        - AWS Managed: indigo.500
+        - Local Managed: coral.600
+    - Policy ARN: arn
+    - Permission Usage Count: attachment_count
+    - Description: description
+    - Creation Time: create_date
+      type: datetime
+      source_type: iso8601
+    - Updated At: update_date
+      type: datetime
+      source_type: iso8601

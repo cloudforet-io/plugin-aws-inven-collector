@@ -1,0 +1,163 @@
+search:
+  fields:
+    - File System ID: data.file_system_id
+    - File System ARN: data.arn
+    - Name: data.name
+    - State: data.life_cycle_state
+      type: text
+      labels:
+        - available: "available"
+        - creating: "creating"
+        - updating: "updating"
+        - deleting: "deleting"
+        - deleted: "deleted"
+    - Metered Size: instance_size
+      data_type: "integer"
+    - Performance Mode: data.performance_mode
+      type: text
+      labels:
+        - generalPurpose: "General Purpose"
+        - maxIO: "Max IO"
+    - Throughput Mode: data.throughput_mode
+      type: text
+      labels:
+        - bursting: "Bursting"
+        - provisioned: "Provisioned"
+    - Encrypted: data.encrypted
+      data_type: "boolean"
+    - Mount Target Count: data.number_of_mount_targets
+      data_type: "integer"
+    - Mount Target ID: data.mount_targets.mount_target_id
+    - IP Address: data.mount_targets.ip_address
+    - Availability Zone: data.mount_targets.availability_zone_name
+    - Subnet ID: data.mount_targets.subnet_id
+    - Security Group ID: data.mount_targets.security_groups
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.file_system_id
+    desc: true
+  fields:
+    - File System ID: data.file_system_id
+    - Name: data.name
+    - State: data.life_cycle_state
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - updating: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+    - Performance Mode: data.performance_mode
+    - Throughput Mode: data.throughput_mode
+    - Encrypted: data.encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Mount Targets: data.number_of_mount_targets
+    - Metered Size: data.size_in_bytes.value
+      display_unit: GB
+      source_unit: B
+      type: size
+    - File System ARN: data.arn
+      is_optional: true
+    - KMS Key ID: data.kms_key_id
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: File System
+  type: item
+  fields:
+    - File System ID: data.file_system_id
+    - File System ARN: data.arn
+    - Name: data.name
+    - State: data.life_cycle_state
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - updating: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+    - Owner ID: data.owner_id
+    - Creation Token: data.creation_token
+    - Performance Mode: data.performance_mode
+    - Throughput Mode: data.throughput_mode
+    - Provisioned Throughput: data.provisioned_throughput_in_mibps
+    - Encrypted: data.encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - KMS Key ID: data.kms_key_id
+    - Mount Targets: data.number_of_mount_targets
+    - Metered Size: data.size_in_bytes.value
+      display_unit: GB
+      source_unit: B
+      type: size
+    - Size in IA: data.size_in_bytes.value_in_ia
+      display_unit: GB
+      source_unit: B
+      type: size
+    - Size in Standard: data.size_in_bytes.value_in_standard
+      display_unit: GB
+      source_unit: B
+      type: size
+    - Creation Time: data.creation_time
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: Lifecycle Policies
+  type: table
+  root_path: data.life_cycle_policies
+  fields:
+    - Transition to IA: transition_to_ia_display
+      type: enum
+      enums:
+        - AFTER_7_DAYS: blue.400
+        - AFTER_14_DAYS: indigo.500
+        - AFTER_30_DAYS: coral.600
+        - AFTER_60_DAYS: green.500
+        - AFTER_90_DAYS: yellow.500
+
+tabs.2:
+  name: Mount Targets
+  type: table
+  root_path: data.mount_targets
+  fields:
+    - Mount Target ID: mount_target_id
+    - State: life_cycle_state
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - updating: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+    - Availability Zone: availability_zone_name
+    - Subnet ID: subnet_id
+    - IP Address: ip_address
+    - Network Interface ID: network_interface_id
+    - Security Groups: security_groups
+      type: badge
+      outline_color: violet.500

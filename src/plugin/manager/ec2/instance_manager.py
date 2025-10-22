@@ -41,9 +41,11 @@ class InstanceManager(ResourceManager):
     def create_cloud_service(
         self, region: str, options: dict, secret_data: dict, schema: str
     ):
+        yield from self._collect_instances(options, region)
+
+    def _collect_instances(self, options, region):
         # meta_manager: MetadataManager = MetadataManager()
         region_name = region
-        cloudtrail_resource_type = "AWS::EC2::Instance"
 
         instance_filter = {}
         # Instance list and account ID
@@ -185,11 +187,11 @@ class InstanceManager(ResourceManager):
                         {"ip_addresses": self.merge_ip_addresses(server_data)}
                     )
 
-                    server_data["data"]["cloudwatch"] = cw_manager.set_cloudwatch_info(
-                        instance_id, region_name
+                    server_data["data"]["cloudwatch"] = self.set_cloudwatch(
+                        self.cloud_service_group, instance_id, region_name
                     )
                     server_data["data"]["cloudtrail"] = self.set_cloudtrail(
-                        region_name, cloudtrail_resource_type, instance_id
+                        self.cloud_service_group, instance_id, region_name
                     )
                     server_data["data"]["compute"]["account"] = account_id
                     server_data["account"] = account_id
@@ -205,7 +207,7 @@ class InstanceManager(ResourceManager):
                         provider=self.provider,
                         ip_addresses=server_data["ip_addresses"],
                         data=server_data["data"],
-                        account=account_id,
+                        account=options.get("account_id"),
                         reference=reference,
                         instance_type=server_data.get("instance_type", ""),
                         instance_size=float(server_data.get("instance_size", 0)),

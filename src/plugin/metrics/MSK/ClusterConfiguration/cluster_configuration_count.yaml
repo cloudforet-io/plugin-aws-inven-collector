@@ -1,0 +1,38 @@
+---
+metric_id: metric-aws-msk-clusterconfiguration-count
+name: Cluster Configuration Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.MSK.ClusterConfiguration
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.arn
+      name: ARN
+    - key: data.name
+      name: Name
+    - key: data.description
+      name: Description
+    - key: data.kafka_versions_list
+      name: Kafka Versions List
+    - key: data.server_properties
+      name: Server Properties
+    - key: data.revision
+      name: Revision
+    - key: data.creation_time
+      name: Creation Time
+    - key: data.latest_revision
+      name: Latest Revision
+    - key: data.state
+      name: State
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-msk-clusterconfiguration
+version: '1.0'

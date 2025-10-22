@@ -1,0 +1,23 @@
+---
+metric_id: metric-aws-sqs-queue-max-message-size
+name: Max Message Size
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.SQS.Queue
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.queue_arn
+      name: Queue ARN
+  fields:
+    value:
+      operator: sum
+      key: data.maximum_message_size
+unit: Bytes
+namespace_id: ns-aws-sqs-queue
+version: '1.0'

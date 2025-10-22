@@ -1,8 +1,8 @@
 ---
-namespace_id: ns-aws-certificate-manager-certificate
+namespace_id: ns-aws-certificatemanager-certificate
 name: CertificateManager/Certificate
 category: ASSET
 resource_type: inventory.CloudService:aws.CertificateManager.Certificate
 group: aws
-icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Certificate-Manager.svg'
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-certificate-manager.svg'
 version: '1.1'

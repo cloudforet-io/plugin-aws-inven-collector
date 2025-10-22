@@ -1,0 +1,24 @@
+---
+metric_id: metric-aws-vpc-peering-connection-count
+name: Peering Connection Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.VPC.PeeringConnection
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.status.code
+      name: Status
+    - key: data.accepter_vpc_info.vpc_id
+      name: Accepter VPC ID
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-vpc-peering-connection
+version: '1.0'

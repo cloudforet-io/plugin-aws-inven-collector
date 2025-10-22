@@ -1,0 +1,57 @@
+search:
+  fields:
+    - VPN Gateway ID: data.vpn_gateway_id
+    - State: data.state
+      type: text
+      labels:
+        - pending: "Pending"
+        - available: "Available"
+        - deleting: "Deleting"
+        - deleted: "Deleted"
+    - Type: data.type
+    - VPC ID: data.vpc_id
+    - Amazon Side ASN: data.amazon_side_asn
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.vpn_gateway_id
+    desc: true
+  fields:
+    - VPN Gateway ID: data.vpn_gateway_id
+    - State: data.state
+      type: enum
+      enums:
+        - pending: yellow.500
+          type: state
+        - available: green.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+    - Type: data.type
+    - VPC ID: data.vpc_id
+    - Amazon Side ASN: data.amazon_side_asn
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: VPN Gateway
+  type: item
+  fields:
+    - VPN Gateway ID: data.vpn_gateway_id
+    - State: data.state
+      type: enum
+      enums:
+        - pending: yellow.500
+          type: state
+        - available: green.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+    - Type: data.type
+    - VPC ID: data.vpc_id
+    - Amazon Side ASN: data.amazon_side_asn

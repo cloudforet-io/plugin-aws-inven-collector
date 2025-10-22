@@ -1,0 +1,24 @@
+---
+metric_id: metric-aws-rds-snapshot-count
+name: Snapshot Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.RDS.Snapshot
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.status
+      name: Status
+    - key: data.snapshot_type
+      name: Snapshot Type
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-rds-snapshot
+version: '1.0'

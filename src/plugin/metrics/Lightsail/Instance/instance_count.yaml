@@ -1,0 +1,49 @@
+---
+metric_id: metric-aws-lightsail-instance-count
+name: Instance Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.Lightsail.Instance
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.state.name
+      name: State
+      default: true
+    - key: data.hardware.cpu_count
+      name: Core
+    - key: data.hardware.ram_size_in_gb
+      name: Memory
+    - key: data.location.availability_zone
+      name: Availability Zone
+    - key: data.public_ip_address
+      name: Public IP
+    - key: data.private_ip_address
+      name: Private IP
+    - key: data.blueprint_name
+      name: Blueprint
+    - key: data.bundle_id
+      name: Bundle ID
+    - key: data.arn
+      name: ARN
+    - key: data.support_code
+      name: Support Code
+    - key: data.location.region_name
+      name: Region
+    - key: data.is_static_ip
+      name: Is Static IP
+    - key: data.username
+      name: Username
+    - key: data.ssh_key_name
+      name: SSH Key Name
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-lightsail-instance
+version: '1.0'

@@ -1,0 +1,27 @@
+---
+metric_id: metric-aws-ec2-securitygroup-related-instance-count
+name: Related Instance Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.EC2.SecurityGroup
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.instances.instance_id
+      name: Instance ID
+    - key: data.instances.instance_type
+      name: Instance Type
+    - key: data.instances.availability_zone
+      name: Availability Zone
+  fields:
+    value:
+      operator: count
+      key: data.instances
+unit: Count
+namespace_id: ns-aws-ec2-securitygroup
+version: '1.0'

@@ -1,0 +1,148 @@
+search:
+  fields:
+    - Name: data.name
+    - ARN: data.arn
+    - Region: data.region_name
+    - Access: data.public_access
+      type: text
+      labels:
+        - Private: "Private"
+        - Public: "Public"
+    - Object Total Counts: data.object_count
+      data_type: "integer"
+    - Object Total Size: instance_size
+      data_type: "integer"
+    - Versioning Status: data.versioning.status
+    - Has Bucket Policy: data.policy_document_exists
+      data_type: "boolean"
+    - Bucket Owner ID: data.bucket_acl.owner.owner_id
+    - Webhosting Index Document: data.website_hosting.index_document
+    - Webhosting Error Document: data.website_hosting.error_document
+    - Webhosting Error Document: data.website_hosting.routing_rules
+    - Access Logging Target Bucket: data.server_access_logging.target_bucket
+    - Access Logging Target Prefix: data.server_access_logging.target_prefix
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.name
+    desc: true
+  fields:
+    - Name: data.name
+    - Access: data.public_access
+      type: enum
+      enums:
+        - Private: indigo.500
+        - Public: coral.600
+    - Object Total Counts: data.object_count
+    - Object Total Size: instance_size
+      display_unit: MB
+      source_unit: B
+      type: size
+    - Region: data.region_name
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Buckets
+  type: item
+  fields:
+    - Name: data.name
+    - ARN: data.arn
+    - Region: data.region_name
+    - Public Access: data.public_access
+      type: enum
+      enums:
+        - Private: indigo.500
+        - Public: coral.600
+
+tabs.1:
+  name: Objects
+  type: item
+  fields:
+    - Object Counts: data.object_count
+    - Object Total Size: data.object_total_size
+      display_unit: MB
+      source_unit: B
+      type: size
+
+tabs.2:
+  name: Bucket Policy
+  type: item
+  fields:
+    - Policy Document Exists: data.policy_document_exists
+    - Bucket Policy Document: data.output_display.data.bucket_policy.policy_document
+
+tabs.3:
+  name: Access Control List
+  type: table
+  root_path: data.bucket_acl.grants
+  fields:
+    - Grantee Type: grantee.type
+    - Canonical ID: grantee.id
+    - Group URI: grantee.uri
+    - Email(If Exists): grantee.email
+    - Permission: readable_permission
+
+tabs.4:
+  name: Versioning
+  type: item
+  fields:
+    - Status: data.versioning.status
+      type: enum
+      enums:
+        - Enabled: green.500
+          type: state
+        - Suspended: red.500
+          type: state
+    - MFA Delete: data.versioning.mfa_delete
+      type: enum
+      enums:
+        - Enabled: indigo.500
+        - Disabled: coral.600
+
+tabs.5:
+  name: Website Hosting
+  type: item
+  fields:
+    - Hostname: data.website_hosting.redirect_all_requests_to.host_name
+    - Protocol: data.website_hosting.redirect_all_requests_to.protocol
+    - Index Document: data.website_hosting.index_document
+    - Error Document: data.website_hosting.error_document
+    - Routing Rules: data.website_hosting.routing_rules
+
+tabs.6:
+  name: Server Access Logging
+  type: item
+  fields:
+    - Target Bucket: data.server_access_logging.target_bucket
+    - Target Prefix: data.server_access_logging.target_prefix
+
+tabs.7:
+  name: Lifecycle Rules
+  type: table
+  root_path: data.lifecycle_rules
+  fields:
+    - ID: id
+    - Status: status
+    - Filter: filter
+    - Transitions: transitions
+    - Expiration: expiration
+    - Noncurrent Version Transitions: noncurrent_version_transitions
+    - Noncurrent Version Expiration: noncurrent_version_expiration
+    - Abort Incomplete Multipart Upload: abort_incomplete_multipart_upload
+
+tabs.8:
+  name: Notification Configurations
+  type: table
+  root_path: data.notification_configurations
+  fields:
+    - ID: id
+    - Notification Type: notification_type
+    - ARN: arn
+    - Events: events
+      type: badge
+      outline_color: violet.500
+    - Filter: filter

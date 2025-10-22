@@ -1,0 +1,62 @@
+search:
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - State: data.state
+    - Power: data.power
+    - Scale: data.scale
+    - Current Deployment State: data.current_deployment.state
+    - Current Deployment Version: data.current_deployment.version
+    - Current Deployment Created At: data.current_deployment.created_at
+      data_type: "datetime"
+    - Current Deployment Public Endpoint: data.current_deployment.public_endpoint
+    - Current Deployment Container Service: data.current_deployment.container_service
+    - Support Code: data.support_code
+    - Availability Zone: data.location.availability_zone
+    - Region: data.location.region_name
+    - Resource Type: data.resource_type
+    - Created At: data.created_at
+      data_type: "datetime"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.name
+    desc: true
+  fields:
+    - Name: data.name
+    - State: data.state
+    - Power: data.power
+    - Scale: data.scale
+    - Current Deployment State: data.current_deployment.state
+    - Current Deployment Version: data.current_deployment.version
+    - Current Deployment Public Endpoint: data.current_deployment.public_endpoint
+    - Availability Zone: data.location.availability_zone
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Container
+  type: item
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - State: data.state
+    - Power: data.power
+    - Scale: data.scale
+    - Current Deployment State: data.current_deployment.state
+    - Current Deployment Version: data.current_deployment.version
+    - Current Deployment Created At: data.current_deployment.created_at
+      type: datetime
+      source_type: iso8601
+    - Current Deployment Public Endpoint: data.current_deployment.public_endpoint
+    - Current Deployment Container Service: data.current_deployment.container_service
+    - Support Code: data.support_code
+    - Availability Zone: data.location.availability_zone
+    - Region: data.location.region_name
+    - Resource Type: data.resource_type
+    - Created At: data.created_at
+      type: datetime
+      source_type: iso8601

@@ -1,0 +1,39 @@
+---
+metric_id: metric-aws-ebs-snapshot-count
+name: Snapshot Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.EBS.Snapshot
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.state
+      name: State
+      default: true
+    - key: data.volume_id
+      name: Volume ID
+    - key: data.volume_size
+      name: Volume Size
+    - key: data.encrypted
+      name: Encrypted
+    - key: data.kms_key_id
+      name: KMS Key ID
+    - key: data.owner_id
+      name: Owner ID
+    - key: data.owner_alias
+      name: Owner Alias
+    - key: data.progress
+      name: Progress
+    - key: data.description
+      name: Description
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-ebs-snapshot
+version: '1.0'

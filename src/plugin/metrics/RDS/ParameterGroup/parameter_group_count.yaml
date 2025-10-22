@@ -1,0 +1,24 @@
+---
+metric_id: metric-aws-rds-parameter-group-count
+name: Parameter Group Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.RDS.ParameterGroup
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.db_parameter_group_name
+      name: Parameter Group Name
+    - key: data.db_parameter_group_family
+      name: Parameter Group Family
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-rds-parameter-group
+version: '1.0'

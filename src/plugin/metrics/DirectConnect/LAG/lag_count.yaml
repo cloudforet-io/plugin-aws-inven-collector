@@ -1,0 +1,37 @@
+---
+metric_id: metric-aws-directconnect-lag-count
+name: LAG Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.DirectConnect.LAG
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.lag_state
+      name: LAG State
+    - key: data.location
+      name: Location
+    - key: data.bandwidth
+      name: Bandwidth
+      default: true
+    - key: data.number_of_connections
+      name: Number of Connections
+    - key: data.jumbo_frame_capable
+      name: Jumbo Frame Capable
+    - key: data.has_logical_redundancy
+      name: Logical Redundancy
+    - key: data.aws_device
+      name: AWS Device
+    - key: data.aws_device_v2
+      name: AWS Device V2
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-directconnect-lag
+version: '1.0'

@@ -1,0 +1,41 @@
+---
+metric_id: metric-aws-directconnect-connection-count
+name: Connection Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.DirectConnect.Connection
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.connection_state
+      name: Connection State
+    - key: data.location
+      name: Location
+    - key: data.bandwidth
+      name: Bandwidth
+      default: true
+    - key: data.has_logical_redundancy
+      name: Logical Redundancy
+    - key: data.vlan
+      name: VLAN
+    - key: data.lag_id
+      name: LAG ID
+    - key: data.jumbo_frame_capable
+      name: Jumbo Frame Capable
+    - key: data.partner_name
+      name: Partner Name
+    - key: data.aws_device
+      name: AWS Device
+    - key: data.aws_device_v2
+      name: AWS Device V2
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-directconnect-connection
+version: '1.0'

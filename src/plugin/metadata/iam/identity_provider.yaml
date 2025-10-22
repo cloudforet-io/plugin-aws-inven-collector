@@ -1,0 +1,52 @@
+search:
+  fields:
+    - Provider Name: data.provider_name
+    - Provider Type: data.provider_type
+      type: text
+      labels:
+        - SAML: "SAML"
+        - OIDC: "OIDC"
+    - Provider ARN: data.arn
+    - Creation Time: data.create_date
+      data_type: "datetime"
+    - Valid Until: data.valid_until
+      data_type: "datetime"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.provider_name
+    desc: true
+  fields:
+    - Provider Name: data.provider_name
+    - Provider Type: data.provider_type
+      type: enum
+      enums:
+        - SAML: indigo.500
+        - OIDC: coral.600
+    - Creation Time: data.create_date
+      type: datetime
+    - Valid Until: data.valid_until
+      type: datetime
+    - Provider ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Identity Provider
+  type: item
+  fields:
+    - Provider Name: data.provider_name
+    - Provider Type: data.provider_type
+      type: enum
+      enums:
+        - SAML: indigo.500
+        - OIDC: coral.600
+    - Provider ARN: data.arn
+    - Creation Time: data.create_date
+      type: datetime
+      source_type: iso8601
+    - Valid Until: data.valid_until
+      type: datetime
+      source_type: iso8601

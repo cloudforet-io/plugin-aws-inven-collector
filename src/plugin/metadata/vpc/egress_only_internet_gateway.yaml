@@ -1,0 +1,64 @@
+search:
+  fields:
+    - Egress Only Internet Gateway ID: data.egress_only_internet_gateway_id
+    - State: data.state
+      type: text
+      labels:
+        - available: "Available"
+        - pending: "Pending"
+        - attaching: "Attaching"
+        - attached: "Attached"
+        - detaching: "Detaching"
+        - detached: "Detached"
+    - VPC ID: data.vpc_id
+    - Owner ID: data.owner_id
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.egress_only_internet_gateway_id
+    desc: true
+  fields:
+    - Egress Only Internet Gateway ID: data.egress_only_internet_gateway_id
+    - State: data.state
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+        - attaching: yellow.500
+          type: state
+        - attached: green.500
+          type: state
+        - detaching: yellow.500
+          type: state
+        - detached: gray.400
+          type: state
+    - VPC ID: data.vpc_id
+    - Owner ID: data.owner_id
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Egress Only Internet Gateway
+  type: item
+  fields:
+    - Egress Only Internet Gateway ID: data.egress_only_internet_gateway_id
+    - State: data.state
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+        - attaching: yellow.500
+          type: state
+        - attached: green.500
+          type: state
+        - detaching: yellow.500
+          type: state
+        - detached: gray.400
+          type: state
+    - VPC ID: data.vpc_id
+    - Owner ID: data.owner_id

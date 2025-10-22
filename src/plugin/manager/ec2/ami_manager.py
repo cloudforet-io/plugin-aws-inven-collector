@@ -34,8 +34,10 @@ class AMIManager(ResourceManager):
         return result
 
     def create_cloud_service(self, region, options, secret_data, schema):
+        yield from self._collect_amis(options, region)
+
+    def _collect_amis(self, options, region):
         self.cloud_service_type = "AMI"
-        cloudtrail_resource_type = "AWS::EC2::Ami"
         results = self.connector.get_ami_images()
         account_id = options.get("account_id", "")
         self.connector.load_account_id(account_id)
@@ -63,7 +65,7 @@ class AMIManager(ResourceManager):
                     {
                         "Platform": platform if platform else "Other Linux",
                         "Cloudtrail": self.set_cloudtrail(
-                            region, cloudtrail_resource_type, image["ImageId"]
+                            self.cloud_service_group, image["ImageId"], region
                         ),
                     }
                 )
@@ -78,7 +80,7 @@ class AMIManager(ResourceManager):
                     provider=self.provider,
                     data=image_vo,
                     instance_type=image_vo.get("ImageType", ""),
-                    account=account_id,
+                    account=options.get("account_id"),
                     tags=self.convert_tags_to_dict_type(image.get("Tags", [])),
                     reference=reference,
                     region_code=region,

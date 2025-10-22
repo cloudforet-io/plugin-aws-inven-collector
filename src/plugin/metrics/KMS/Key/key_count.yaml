@@ -12,6 +12,37 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
+    - key: data.key_id
+      name: Key ID
+    - key: data.key_state
+      name: Status
+    - key: data.enabled
+      name: Enabled
+      default: true
+    - key: data.arn
+      name: ARN
+    - key: data.key_usage
+      name: Key Usage
+    - key: data.origin
+      name: Origin
+    - key: data.key_rotated
+      name: Key Rotated
+    - key: data.customer_master_key_spec
+      name: Customer Master Key Spec
+    - key: data.custom_key_store_id
+      name: Custom Key ID
+    - key: data.signing_algorithms
+      name: Signing Algorithms
+    - key: data.cloud_hsm_cluster_id
+      name: Cloud HSM Cluster ID
+    - key: data.encryption_algorithms
+      name: Encryption Algorithms
+    - key: data.key_type_path
+      name: Key Type Path
+    - key: data.key_manager
+      name: Key Manager
+    - key: data.description
+      name: Description
   fields:
     value:
       operator: count

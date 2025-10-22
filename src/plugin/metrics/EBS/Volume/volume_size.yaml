@@ -1,0 +1,39 @@
+---
+metric_id: metric-aws-ebs-volume-size
+name: Volume Size
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.EBS.Volume
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.state
+      name: State
+    - key: instance_type
+      name: Volume Type
+    - key: data.iops
+      name: IOPS
+    - key: data.snapshot_id
+      name: From Snapshot
+    - key: data.availability_zone
+      name: Availability Zone
+    - key: data.encrypted
+      name: Encrypted
+    - key: data.kms_key_id
+      name: KMS Key ID
+    - key: data.multi_attach_enabled
+      name: Multi Attach Enabled
+    - key: data.attachments.instance_id
+      name: Attached Instance ID
+  fields:
+    value:
+      operator: sum
+      key: instance_size
+unit: Bytes
+namespace_id: ns-aws-ebs-volume
+version: '1.0'

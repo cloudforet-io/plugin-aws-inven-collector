@@ -1,0 +1,41 @@
+---
+metric_id: metric-aws-eip-eip-count
+name: EIP Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.EIP.EIP
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.public_ip
+      name: Public IP
+    - key: data.private_ip_address
+      name: Private IP
+    - key: data.public_ipv4_pool
+      name: Address Pool
+    - key: data.domain
+      name: Scope
+      default: true
+    - key: data.instance_id
+      name: Associate Instance ID
+    - key: data.public_dns
+      name: Public DNS
+    - key: data.nat_gateway_id
+      name: NAT Gateway ID
+    - key: data.association_id
+      name: Association ID
+    - key: data.allocation_id
+      name: Allocation ID
+    - key: data.allocation_status
+      name: Allocation Status
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-eip-eip
+version: '1.0'

@@ -1,0 +1,92 @@
+search:
+  fields:
+    - ARN: data.arn
+    - DB Snapshot Identifier: data.snapshot.db_snapshot_identifier
+    - DB Instance Identifier: data.snapshot.db_instance_identifier
+    - Engine: data.snapshot.engine
+    - Engine Version: data.snapshot.engine_version
+    - Snapshot Type: data.snapshot.snapshot_type
+    - Status: data.snapshot.status
+      type: text
+      labels:
+        - available: "Available"
+        - creating: "Creating"
+        - deleting: "Deleting"
+        - failed: "Failed"
+        - modifying: "Modifying"
+        - rebooting: "Rebooting"
+        - restoring: "Restoring"
+    - Allocated Storage: data.snapshot.allocated_storage
+      data_type: "integer"
+    - Storage Type: data.snapshot.storage_type
+    - Encrypted: data.snapshot.encrypted
+      data_type: "boolean"
+    - KMS Key ID: data.snapshot.kms_key_id
+    - Availability Zone: data.snapshot.availability_zone
+    - VPC ID: data.snapshot.vpc_id
+    - Snapshot Create Time: data.snapshot.snapshot_create_time
+      data_type: "datetime"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.snapshot.db_snapshot_identifier
+    desc: true
+  fields:
+    - DB Snapshot Identifier: data.snapshot.db_snapshot_identifier
+    - DB Instance Identifier: data.snapshot.db_instance_identifier
+    - Engine: data.snapshot.engine
+    - Status: data.snapshot.status
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - failed: red.500
+          type: state
+        - modifying: yellow.500
+          type: state
+        - rebooting: yellow.500
+          type: state
+        - restoring: yellow.500
+          type: state
+    - Allocated Storage: data.snapshot.allocated_storage
+    - Storage Type: data.snapshot.storage_type
+    - Encrypted: data.snapshot.encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Availability Zone: data.snapshot.availability_zone
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Snapshot
+  type: item
+  fields:
+    - ARN: data.arn
+    - DB Snapshot Identifier: data.snapshot.db_snapshot_identifier
+    - DB Instance Identifier: data.snapshot.db_instance_identifier
+    - Engine: data.snapshot.engine
+    - Engine Version: data.snapshot.engine_version
+    - Snapshot Type: data.snapshot.snapshot_type
+    - Status: data.snapshot.status
+    - Allocated Storage: data.snapshot.allocated_storage
+    - Storage Type: data.snapshot.storage_type
+    - Encrypted: data.snapshot.encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - KMS Key ID: data.snapshot.kms_key_id
+    - Availability Zone: data.snapshot.availability_zone
+    - VPC ID: data.snapshot.vpc_id
+    - Snapshot Create Time: data.snapshot.snapshot_create_time
+      type: datetime
+      source_type: iso8601

@@ -1,6 +1,6 @@
 ---
-metric_id: metric-aws-efs-file-system-size
-name: FileSystem Size
+metric_id: metric-aws-efs-filesystem-size
+name: File System Size
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.EFS.FileSystem
 query_options:
@@ -14,11 +14,32 @@ query_options:
         reference_key: region_code
     - key: data.life_cycle_state
       name: State
-      default: true
+    - key: data.number_of_mount_targets
+      name: Mount Targets
+    - key: data.file_system_id
+      name: File System ID
+    - key: data.arn
+      name: ARN
+    - key: data.throughput_mode
+      name: Throughput Mode
+    - key: data.performance_mode
+      name: Performance Mode
+    - key: data.encrypted
+      name: Encrypted
+    - key: data.kms_key_id
+      name: KMS Key ARN
+    - key: data.mount_targets.mount_target_id
+      name: Mount Target IDs
+    - key: data.mount_targets.ip_address
+      name: Mount Target IP
+    - key: data.mount_targets.life_cycle_state
+      name: Mount Target State
+    - key: data.mount_targets.availability_zone_name
+      name: Mount Target AZ
   fields:
     value:
       operator: sum
-      key: data.size
+      key: instance_size
 unit: Bytes
-namespace_id: ns-aws-efs-file-system
+namespace_id: ns-aws-efs-filesystem
 version: '1.0'

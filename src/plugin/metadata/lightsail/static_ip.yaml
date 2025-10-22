@@ -1,0 +1,55 @@
+search:
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - IP Address: data.ip_address
+    - Attached To: data.attached_to
+    - Is Attached: data.is_attached
+      data_type: "boolean"
+    - Support Code: data.support_code
+    - Availability Zone: data.location.availability_zone
+    - Region: data.location.region_name
+    - Resource Type: data.resource_type
+    - Created At: data.created_at
+      data_type: "datetime"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.name
+    desc: true
+  fields:
+    - Name: data.name
+    - IP Address: data.ip_address
+    - Attached To: data.attached_to
+    - Is Attached: data.is_attached
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Availability Zone: data.location.availability_zone
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Static IP
+  type: item
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - IP Address: data.ip_address
+    - Attached To: data.attached_to
+    - Attached: data.is_attached
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Support Code: data.support_code
+    - Availability Zone: data.location.availability_zone
+    - Region: data.location.region_name
+    - Resource Type: data.resource_type
+    - Created At: data.created_at
+      type: datetime
+      source_type: iso8601

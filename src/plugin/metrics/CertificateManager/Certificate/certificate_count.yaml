@@ -1,5 +1,5 @@
 ---
-metric_id: metric-aws-certificate-manager-certificate-count
+metric_id: metric-aws-certificatemanager-certificate-count
 name: Certificate Count
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.CertificateManager.Certificate
@@ -15,13 +15,29 @@ query_options:
     - key: data.status
       name: Status
       default: true
+    - key: instance_type
+      name: Type
     - key: data.in_use_display
       name: In Use
     - key: data.renewal_eligibility_display
       name: Renewal Eligibility
+    - key: data.additional_names_display
+      name: Additional Names
+    - key: data.issuer
+      name: Issuer
+    - key: data.subject
+      name: Subject
+    - key: data.serial
+      name: Serial
+    - key: data.signature_algorithm
+      name: Signature Algorithm
+    - key: data.key_algorithm
+      name: Key Algorithm
+    - key: data.in_use_by
+      name: Associated Resources
   fields:
     value:
       operator: count
 unit: Count
-namespace_id: ns-aws-certificate-manager-certificate
+namespace_id: ns-aws-certificatemanager-certificate
 version: '1.0'

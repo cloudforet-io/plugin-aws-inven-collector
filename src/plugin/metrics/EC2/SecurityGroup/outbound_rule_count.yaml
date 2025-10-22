@@ -1,0 +1,27 @@
+---
+metric_id: metric-aws-ec2-securitygroup-outbound-rule-count
+name: Outbound Rule Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.EC2.SecurityGroup
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.ip_permissions_egress.protocol_display
+      name: Protocol
+    - key: data.ip_permissions_egress.port_display
+      name: Port Range
+    - key: data.ip_permissions_egress.source_display
+      name: Source
+  fields:
+    value:
+      operator: count
+      key: data.ip_permissions_egress
+unit: Count
+namespace_id: ns-aws-ec2-securitygroup
+version: '1.0'

@@ -7,14 +7,28 @@ query_options:
   group_by:
     - key: account
       name: Account ID
-    - key: data.id
-      name: ID
-    - key: data.viewer_certificate.minimum_protocol_version
-      name: SSL version
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
     - key: data.status
       name: Distribution Status
+      default: true
     - key: data.state_display
       name: Status
+    - key: data.alias_icp_recordals.cname
+      name: CNAME
+    - key: data.viewer_certificate.minimum_protocol_version
+      name: Security Policy
+    - key: data.comment
+      name: Comment
+    - key: data.price_class
+      name: Price Class
+    - key: data.http_version
+      name: HTTP Version
+    - key: data.origins.items
+      name: Origins
   fields:
     value:
       operator: count

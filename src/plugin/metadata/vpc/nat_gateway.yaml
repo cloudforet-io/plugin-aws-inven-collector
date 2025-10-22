@@ -1,0 +1,76 @@
+search:
+  fields:
+    - NAT Gateway ID: data.nat_gateway_id
+    - State: data.state
+      type: text
+      labels:
+        - pending: "Pending"
+        - failed: "Failed"
+        - available: "Available"
+        - deleting: "Deleting"
+        - deleted: "Deleted"
+    - VPC ID: data.vpc_id
+    - Subnet ID: data.subnet_id
+    - NAT Gateway Addresses: data.nat_gateway_addresses
+    - Create Time: data.create_time
+      data_type: "datetime"
+    - Delete Time: data.delete_time
+      data_type: "datetime"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.nat_gateway_id
+    desc: true
+  fields:
+    - NAT Gateway ID: data.nat_gateway_id
+    - State: data.state
+      type: enum
+      enums:
+        - pending: yellow.500
+          type: state
+        - failed: red.500
+          type: state
+        - available: green.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+    - VPC ID: data.vpc_id
+    - Subnet ID: data.subnet_id
+    - NAT Gateway Addresses: data.nat_gateway_addresses
+      type: badge
+      outline_color: violet.500
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: NAT Gateway
+  type: item
+  fields:
+    - NAT Gateway ID: data.nat_gateway_id
+    - State: data.state
+      type: enum
+      enums:
+        - pending: yellow.500
+          type: state
+        - failed: red.500
+          type: state
+        - available: green.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+    - VPC ID: data.vpc_id
+    - Subnet ID: data.subnet_id
+    - NAT Gateway Addresses: data.nat_gateway_addresses
+      type: badge
+      outline_color: violet.500
+    - Create Time: data.create_time
+      type: datetime
+      source_type: iso8601
+    - Delete Time: data.delete_time
+      type: datetime
+      source_type: iso8601

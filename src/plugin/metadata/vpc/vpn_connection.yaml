@@ -1,0 +1,63 @@
+search:
+  fields:
+    - VPN Connection ID: data.vpn_connection_id
+    - State: data.state
+      type: text
+      labels:
+        - pending: "Pending"
+        - available: "Available"
+        - deleting: "Deleting"
+        - deleted: "Deleted"
+    - Type: data.type
+    - Customer Gateway ID: data.customer_gateway_id
+    - VPN Gateway ID: data.vpn_gateway_id
+    - Transit Gateway ID: data.transit_gateway_id
+    - Category: data.category
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.vpn_connection_id
+    desc: true
+  fields:
+    - VPN Connection ID: data.vpn_connection_id
+    - State: data.state
+      type: enum
+      enums:
+        - pending: yellow.500
+          type: state
+        - available: green.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+    - Type: data.type
+    - Customer Gateway ID: data.customer_gateway_id
+    - VPN Gateway ID: data.vpn_gateway_id
+    - Transit Gateway ID: data.transit_gateway_id
+    - Category: data.category
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: VPN Connection
+  type: item
+  fields:
+    - VPN Connection ID: data.vpn_connection_id
+    - State: data.state
+      type: enum
+      enums:
+        - pending: yellow.500
+          type: state
+        - available: green.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+    - Type: data.type
+    - Customer Gateway ID: data.customer_gateway_id
+    - VPN Gateway ID: data.vpn_gateway_id
+    - Transit Gateway ID: data.transit_gateway_id
+    - Category: data.category

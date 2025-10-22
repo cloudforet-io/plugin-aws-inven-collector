@@ -3,14 +3,16 @@ from ..base import ResourceManager
 from ...conf.cloud_service_conf import *
 from spaceone.inventory.plugin.collector.lib import *
 
+from ...model.acm import Certificate
+
 
 class CertificateManager(ResourceManager):
-    cloud_service_group = "CertificateManager"
+    cloud_service_group = "ACM"
     cloud_service_type = "Certificate"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.cloud_service_group = "CertificateManager"
+        self.cloud_service_group = "ACM"
         self.cloud_service_type = "Certificate"
         self.metadata_path = "metadata/acm/certificate.yaml"
 
@@ -30,12 +32,11 @@ class CertificateManager(ResourceManager):
     def create_cloud_service(
         self, region: str, options: dict, secret_data: dict, schema: str
     ) -> List[dict]:
-        cloudwatch_namespace = "AWS/CertificateManager"
-        cloudwatch_dimension_name = "CertificateArn"
-        cloudtrail_resource_type = "AWS::ACM::Certificate"
-        self.connector.set_account_id()
+        yield from self._collect_certificates(options, region)
+
+    def _collect_certificates(self, options: dict, region: str) -> List[dict]:
         results = self.connector.get_certificates()
-        account_id = self.connector.get_account_id()
+
         for data in results:
             for raw in data.get("CertificateSummaryList", []):
                 try:
@@ -62,39 +63,35 @@ class CertificateManager(ResourceManager):
                                 certificate_info.get("InUseBy")
                             ),
                             "cloudwatch": self.set_cloudwatch(
-                                cloudwatch_namespace,
-                                cloudwatch_dimension_name,
+                                self.cloud_service_group,
                                 certificate_info.get("CertificateArn"),
                                 region,
                             ),
                             "cloudtrail": self.set_cloudtrail(
-                                region,
-                                cloudtrail_resource_type,
+                                self.cloud_service_group,
                                 raw["CertificateArn"],
-                            ),
-                            "launched_at": self.datetime_to_iso8601(
-                                certificate_info.get("CreatedAt")
+                                region,
                             ),
                         }
                     )
-                    link = f"https://console.aws.amazon.com/acm/home?region={region}#/?id={certificate_info.get('identifier')}"
-                    reference = self.get_reference(
-                        certificate_info.get("CertificateArn"), link
-                    )
 
-                    # Converting datetime type attributes to ISO8601 format needed to meet protobuf format
                     self._update_times(certificate_info)
 
-                    certificate_vo = certificate_info
+                    certificate_vo = Certificate(certificate_info, strict=False)
+
+                    certificate_arn = certificate_vo.certificate_arn
+                    link = f"https://console.aws.amazon.com/acm/home?region={region}#/?id={certificate_info.get('identifier')}"
+                    reference = self.get_reference(certificate_arn, link)
+
                     cloud_service = make_cloud_service(
-                        name=certificate_vo.get("DomainName", ""),
+                        name=certificate_vo.domain_name,
                         cloud_service_type=self.cloud_service_type,
                         cloud_service_group=self.cloud_service_group,
                         provider=self.provider,
-                        data=certificate_vo,
-                        account=account_id,
+                        data=certificate_vo.to_primitive(),
+                        account=options.get("account_id"),
                         reference=reference,
-                        tags=self.get_tags(certificate_vo.get("CertificateArn", "")),
+                        tags=self.get_tags(certificate_arn),
                         region_code=region,
                     )
                     yield cloud_service

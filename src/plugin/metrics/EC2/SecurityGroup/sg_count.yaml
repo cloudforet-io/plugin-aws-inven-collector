@@ -1,6 +1,6 @@
 ---
-metric_id: metric-aws-ec2-sg-count
-name: Security Groups Count
+metric_id: metric-aws-ec2-securitygroup-count
+name: Security Group Count
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.EC2.SecurityGroup
 query_options:
@@ -12,11 +12,27 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.VpcId
-      name: VPC
+    - key: data.group_id
+      name: Security Group ID
+    - key: data.vpc_id
+      name: VPC ID
+    - key: data.description
+      name: Description
+    - key: data.ip_permissions.protocol_display
+      name: Inbound Protocol
+    - key: data.ip_permissions.port_display
+      name: Inbound Port Range
+    - key: data.ip_permissions.source_display
+      name: Inbound Source
+    - key: data.ip_permissions_egress.protocol_display
+      name: Outbound Protocol
+    - key: data.ip_permissions_egress.port_display
+      name: Outbound Port Range
+    - key: data.ip_permissions_egress.source_display
+      name: Outbound Source
   fields:
     value:
       operator: count
 unit: Count
-namespace_id: ns-aws-ec2-sg
+namespace_id: ns-aws-ec2-securitygroup
 version: '1.0'

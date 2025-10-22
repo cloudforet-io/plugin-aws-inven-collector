@@ -2,16 +2,7 @@ from ..base import ResourceManager, _LOGGER
 from ...conf.cloud_service_conf import ASSET_URL
 from spaceone.inventory.plugin.collector.lib import *
 
-
-EXCLUDE_REGION = [
-    "us-west-1",
-    "af-south-1",
-    "ap-east-1",
-    "ap-southeast-3",
-    "ap-northeast-3",
-    "eu-north-1",
-    "me-south-1",
-]
+from ...model.documentdb import Cluster
 
 
 class ClusterManager(ResourceManager):
@@ -31,9 +22,6 @@ class ClusterManager(ResourceManager):
         self._raw_snapshots = []
 
     def create_cloud_service_type(self):
-        yield from self._create_parameter_group_type()
-        yield from self._create_subnet_group_type()
-
         yield make_cloud_service_type(
             name=self.cloud_service_type,
             group=self.cloud_service_group,
@@ -47,26 +35,19 @@ class ClusterManager(ResourceManager):
         )
 
     def create_cloud_service(self, region, options, secret_data, schema):
-        if region in EXCLUDE_REGION:
+        if region in self.EXCLUDE_REGION.get(self.cloud_service_group, []):
             return {}
+
+        yield from self._collect_clusters(options, region)
+
+    def _collect_clusters(self, options, region):
         self.connector.set_account_id()
         self.cloud_service_type = "Cluster"
-        cloudwatch_namespace = "AWS/DocDB"
-        cloudwatch_dimension_name = "DBClusterIdentifier"
-        cloudtrail_resource_type = "AWS::RDS::DBCluster"
 
         self._raw_instances = self._get_instances()
         self._raw_snapshots = self._get_snapshots()
 
-        pre_collect_list = [
-            self._create_parameter_groups,
-            self._create_subnet_groups,
-        ]
-        for pre_collect in pre_collect_list:
-            yield from pre_collect(region)
-
         results = self.connector.get_db_clusters()
-        account_id = self.connector.get_account_id()
 
         for data in results:
             for raw in data.get("DBClusters", []):
@@ -78,43 +59,33 @@ class ClusterManager(ResourceManager):
                         {
                             "instances": instances,
                             "instance_count": len(instances),
-                            "snapshots": self._match_snapshots(
+                            "DBClusterIdentifier": self._match_snapshots(
                                 self._raw_snapshots, raw.get("DBClusterIdentifier")
                             ),
-                            "subnet_group": self._match_subnet_group(
+                            "DBSubnetGroup": self._match_subnet_group(
                                 raw.get("DBSubnetGroup")
                             ),
-                            "parameter_group": self._match_parameter_group(
+                            "DBClusterParameterGroup": self._match_parameter_group(
                                 raw.get("DBClusterParameterGroup")
                             ),
                             "cloudwatch": self.set_cloudwatch(
-                                cloudwatch_namespace,
-                                cloudwatch_dimension_name,
+                                self.cloud_service_group,
                                 raw["DBClusterIdentifier"],
                                 region,
                             ),
                             "cloudtrail": self.set_cloudtrail(
-                                region,
-                                cloudtrail_resource_type,
+                                self.cloud_service_group,
                                 raw["DBClusterIdentifier"],
+                                region,
                             ),
                         }
                     )
 
-                    if subnet_group := self._match_subnet_group(
-                        raw.get("DBSubnetGroup")
-                    ):
-                        raw.update({"subnet_group": subnet_group})
+                    self._update_cluster_times(raw)
 
-                    if parameter_group := self._match_parameter_group(
-                        raw.get("DBClusterParameterGroup")
-                    ):
-                        raw.update({"parameter_group": parameter_group})
-
-                    cluster_vo = raw
-                    self._update_cluster_times(cluster_vo)
-                    cluster_arn = cluster_vo.get("DBClusterArn", "")
-                    cluster_identifier = cluster_vo.get("DBClusterIdentifier", "")
+                    cluster_vo = Cluster(raw, strict=False)
+                    cluster_arn = cluster_vo.db_cluster_arn
+                    cluster_identifier = cluster_vo.db_cluster_identifier
                     link = f"https://console.aws.amazon.com/docdb/home?region={region}#cluster-details/{cluster_identifier}"
                     reference = self.get_reference(cluster_arn, link)
 
@@ -123,8 +94,8 @@ class ClusterManager(ResourceManager):
                         cloud_service_type=self.cloud_service_type,
                         cloud_service_group=self.cloud_service_group,
                         provider=self.provider,
-                        data=cluster_vo,
-                        account=account_id,
+                        data=cluster_vo.to_primitive(),
+                        account=options.get("account_id"),
                         reference=reference,
                         instance_type=cluster_vo.get("EngineVersion", ""),
                         instance_size=float(cluster_vo.get("instance_count", 0)),
@@ -143,152 +114,9 @@ class ClusterManager(ResourceManager):
                         resource_type="inventory.CloudService",
                     )
 
-    def _create_parameter_group_type(self):
-        cloud_service_type = "ParameterGroup"
-        metadata_path = "metadata/documentdb/parameter.yaml"
-
-        yield make_cloud_service_type(
-            name=cloud_service_type,
-            group=self.cloud_service_group,
-            provider=self.provider,
-            metadata_path=metadata_path,
-            is_primary=True,
-            is_major=True,
-            service_code="AmazonDocDB",
-            tags={"spaceone:icon": f"{ASSET_URL}/Amazon-DocumentDB.svg"},
-            labels=["Database"],
-        )
-
-    def _create_subnet_group_type(self):
-        cloud_service_type = "SubnetGroup"
-        metadata_path = "metadata/documentdb/subnet.yaml"
-
-        yield make_cloud_service_type(
-            name=cloud_service_type,
-            group=self.cloud_service_group,
-            provider=self.provider,
-            metadata_path=metadata_path,
-            is_primary=True,
-            is_major=True,
-            service_code="AmazonDocDB",
-            tags={"spaceone:icon": f"{ASSET_URL}/Amazon-DocumentDB.svg"},
-            labels=["Database"],
-        )
-
-    def _create_parameter_groups(self, region):
-        cloud_service_type = "ParameterGroup"
-        cloudtrail_resource_type = "AWS::RDS::DBClusterParameterGroup"
-
-        res_pgs = self.connector.get_db_cluster_parameter_groups()
-        account_id = self.connector.get_account_id()
-
-        for pg_data in res_pgs.get("DBClusterParameterGroups", []):
-            try:
-                pg_data.update(
-                    {
-                        "cloudtrail": self.set_cloudtrail(
-                            region,
-                            cloudtrail_resource_type,
-                            pg_data["DBClusterParameterGroupName"],
-                        ),
-                        "parameters": self.request_parameter_data(
-                            pg_data["DBClusterParameterGroupName"]
-                        ),
-                    }
-                )
-                param_group_vo = pg_data
-                parameter_arn = param_group_vo.get("DBClusterParameterGroupArn", "")
-                parameter_name = param_group_vo.get("DBClusterParameterGroupName", "")
-                link = f"https://console.aws.amazon.com/docdb/home?region={region}#parameterGroup-details/{parameter_name}"
-                reference = self.get_reference(parameter_arn, link)
-
-                cloud_service = make_cloud_service(
-                    name=param_group_vo.get("DBClusterParameterGroupName", ""),
-                    cloud_service_type=self.cloud_service_type,
-                    cloud_service_group=self.cloud_service_group,
-                    provider=self.provider,
-                    data=param_group_vo,
-                    account=account_id,
-                    reference=reference,
-                    instance_type=param_group_vo.get("DBParameterGroupFamily", ""),
-                    tags=self.request_tags(
-                        param_group_vo.get("DBClusterParameterGroupArn", "")
-                    ),
-                    region_code=region,
-                )
-                yield cloud_service
-
-            except Exception as e:
-                yield make_error_response(
-                    error=e,
-                    provider=self.provider,
-                    cloud_service_group=self.cloud_service_group,
-                    cloud_service_type=cloud_service_type,
-                    region_name=region,
-                    resource_type="inventory.CloudService",
-                )
-
-    def _create_subnet_groups(self, region):
-        cloud_service_type = "SubnetGroup"
-        cloudtrail_resource_type = "AWS::RDS::DBSubnetGroup"
-
-        response = self.connector.get_db_subnet_groups()
-        account_id = self.connector.get_account_id()
-        for data in response:
-            for raw in data.get("DBSubnetGroups", []):
-                try:
-                    raw.update(
-                        {
-                            "cloudtrail": self.set_cloudtrail(
-                                region,
-                                cloudtrail_resource_type,
-                                raw["DBSubnetGroupName"],
-                            )
-                        }
-                    )
-                    subnet_grp_vo = raw
-                    subnet_arn = subnet_grp_vo.get("DBSubnetGroupArn", "")
-                    subnet_name = subnet_grp_vo.get("DBClusterParameterGroupName", "")
-                    link = f"https://console.aws.amazon.com/docdb/home?region={region}#subnetGroup-details/{subnet_name}"
-                    reference = self.get_reference(subnet_arn, link)
-
-                    cloud_service = make_cloud_service(
-                        name=subnet_grp_vo.get("DBSubnetGroupName", ""),
-                        cloud_service_type=cloud_service_type,
-                        cloud_service_group=self.cloud_service_group,
-                        provider=self.provider,
-                        data=subnet_grp_vo,
-                        account=account_id,
-                        reference=reference,
-                        tags=self.request_tags(
-                            subnet_grp_vo.get("DBSubnetGroupArn", "")
-                        ),
-                        region_code=region,
-                    )
-                    yield cloud_service
-
-                except Exception as e:
-                    yield make_error_response(
-                        error=e,
-                        provider=self.provider,
-                        cloud_service_group=self.cloud_service_group,
-                        cloud_service_type=cloud_service_type,
-                        region_name=region,
-                        resource_type="inventory.CloudService",
-                    )
-
     def request_tags(self, resource_arn):
         response = self.connector.list_tags_for_resource(resource_arn)
         return self.convert_tags_to_dict_type(response.get("TagList", []))
-
-    def request_parameter_data(self, pg_name):
-        res_params = self.connector.describe_db_cluster_parameters(pg_name)
-        return list(
-            map(
-                lambda param: param,
-                res_params.get("Parameters", []),
-            )
-        )
 
     def _match_subnet_group(self, subnet_group):
         for _sg in self._subnet_groups:

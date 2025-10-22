@@ -12,10 +12,41 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.status
-      name: Status
     - key: data.version
       name: Version
+    - key: data.status
+      name: Status
+      default: true
+    - key: data.arn
+      name: ARN
+    - key: data.role_arn
+      name: Role ARN
+    - key: data.endpoint
+      name: Endpoint
+    - key: data.node_groups.nodegroup_arn
+      name: Node Group ARNs
+    - key: data.node_groups.nodegroup_name
+      name: Node Group Names
+    - key: data.node_groups.node_role
+      name: Node Role ARNs
+    - key: data.resources_vpc_config.vpc_id
+      name: VPC ID
+    - key: data.resources_vpc_config.subnet_ids
+      name: Subnets
+    - key: data.resources_vpc_config.public_access_cidrs
+      name: Public Access CIDRs
+    - key: data.resources_vpc_config.cluster_security_group_id
+      name: Cluster Security Group ID
+    - key: data.resources_vpc_config.endpoint_public_access
+      name: Endpoint Public Access
+    - key: data.resources_vpc_config.endpoint_private_access
+      name: Endpoint Private Access
+    - key: data.logging.cluster_logging.enabled
+      name: Cluster Logging Enabled
+    - key: data.identity.oidc.issuer
+      name: OIDC Issuer
+    - key: data.platform_version
+      name: Platform Version
   fields:
     value:
       operator: count

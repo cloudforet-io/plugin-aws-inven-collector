@@ -1,0 +1,61 @@
+search:
+  fields:
+    - Customer Gateway ID: data.customer_gateway_id
+    - State: data.state
+      type: text
+      labels:
+        - pending: "Pending"
+        - available: "Available"
+        - deleting: "Deleting"
+        - deleted: "Deleted"
+    - Type: data.type
+    - IP Address: data.ip_address
+    - BGP ASN: data.bgp_asn
+    - Device Name: data.device_name
+    - Certificate ARN: data.certificate_arn
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.customer_gateway_id
+    desc: true
+  fields:
+    - Customer Gateway ID: data.customer_gateway_id
+    - State: data.state
+      type: enum
+      enums:
+        - pending: yellow.500
+          type: state
+        - available: green.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+    - Type: data.type
+    - IP Address: data.ip_address
+    - BGP ASN: data.bgp_asn
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Customer Gateway
+  type: item
+  fields:
+    - Customer Gateway ID: data.customer_gateway_id
+    - State: data.state
+      type: enum
+      enums:
+        - pending: yellow.500
+          type: state
+        - available: green.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - deleted: gray.400
+          type: state
+    - Type: data.type
+    - IP Address: data.ip_address
+    - BGP ASN: data.bgp_asn
+    - Device Name: data.device_name
+    - Certificate ARN: data.certificate_arn

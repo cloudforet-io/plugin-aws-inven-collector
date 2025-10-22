@@ -1,0 +1,55 @@
+---
+metric_id: metric-aws-ecs-cluster-count
+name: Cluster Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.ECS.Cluster
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.status
+      name: Status
+      default: true
+    - key: data.active_services_count
+      name: Active Services
+    - key: data.running_tasks_count
+      name: Running Tasks
+    - key: data.pending_tasks_count
+      name: Pending Tasks
+    - key: data.registered_container_instances_count
+      name: Registered Instances
+    - key: data.cluster_arn
+      name: Cluster ARN
+    - key: data.services.service_arn
+      name: Services ARN
+    - key: data.services.service_name
+      name: Services Name
+    - key: data.services.launch_type
+      name: Services Launch Type
+    - key: data.services.role_arn
+      name: Services Role ARN
+    - key: data.services.scheduling_strategy
+      name: Services Scheduling Strategy
+    - key: data.tasks.task_arn
+      name: Tasks ARN
+    - key: data.tasks.task
+      name: Tasks Name
+    - key: data.tasks.availability_zone
+      name: Tasks Availability Zone
+    - key: data.tasks.health_status
+      name: Tasks Health Status
+    - key: data.tasks.cpu
+      name: Tasks CPU
+    - key: data.tasks.memory
+      name: Tasks Memory
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-ecs-cluster
+version: '1.0'

@@ -1,0 +1,177 @@
+search:
+  fields:
+    - Target Group Name: data.target_group_name
+    - Target Group ARN: data.target_group_arn
+    - Protocol: data.protocol
+      type: text
+      labels:
+        - HTTP: "HTTP"
+        - HTTPS: "HTTPS"
+        - TCP: "TCP"
+        - UDP: "UDP"
+        - TLS: "TLS"
+        - TCP_UDP: "TCP/UDP"
+    - Port: data.port
+      data_type: "integer"
+    - Target Type: instance_type
+      type: text
+      labels:
+        - instance: "Instance"
+        - ip: "IP"
+        - lambda: "Lambda"
+    - VPC ID: data.vpc_id
+    - Stickiness: data.attributes.stickiness_enabled
+      type: text
+      labels:
+        - Enabled: "Enabled"
+        - Disabled: "Disabled"
+    - Stickiness Type: data.attributes.stickiness_type
+      type: text
+      labels:
+        - lb_cookie: "LB Cookie"
+        - source_ip: "Source IP"
+    - Health Check Enabled: data.health_check_enabled
+      data_type: "boolean"
+    - Health Check Protocol: data.health_check_protocol
+    - Health Check Port: data.health_check_port
+    - Health Check Path: data.health_check_path
+    - Healthy Threshold Count: data.healthy_threshold_count
+    - Unhealthy Threshold Count: data.unhealthy_threshold_count
+    - Health Check Interval Seconds: data.health_check_interval_seconds
+    - Health Check Timeout Seconds: data.health_check_timeout_seconds
+    - Deregistration Delay Timeout Seconds: data.attributes.deregistration_delay_timeout_seconds
+    - Slow Start Duration Seconds: data.attributes.slow_start_duration_seconds
+    - Load Balancing Algorithm Type: data.attributes.load_balancing_algorithm_type
+    - Stickiness LB Cookie Duration Seconds: data.attributes.stickiness_lb_cookie_duration_seconds
+    - Load Balancer ARNs: data.load_balancer_arns
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.target_group_name
+    desc: true
+  fields:
+    - Target Group Name: data.target_group_name
+    - Protocol: data.protocol
+      type: enum
+      enums:
+        - HTTP: blue.400
+        - HTTPS: indigo.500
+        - TCP: coral.600
+        - TLS: green.500
+        - UDP: yellow.500
+        - TCP_UDP: violet.500
+    - Port: data.port_display
+    - Target Type: instance_type
+      type: enum
+      enums:
+        - instance: indigo.500
+        - ip: coral.600
+        - lambda: green.500
+    - Load Balancers: data.load_balancer_arns
+      type: badge
+      outline_color: violet.500
+    - Health Check: data.health_check_enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Target Group ARN: data.target_group_arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Target Group
+  type: item
+  fields:
+    - Target Group Name: data.target_group_name
+    - Target Group ARN: data.target_group_arn
+    - Protocol: data.protocol
+      type: enum
+      enums:
+        - HTTP: blue.400
+        - HTTPS: indigo.500
+        - TCP: coral.600
+        - TLS: green.500
+        - UDP: yellow.500
+        - TCP_UDP: violet.500
+    - Port: data.port
+    - Target Type: data.target_type
+      type: enum
+      enums:
+        - instance: indigo.500
+        - ip: coral.600
+        - lambda: green.500
+    - VPC ID: data.vpc_id
+    - Load Balancer ARNs: data.load_balancer_arns
+      type: badge
+      outline_color: violet.500
+
+tabs.1:
+  name: Target Health
+  type: table
+  root_path: data.targets_health
+  fields:
+    - Target ID: target.id
+    - Health Check Port: health_check_port_display
+    - Availability Zone: target.availability_zone
+    - State: target_health.state
+      type: enum
+      enums:
+        - healthy: green.500
+        - initial: gray.500
+        - unused: gray.500
+        - unavailable: gray.500
+        - draining: gray.500
+        - unhealthy: red.600
+        - unhealthy.draining: red.600
+    - Reason: target_health.reason
+    - Description: target_health.description
+
+tabs.2:
+  name: Attributes
+  type: item
+  fields:
+    - Deregistration Delay: data.attributes.deregistration_delay_timeout_seconds
+    - Slow Start Duration: data.attributes.slow_start_duration_seconds
+    - Load Balancing Algorithm: data.attributes.load_balancing_algorithm_type
+      type: enum
+      enums:
+        - round_robin: indigo.500
+        - least_outstanding_requests: coral.600
+    - Stickiness: data.attributes.stickiness_enabled
+      type: enum
+      enums:
+        - Enabled: indigo.500
+        - Disabled: coral.600
+    - Stickiness Type: data.attributes.stickiness_type
+      type: enum
+      enums:
+        - lb_cookie: indigo.500
+        - source_ip: coral.600
+
+tabs.3:
+  name: Health Check
+  type: item
+  fields:
+    - Health Check Protocol: data.health_check_protocol
+      type: enum
+      enums:
+        - HTTP: blue.400
+        - HTTPS: indigo.500
+        - TCP: coral.600
+        - TLS: green.500
+        - UDP: yellow.500
+        - TCP_UDP: violet.500
+    - Health Check Port: data.health_check_port
+    - Health Check Enabled: data.health_check_enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Health Check Interval Seconds: data.health_check_interval_seconds
+    - Health Check Timeout Seconds: data.health_check_timeout_seconds
+    - Healthy Threshold Count: data.healthy_threshold_count
+    - Unhealthy Threshold Count: data.unhealthy_threshold_count
+    - Health Check Path: data.health_check_path

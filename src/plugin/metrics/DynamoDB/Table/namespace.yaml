@@ -1,0 +1,8 @@
+---
+namespace_id: ns-aws-dynamodb-table
+name: DynamoDB/Table
+category: ASSET
+resource_type: inventory.CloudService:aws.DynamoDB.Table
+group: aws
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-dynamodb.svg'
+version: '1.1'

@@ -1,0 +1,8 @@
+---
+namespace_id: ns-aws-eip-eip
+name: EIP/EIP
+category: ASSET
+resource_type: inventory.CloudService:aws.EIP.EIP
+group: aws
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-eip.svg'
+version: '1.1'

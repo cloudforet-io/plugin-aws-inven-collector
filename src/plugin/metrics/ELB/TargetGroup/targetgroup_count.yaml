@@ -1,5 +1,5 @@
 ---
-metric_id: metric-aws-elb-target-group-count
+metric_id: metric-aws-elb-targetgroup-count
 name: Target Group Count
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.ELB.TargetGroup
@@ -12,13 +12,51 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
+    - key: data.target_group_arn
+      name: Target Group ARN
+    - key: data.target_group_name
+      name: Target Group Name
     - key: data.protocol
       name: Protocol
+    - key: data.port
+      name: Port
+    - key: data.health_check_protocol
+      name: Health Check Protocol
+    - key: data.health_check_port
+      name: Health Check Port
+    - key: data.health_check_path
+      name: Health Check Path
+    - key: data.health_check_interval_seconds
+      name: Health Check Interval
+    - key: data.health_check_timeout_seconds
+      name: Health Check Timeout
+    - key: data.healthy_threshold_count
+      name: Healthy Threshold
+    - key: data.unhealthy_threshold_count
+      name: Unhealthy Threshold
     - key: data.target_type
       name: Target Type
+    - key: data.vpc_id
+      name: VPC ID
+    - key: data.load_balancer_arns
+      name: Load Balancer ARNs
+    - key: data.instances.instance_id
+      name: Instance IDs
+    - key: data.instances.port
+      name: Instance Ports
+    - key: data.instances.availability_zone
+      name: Instance Availability Zones
+    - key: data.instances.health_status
+      name: Instance Health Status
+    - key: data.instances.target_health_description
+      name: Instance Health Description
+    - key: data.instances.target_health_reason
+      name: Instance Health Reason
+    - key: data.instances.target_health_state
+      name: Instance Health State
   fields:
     value:
       operator: count
 unit: Count
-namespace_id: ns-aws-elb-target-group
+namespace_id: ns-aws-elb-targetgroup
 version: '1.0'

@@ -2,6 +2,8 @@ from spaceone.inventory.plugin.collector.lib import *
 from plugin.manager.base import ResourceManager
 from plugin.conf.cloud_service_conf import *
 
+from ...model.dynamodb import Table
+
 
 class TableManager(ResourceManager):
     cloud_service_group = "DynamoDB"
@@ -27,18 +29,15 @@ class TableManager(ResourceManager):
         )
 
     def create_cloud_service(self, region, options, secret_data, schema):
+        yield from self._collect_tables(options, region)
+
+    def _collect_tables(self, options, region):
         _auto_scaling_policies = None
-        cloudwatch_namespace = "AWS/DynamoDB"
-        cloudwatch_dimension_name = "TableName"
-        cloudtrail_resource_type = "AWS::DynamoDB::Table"
         self.connector.set_account_id()
         results = self.connector.get_tables()
-        account_id = self.connector.get_account_id()
         for data in results:
             for table_name in data.get("TableNames", []):
                 try:
-                    table = {}
-                    # response = self.client.describe_table(TableName=table_name)
                     response = self.connector.describe_table(table_name)
                     table = response.get("Table")
 
@@ -77,38 +76,37 @@ class TableManager(ResourceManager):
                                 table_name
                             ),
                             "cloudwatch": self.set_cloudwatch(
-                                cloudwatch_namespace,
-                                cloudwatch_dimension_name,
+                                self.cloud_service_group,
                                 table["TableName"],
                                 region,
                             ),
                             "cloudtrail": self.set_cloudtrail(
-                                region,
-                                cloudtrail_resource_type,
+                                self.cloud_service_group,
                                 table["TableName"],
+                                region,
                             ),
                         }
                     )
-                    table_vo = table
 
-                    # Converting datetime type attributes to ISO8601 format needed to meet protobuf format
-                    self._update_times(table_vo)
+                    self._update_times(table)
 
-                    table_arn = table_vo.get("TableArn", "")
-                    table_name = table_vo.get("TableName", "")
+                    table_vo = Table(table, strict=False)
+
+                    table_arn = table_vo.table_arn
+                    table_name = table_vo.table_name
                     link = f"https://console.aws.amazon.com/dynamodb/home?region={region}#tables:selected={table_name};tab=overview"
                     reference = self.get_reference(table_arn, link)
 
                     cloud_service = make_cloud_service(
-                        name=table_vo.get("TableName", ""),
+                        name=table_name,
                         cloud_service_type=self.cloud_service_type,
                         cloud_service_group=self.cloud_service_group,
                         provider=self.provider,
-                        data=table_vo,
-                        account=account_id,
+                        data=table_vo.to_primitive(),
+                        account=options.get("account_id"),
                         reference=reference,
-                        instance_size=float(table_vo.get("TableSizeBytes", 0)),
-                        tags=self.request_tags(table_vo.get("TableArn", "")),
+                        instance_size=float(table_vo.table_size_bytes),
+                        tags=self.request_tags(table_arn),
                         region_code=region,
                     )
                     yield cloud_service

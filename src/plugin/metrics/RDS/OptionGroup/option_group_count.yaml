@@ -1,0 +1,24 @@
+---
+metric_id: metric-aws-rds-option-group-count
+name: Option Group Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.RDS.OptionGroup
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.option_group_name
+      name: Option Group Name
+    - key: data.engine_name
+      name: Engine Name
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-rds-option-group
+version: '1.0'

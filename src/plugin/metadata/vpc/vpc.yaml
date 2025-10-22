@@ -1,0 +1,130 @@
+search:
+  fields:
+    - VPC ID: data.vpc_id
+    - State: data.state
+      type: text
+      labels:
+        - available: "Available"
+        - pending: "Pending"
+    - CIDR: data.cidr_blocks.cidr_block
+    - Main Route Table: data.main_route_table_id
+    - Main Network ACL: data.main_network_acl_id
+    - Tenancy: data.instance_tenancy
+    - Default VPC: data.is_default
+      data_type: "boolean"
+    - Owner: data.owner_id
+    - ARN: data.arn
+    - DHCP Options ID: data.dhcp_options_id
+    - Enable DNS Hostnames: data.enable_dns_hostnames
+      data_type: "boolean"
+    - Enable DNS Support: data.enable_dns_support
+      data_type: "boolean"
+    - Subnet ARNs: data.subnets.subnet_arn
+    - Subnet IDs: data.subnets.subnet_id
+    - Subnet Names: data.subnets.name
+    - Subnet CIDRs: data.subnets.cidr_block
+    - Subnet Availability Zones: data.subnets.availability_zone
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.vpc_id
+    desc: true
+  fields:
+    - VPC ID: data.vpc_id
+    - State: data.state
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+    - CIDR: data.cidr_blocks.cidr_block
+      type: badge
+      outline_color: violet.500
+    - Tenancy: data.instance_tenancy
+    - Default VPC: data.is_default
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Owner: data.owner_id
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: VPC
+  type: item
+  fields:
+    - VPC ID: data.vpc_id
+    - State: data.state
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+    - IPv4 CIDR: data.cidr_blocks.cidr_block
+      type: badge
+      outline_color: violet.500
+    - IPv6 CIDR: data.ipv6_cidr_block_association_set.ipv6_cidr_block
+      type: badge
+      outline_color: violet.500
+    - DNS resolution: data.enable_dns_support
+      type: enum
+      enums:
+        - Enabled: indigo.500
+        - Disabled: coral.600
+    - DNS hostnames: data.enable_dns_hostnames
+      type: enum
+      enums:
+        - Enabled: indigo.500
+        - Disabled: coral.600
+    - DHCP Options set: data.dhcp_options_id
+    - Tenancy: data.instance_tenancy
+      type: badge
+      outline_color: violet.500
+    - Default VPC: data.is_default
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Owner: data.owner_id
+
+tabs.1:
+  name: Subnet
+  type: table
+  root_path: data.subnets
+  fields:
+    - Subnet ID: subnet_id
+    - State: state
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+    - IPv4 CIDR: cidr_block
+    - Availability Zone: availability_zone
+    - Auto-assign Public IP: map_public_ip_on_launch
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+
+tabs.2:
+  name: Route Tables
+  type: table
+  root_path: data.route_tables
+  fields:
+    - Route Table ID: route_table_id
+    - Main: main
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Routes: routes
+      type: badge
+      outline_color: violet.500

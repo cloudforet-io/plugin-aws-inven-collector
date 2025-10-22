@@ -7,13 +7,35 @@ query_options:
   group_by:
     - key: account
       name: Account ID
-      search_key: account
     - key: region_code
       name: Region
-      search_key: region_code
       reference:
         resource_type: inventory.Region
         reference_key: region_code
+    - key: data.home_region
+      name: Home Region
+    - key: data.is_multi_region_trail
+      name: Multi-Region Trail
+    - key: data.has_insight_selectors
+      name: Insight
+    - key: data.is_organization_trail
+      name: Organization Trail
+    - key: data.s3_bucket_name
+      name: S3 Bucket
+    - key: data.s3_key_prefix
+      name: Log file Prefix
+    - key: data.log_file_validation_enabled
+      name: Log file Validation Enabled
+    - key: data.cloud_watch_logs_log_group_arn
+      name: CloudWatch Logs Log group
+    - key: data.sns_topic_name
+      name: SNS Topic name
+    - key: data.sns_topic_arn
+      name: SNS Topic ARN
+    - key: data.kms_key_id
+      name: KMS Key ID
+    - key: data.include_global_service_events
+      name: Include Global Service Events
   fields:
     value:
       operator: count

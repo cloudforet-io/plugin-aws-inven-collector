@@ -1,5 +1,5 @@
 ---
-metric_id: metric-aws-lambda-function-code-size
+metric_id: metric-aws-lambda_model-function-code-size
 name: Function Code Size
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.Lambda.Function
@@ -12,14 +12,42 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.runtime
-      name: Runtime
     - key: data.package_type
       name: Package Type
+    - key: data.runtime
+      name: Runtime
+    - key: data.description
+      name: Description
+    - key: data.arn
+      name: ARN
+    - key: data.version
+      name: Version
+    - key: data.role
+      name: Role ARN
+    - key: data.handler
+      name: Handler
+    - key: data.vpc_config.vpc_id
+      name: VPC ID
+    - key: data.vpc_config.subnet_ids
+      name: Subnet IDs
+    - key: data.vpc_config.security_group_ids
+      name: Security Group IDs
+    - key: data.code_sha256
+      name: Code SHA256
+    - key: data.layers.arn
+      name: Layers ARN
+    - key: data.kms_key_arn
+      name: KMS Key ARN
+    - key: data.dead_letter_config.target_name
+      name: Dead Letter Target Name
+    - key: data.dead_letter_config.target_arn
+      name: Dead Letter Target ARN
+    - key: data.trace_config.mode
+      name: Trace Config Mode
   fields:
     value:
       operator: sum
-      key: data.code_size
+      key: instance_size
 unit: Bytes
-namespace_id: ns-aws-lambda-function
+namespace_id: ns-aws-lambda_model-function
 version: '1.0'

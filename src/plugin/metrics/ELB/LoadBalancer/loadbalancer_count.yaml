@@ -1,6 +1,6 @@
 ---
 metric_id: metric-aws-elb-loadbalancer-count
-name: LoadBalancer Count
+name: Load Balancer Count
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.ELB.LoadBalancer
 query_options:
@@ -12,12 +12,93 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
+    - key: data.dns_name
+      name: DNS Name
     - key: data.state.code
       name: State
-    - key: data.type
+    - key: instance_type
       name: Type
+      default: true
+    - key: data.availability_zones.zone_name
+      name: Availability Zones
+    - key: data.listeners.ssl_policy
+      name: Security Policy
+    - key: data.load_balancer_arn
+      name: ARN
     - key: data.scheme
       name: Scheme
+    - key: data.vpc_id
+      name: VPC ID
+    - key: data.availability_zones.subnet_id
+      name: Subnet ID
+    - key: data.canonical_hosted_zone_id
+      name: Hosted Zone ID
+    - key: data.security_groups
+      name: Security Groups
+    - key: data.listeners.listener_arn
+      name: Listener IDs
+    - key: data.listeners.protocol
+      name: Listener Protocol
+    - key: data.listeners.port
+      name: Listener Port
+    - key: data.listeners.ssl_policy
+      name: Listener SSL Policy
+    - key: data.target_groups.target_group_arn
+      name: Target Group ARNs
+    - key: data.target_groups.target_group_name
+      name: Target Group Names
+    - key: data.target_groups.protocol
+      name: Target Group Protocol
+    - key: data.target_groups.port
+      name: Target Group Port
+    - key: data.target_groups.health_check_protocol
+      name: Target Group Health Check Protocol
+    - key: data.target_groups.health_check_port
+      name: Target Group Health Check Port
+    - key: data.target_groups.health_check_path
+      name: Target Group Health Check Path
+    - key: data.target_groups.health_check_interval_seconds
+      name: Target Group Health Check Interval
+    - key: data.target_groups.health_check_timeout_seconds
+      name: Target Group Health Check Timeout
+    - key: data.target_groups.healthy_threshold_count
+      name: Target Group Healthy Threshold
+    - key: data.target_groups.unhealthy_threshold_count
+      name: Target Group Unhealthy Threshold
+    - key: data.target_groups.target_type
+      name: Target Group Target Type
+    - key: data.target_groups.vpc_id
+      name: Target Group VPC ID
+    - key: data.target_groups.load_balancer_arns
+      name: Target Group Load Balancer ARNs
+    - key: data.target_groups.instances.instance_id
+      name: Target Group Instance IDs
+    - key: data.target_groups.instances.port
+      name: Target Group Instance Ports
+    - key: data.target_groups.instances.availability_zone
+      name: Target Group Instance Availability Zones
+    - key: data.target_groups.instances.health_status
+      name: Target Group Instance Health Status
+    - key: data.target_groups.instances.target_health_description
+      name: Target Group Instance Health Description
+    - key: data.target_groups.instances.target_health_reason
+      name: Target Group Instance Health Reason
+    - key: data.target_groups.instances.target_health_state
+      name: Target Group Instance Health State
+    - key: data.instances.instance_id
+      name: Instance IDs
+    - key: data.instances.port
+      name: Instance Ports
+    - key: data.instances.availability_zone
+      name: Instance Availability Zones
+    - key: data.instances.health_status
+      name: Instance Health Status
+    - key: data.instances.target_health_description
+      name: Instance Health Description
+    - key: data.instances.target_health_reason
+      name: Instance Health Reason
+    - key: data.instances.target_health_state
+      name: Instance Health State
   fields:
     value:
       operator: count

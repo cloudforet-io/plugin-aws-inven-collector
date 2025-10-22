@@ -1,0 +1,207 @@
+search:
+  fields:
+    - ARN: data.arn
+    - Role: data.role
+      type: text
+      labels:
+        - cluster: "Cluster"
+        - instance: "Instance"
+    - Status: data.status
+      type: text
+      labels:
+        - available: "Available"
+        - creating: "Creating"
+        - deleting: "Deleting"
+        - maintenance: "Maintenance"
+        - modifying: "Modifying"
+        - rebooting: "Rebooting"
+        - renaming: "Renaming"
+        - starting: "Starting"
+        - stopping: "Stopping"
+        - upgrading: "Upgrading"
+        - failed: "Failed"
+        - inaccessible-encryption-credentials: "Inaccessible Encryption Credentials"
+        - restore-error: "Restore Error"
+        - stopped: "Stopped"
+        - storage-full: "Storage Full"
+    - Engine: data.engine
+    - Engine Version: data.engine_version
+    - Cluster member counts: data.cluster.db_cluster_member_counts
+      data_type: "integer"
+    - Instance Class: data.instance.db_instance_class
+    - Availability Zone: data.availability_zone
+    - Multi AZ: data.multi_az
+      data_type: "boolean"
+    - Cluster Endpoint: data.cluster.endpoint
+    - Cluster Reader Endpoint: data.cluster.reader_endpoint
+    - Cluster Custom Endpoint: data.cluster.custom_endpoints
+    - Cluster Port: data.cluster.port
+      data_type: "integer"
+    - Instance Endpoint: data.instance.endpoint.address
+    - Auto Minor Version Upgrade: data.cluster.auto_minor_version_upgrade
+    - Preferred Maintenance Window: data.preferred_maintenance_window
+    - Deletion Protection: data.deletion_protection
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.db_identifier
+    desc: true
+  fields:
+    - DB Identifier: data.db_identifier
+    - Role: data.role
+    - Engine: data.engine
+    - Status: data.status
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - maintenance: yellow.500
+          type: state
+        - modifying: yellow.500
+          type: state
+        - rebooting: yellow.500
+          type: state
+        - renaming: yellow.500
+          type: state
+        - starting: yellow.500
+          type: state
+        - stopping: yellow.500
+          type: state
+        - upgrading: yellow.500
+          type: state
+        - failed: red.500
+          type: state
+        - inaccessible-encryption-credentials: red.500
+          type: state
+        - restore-error: red.500
+          type: state
+        - stopped: red.500
+          type: state
+        - storage-full: red.500
+          type: state
+    - Size: data.size
+    - Region & AZ: data.availability_zone
+    - Multi-AZ: data.multi_az
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Summary
+  type: item
+  fields:
+    - DB Identifier: data.db_identifier
+    - Role: data.role
+    - Status: data.status
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - creating: yellow.500
+          type: state
+        - deleting: yellow.500
+          type: state
+        - maintenance: yellow.500
+          type: state
+        - modifying: yellow.500
+          type: state
+        - rebooting: yellow.500
+          type: state
+        - renaming: yellow.500
+          type: state
+        - starting: yellow.500
+          type: state
+        - stopping: yellow.500
+          type: state
+        - upgrading: yellow.500
+          type: state
+        - failed: red.500
+          type: state
+        - inaccessible-encryption-credentials: red.500
+          type: state
+        - restore-error: red.500
+          type: state
+        - stopped: red.500
+          type: state
+        - storage-full: red.500
+          type: state
+    - Engine: data.engine
+    - Engine Version: data.cluster.engine_version
+    - Class: data.size
+    - Region & AZ: data.availability_zone
+
+tabs.1:
+  name: Endpoints
+  type: item
+  fields:
+    - Endpoint: data.cluster.endpoint
+    - Port: data.cluster.port
+    - Reader Endpoint: data.cluster.reader_endpoint
+
+tabs.2:
+  name: Configuration
+  type: item
+  fields:
+    - DB Cluster ID: data.cluster.db_cluster_identifier
+    - ARN: data.cluster.db_cluster_arn
+    - DB Cluster Role: data.cluster.db_cluster_role
+    - Engine Version: data.cluster.engine_version
+    - Resource ID: data.cluster.db_cluster_resource_id
+    - Engine Mode: data.cluster.engine_mode
+    - DB Cluster Parameter Group: data.cluster.db_cluster_parameter_group
+    - Deletion Protection: data.cluster.deletion_protection
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - IAM DB Authentication: data.cluster.iam_database_authentication_enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Master username: data.cluster.master_username
+    - Multi AZ: data.cluster.multi_az
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Encrypted: data.cluster.storage_encrypted
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - KMS Key: data.cluster.kms_key_id
+    - Auto Minor Version Upgrade: data.cluster.auto_minor_version_upgrade
+    - Created Time: data.cluster.cluster_create_time
+      type: datetime
+      source_type: iso8601
+
+tabs.3:
+  name: Maintenance
+  type: item
+  fields:
+    - Maintenance Window: data.cluster.preferred_maintenance_window
+
+tabs.4:
+  name: Backup
+  type: item
+  fields:
+    - Automated Backup (Period Day): data.cluster.backup_retention_period
+    - Copy tags to snapshots: data.cluster.copy_tags_to_snapshot
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Earliest Restorable Time: data.cluster.earliest_restorable_time
+      type: datetime
+      source_type: iso8601
+    - Latest Restore Time: data.cluster.latest_restorable_time
+      type: datetime
+      source_type: iso8601
+    - Backup Window: data.cluster.preferred_backup_window

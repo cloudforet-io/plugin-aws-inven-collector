@@ -1,0 +1,8 @@
+---
+namespace_id: ns-aws-ebs-volume
+name: EBS/Volume
+category: ASSET
+resource_type: inventory.CloudService:aws.EBS.Volume
+group: aws
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-ebs.svg'
+version: '1.1'

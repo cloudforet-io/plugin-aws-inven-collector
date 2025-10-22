@@ -1,0 +1,35 @@
+---
+metric_id: metric-aws-iam-user-access-key-age-30-count
+name: Access Key Age 30+ Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.IAM.User
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.access_key.access_key_id
+      name: Access Key ID
+    - key: data.access_key.status
+      name: Access Key Status
+    - key: data.access_key.create_date
+      name: Access Key Creation Date
+    - key: data.access_key.last_used_date
+      name: Access Key Last Used Date
+    - key: data.access_key.last_used_service
+      name: Access Key Last Used Service
+    - key: data.access_key.last_used_region
+      name: Access Key Last Used Region
+    - key: data.access_key_age
+      name: Access Key Age
+  fields:
+    value:
+      operator: count
+      key: data.access_key
+unit: Count
+namespace_id: ns-aws-iam-user
+version: '1.0'

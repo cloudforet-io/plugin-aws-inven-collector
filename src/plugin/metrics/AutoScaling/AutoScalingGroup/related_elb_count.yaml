@@ -1,0 +1,27 @@
+---
+metric_id: metric-aws-autoscaling-autoscalinggroup-related-elb-count
+name: Related ELB Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.AutoScaling.AutoScalingGroup
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.load_balancers.name
+      name: LoadBalancer Name
+    - key: data.load_balancers.endpoint
+      name: LoadBalancer Endpoint
+    - key: data.load_balancer_arns
+      name: LoadBalancer ARNs
+  fields:
+    value:
+      operator: count
+      key: data.load_balancers
+unit: Count
+namespace_id: ns-aws-autoscaling-autoscalinggroup
+version: '1.0'

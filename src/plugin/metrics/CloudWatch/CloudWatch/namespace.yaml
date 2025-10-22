@@ -1,0 +1,8 @@
+---
+namespace_id: ns-aws-cloudwatch-cloudwatch
+name: CloudWatch/CloudWatch
+category: ASSET
+resource_type: inventory.CloudService:aws.CloudWatch.CloudWatch
+group: aws
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloud-watch.svg'
+version: '1.1'

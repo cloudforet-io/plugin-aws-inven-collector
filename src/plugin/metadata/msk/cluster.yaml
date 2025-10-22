@@ -1,0 +1,156 @@
+search:
+  fields:
+    - Cluster ARN: data.cluster_arn
+    - Kafka Version: data.current_broker_software_info.kafka_version
+    - Broker Type: data.broker_node_group_info.instance_type
+    - Status: data.state
+    - Number Of Broker Nodes: data.number_of_broker_nodes
+      data_type: "integer"
+    - Active Operation ARN: data.active_operation_arn
+    - Zookeeper Connect String TLS: data.zookeeper_connect_string_tls
+    - Zookeeper Connect String: data.zookeeper_connect_string
+    - Nodes ARN: data.node_info_list.node_arn
+    - Client Auth SASL: data.client_authentication.sasl
+    - Client Auth TLS: data.client_authentication.tls
+    - Encryption At Rest: data.encryption_info.encryption_at_rest.data_volume_kms_key_id
+    - Encryption In Transit: data.encryption_info.encryption_in_transit.client_broker
+    - Enhance Monitoring: data.enhanced_monitoring
+    - Prometheus JMX Exporter: data.open_monitoring.prometheus.jmx_exporter
+    - Prometheus Node Exporter: data.open_monitoring.prometheus.node_exporter
+    - Logging (S3 Bucket): data.logging_info.s3.bucket
+    - Logging (Firehose): data.logging_info.firehose.delivery_stream
+    - Logging (Cloudwatch): data.logging_info.broker_logs.cloud_watch_logs
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.cluster_name
+    desc: true
+  fields:
+    - Name: data.cluster_name
+    - Status: data.state
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - CREATING: yellow.500
+          type: state
+        - DELETING: yellow.500
+          type: state
+        - HEALING: yellow.500
+          type: state
+        - MAINTENANCE: yellow.500
+          type: state
+        - REBOOTING_BROKER: yellow.500
+          type: state
+        - FAILED: red.500
+          type: state
+    - Kafka Version: data.current_broker_software_info.kafka_version
+    - Broker Type: data.broker_node_group_info.instance_type
+    - Number Of Broker Nodes: data.number_of_broker_nodes
+    - ARN: data.cluster_arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Cluster
+  type: item
+  fields:
+    - ARN: data.cluster_arn
+    - Name: data.cluster_name
+    - Status: data.state
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - CREATING: yellow.500
+          type: state
+        - DELETING: yellow.500
+          type: state
+        - HEALING: yellow.500
+          type: state
+        - MAINTENANCE: yellow.500
+          type: state
+        - REBOOTING_BROKER: yellow.500
+          type: state
+        - FAILED: red.500
+          type: state
+    - Current Version: data.current_version
+    - Enhanced Monitoring: data.enhanced_monitoring
+    - Number of Broker Nodes: data.number_of_broker_nodes
+    - Zookeeper Connect String: data.zookeeper_connect_string
+    - Created Time: data.creation_time
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: Broker Summary Info
+  type: item
+  root_path: data.broker_node_group_info
+  fields:
+    - Broker AZ Distribution: broker_az_distribution
+    - Client Subnet: client_subnets
+      type: badge
+      outline_color: violet.500
+    - Security Group: security_group
+      type: badge
+      outline_color: violet.500
+    - EBS storage volume per broker: storage_info.ebs_storage_info.volume_size
+
+tabs.2:
+  name: Broker Node Info
+  type: table
+  root_path: data.node_info_list
+  fields:
+    - Broker ID: broker_node_info.broker_id
+    - Instance Type: instance_type
+    - Node Type: node_type
+    - Client Subnet: broker_node_info.client_subnet
+    - Client VPC IP: broker_node_info.client_vpc_ip_address
+    - Endpoints: broker_node_info.endpoints
+      type: badge
+      outline_color: violet.500
+    - Node ARN: node_arn
+    - Added To Cluster Time: added_to_cluster_time
+      type: datetime
+      source_type: iso8601
+
+tabs.3:
+  name: Encryption Info
+  type: item
+  root_path: data.encryption_info
+  fields:
+    - Within the cluster: encryption_in_transit.in_cluster
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Between clients and brokers: encryption_in_transit.client_broker
+    - Customer master key in KMS: encryption_at_rest.data_volume_kms_key_id
+
+tabs.4:
+  name: Client Authentication
+  type: item
+  root_path: data.client_authentication
+  fields:
+    - SASL scram: sasl.scram
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Tls CertificateAuthorityArnList: tls.certificate_authority_arn_list
+      type: badge
+      outline_color: violet.500
+
+tabs.5:
+  name: CloudWatch Logs
+  type: item
+  root_path: data.logging_info.broker_logs.cloud_watch_logs
+  fields:
+    - Enabled: enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Log Group: log_group

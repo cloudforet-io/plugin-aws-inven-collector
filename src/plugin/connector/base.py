@@ -109,57 +109,6 @@ class ResourceConnector(BaseConnector):
         self.filter = filter
         self.region_names = kwargs.get("regions", [])
 
-    def reset_region(self, region_name):
-        self.region_name = region_name
-        self._client = None
-        self._session = None
-
-    def set_client(self, service_name):
-        self.service_name = service_name
-        self._client = self.session.client(
-            self.service_name,
-            verify=BOTO3_HTTPS_VERIFIED,
-            config=Config(retries={"max_attempts": 10}),
-        )
-        return self._client
-
-    def get_account_id(self):
-        return self.account_id
-
-    def load_account_id(self, account_id):
-        self.account_id = account_id
-
-    def set_account_id(self):
-        sts_client = self.session.client(
-            "sts",
-            verify=BOTO3_HTTPS_VERIFIED,
-            config=Config(retries={"max_attempts": 10}),
-        )
-        self.account_id = sts_client.get_caller_identity()["Account"]
-
-    def set_cloud_service_types(self):
-        if "service_code_mappers" in self.options:
-            svc_code_maps = self.options["service_code_mappers"]
-
-            for cst in self.cloud_service_types:
-                if (
-                    getattr(cst.resource, "service_code")
-                    and cst.resource.service_code in svc_code_maps
-                ):
-                    cst.resource.service_code = svc_code_maps[cst.resource.service_code]
-
-        if "custom_asset_url" in self.options:
-            for cst in self.cloud_service_types:
-                _tags = cst.resource.tags
-
-                if "spaceone:icon" in _tags:
-                    _icon = _tags["spaceone:icon"]
-                    _tags["spaceone:icon"] = (
-                        f'{self.options["custom_asset_url"]}/{_icon.split("/")[-1]}'
-                    )
-
-        return self.cloud_service_types
-
     @property
     def session(self):
         return self.init_property(
@@ -201,3 +150,8 @@ class ResourceConnector(BaseConnector):
                 ec2_client.describe_regions().get("Regions"),
             )
         )
+
+    @classmethod
+    def get_available_regions(cls, secret_data, service_name):
+        _session = get_session(secret_data, DEFAULT_REGION)
+        return _session.get_available_regions(service_name)

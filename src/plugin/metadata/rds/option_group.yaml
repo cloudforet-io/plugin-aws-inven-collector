@@ -1,0 +1,98 @@
+search:
+  fields:
+    - ARN: data.arn
+    - Option Group Name: data.option_group.option_group_name
+    - Option Group Description: data.option_group.option_group_description
+    - Engine Name: data.option_group.engine_name
+    - Major Engine Version: data.option_group.major_engine_version
+    - Option Name: data.option_group.options.option_name
+    - Option Description: data.option_group.options.option_description
+    - Persistent: data.option_group.options.persistent
+      data_type: "boolean"
+    - Permanent: data.option_group.options.permanent
+      data_type: "boolean"
+    - Port: data.option_group.options.port
+      data_type: "integer"
+    - Option Version: data.option_group.options.option_version
+    - Allows VPC and Non-VPC Instance Memberships: data.option_group.allows_vpc_and_non_vpc_instance_memberships
+      data_type: "boolean"
+    - VPC ID: data.option_group.vpc_id
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.option_group.option_group_name
+    desc: true
+  fields:
+    - Option Group Name: data.option_group.option_group_name
+    - Engine Name: data.option_group.engine_name
+    - Major Engine Version: data.option_group.major_engine_version
+    - Allows VPC and Non-VPC Instance Memberships: data.option_group.allows_vpc_and_non_vpc_instance_memberships
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - VPC ID: data.option_group.vpc_id
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Option Group
+  type: item
+  fields:
+    - ARN: data.arn
+    - Option Group Name: data.option_group.option_group_name
+    - Option Group Description: data.option_group.option_group_description
+    - Engine Name: data.option_group.engine_name
+    - Major Engine Version: data.option_group.major_engine_version
+    - Allows VPC and Non-VPC Instance Memberships: data.option_group.allows_vpc_and_non_vpc_instance_memberships
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - VPC ID: data.option_group.vpc_id
+
+tabs.1:
+  name: Options
+  type: table
+  root_path: data.option_group.options
+  fields:
+    - Option Name: option_name
+    - Option Description: option_description
+    - Persistent: persistent
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Permanent: permanent
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Port: port
+    - Option Version: option_version
+
+tabs.2:
+  name: Option Settings
+  type: table
+  root_path: data.option_group.options.option_settings
+  fields:
+    - Name: name
+    - Value: value
+    - Default Value: default_value
+    - Description: description
+    - Apply Type: apply_type
+    - Data Type: data_type
+    - Allowed Values: allowed_values
+    - Is Modifiable: is_modifiable
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Is Collection: is_collection
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600

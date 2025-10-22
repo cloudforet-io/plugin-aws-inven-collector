@@ -1,0 +1,67 @@
+search:
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - State: data.state
+    - Protocol: data.protocol
+    - Public Ports: data.public_ports
+    - Private Ports: data.private_ports
+    - Health Check Path: data.health_check_path
+    - Instance Port: data.instance_port
+    - Instance Protocol: data.instance_protocol
+    - Tls Certificate Name: data.tls_certificate_name
+    - Tls Certificate Domain Name: data.tls_certificate_domain_name
+    - Tls Certificate Status: data.tls_certificate_status
+    - Support Code: data.support_code
+    - Availability Zone: data.location.availability_zone
+    - Region: data.location.region_name
+    - Resource Type: data.resource_type
+    - Created At: data.created_at
+      data_type: "datetime"
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.name
+    desc: true
+  fields:
+    - Name: data.name
+    - State: data.state
+    - Protocol: data.protocol
+    - Public Ports: data.public_ports
+    - Private Ports: data.private_ports
+    - Health Check Path: data.health_check_path
+    - Instance Port: data.instance_port
+    - Instance Protocol: data.instance_protocol
+    - Tls Certificate Name: data.tls_certificate_name
+    - Tls Certificate Domain Name: data.tls_certificate_domain_name
+    - Tls Certificate Status: data.tls_certificate_status
+    - Availability Zone: data.location.availability_zone
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Load Balancer
+  type: item
+  fields:
+    - ARN: data.arn
+    - Name: data.name
+    - State: data.state
+    - Protocol: data.protocol
+    - Public Ports: data.public_ports
+    - Private Ports: data.private_ports
+    - Health Check Path: data.health_check_path
+    - Instance Port: data.instance_port
+    - Instance Protocol: data.instance_protocol
+    - Tls Certificate Name: data.tls_certificate_name
+    - Tls Certificate Domain Name: data.tls_certificate_domain_name
+    - Tls Certificate Status: data.tls_certificate_status
+    - Support Code: data.support_code
+    - Availability Zone: data.location.availability_zone
+    - Region: data.location.region_name
+    - Resource Type: data.resource_type
+    - Created At: data.created_at
+      type: datetime
+      source_type: iso8601

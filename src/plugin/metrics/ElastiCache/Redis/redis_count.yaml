@@ -1,0 +1,55 @@
+---
+metric_id: metric-aws-elasticache-redis-count
+name: Redis Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.ElastiCache.Redis
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.mode
+      name: Mode
+    - key: data.status
+      name: Status
+      default: true
+    - key: data.num_cache_nodes
+      name: Nodes
+    - key: data.cache_node_type
+      name: Node Type
+    - key: data.preferred_availability_zone
+      name: Zone
+    - key: data.configuration_endpoint_display
+      name: Configuration Endpoint
+    - key: data.arn
+      name: ARN
+    - key: data.engine_version
+      name: Engine Version
+    - key: data.description
+      name: Description
+    - key: data.automatic_failover
+      name: Automatic Failover
+    - key: data.configuration_endpoint.address
+      name: Endpoint Address
+    - key: data.configuration_endpoint.port
+      name: Port
+    - key: data.snapshot_retention_limit
+      name: Snapshot Retention Limit
+    - key: data.replication_group_id
+      name: Replication Group ID
+    - key: data.snapshot_window
+      name: Snapshot Window
+    - key: data.cache_subnet_group_name
+      name: Subnet Group Name
+    - key: data.auth_token_enabled
+      name: Auth Token Enabled
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-elasticache-redis
+version: '1.0'

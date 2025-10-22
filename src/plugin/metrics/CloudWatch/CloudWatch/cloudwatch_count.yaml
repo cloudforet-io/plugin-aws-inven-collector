@@ -1,0 +1,36 @@
+---
+metric_id: metric-aws-cloudwatch-cloudwatch-count
+name: CloudWatch Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.CloudWatch.CloudWatch
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.state_value
+      name: State
+    - key: data.state_updated_timestamp
+      name: Last State Update
+    - key: data.conditions
+      name: Conditions
+    - key: data.actions_enabled
+      name: Actions
+    - key: data.metric_name
+      name: MetricName
+    - key: data.namespace
+      name: Namespace
+    - key: data.statistic
+      name: Statistic
+    - key: data.period
+      name: Period
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-cloudwatch-cloudwatch
+version: '1.0'

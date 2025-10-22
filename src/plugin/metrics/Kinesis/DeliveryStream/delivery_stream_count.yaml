@@ -1,0 +1,39 @@
+---
+metric_id: metric-aws-kinesis-deliverystream-count
+name: Delivery Stream Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.Kinesis.DeliveryStream
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.delivery_stream_status
+      name: Status
+      default: true
+    - key: data.source.source_name
+      name: Source
+    - key: data.destinations.destination_id
+      name: Destination
+    - key: data.create_timestamp
+      name: Creation Time
+    - key: data.delivery_stream_arn
+      name: ARN
+    - key: data.delivery_stream_type
+      name: Type
+    - key: data.version_id
+      name: Version ID
+    - key: data.delivery_stream_encryption_configuration.status
+      name: Encryption Configuration Status
+    - key: data.failure_description
+      name: Failure Description
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-kinesis-deliverystream
+version: '1.0'

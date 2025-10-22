@@ -1,0 +1,1 @@
+# Kinesis Data Stream metadata

@@ -1,0 +1,114 @@
+search:
+  fields:
+    - Alarm ARN: data.alarm_arn
+    - Alarm Name: data.name
+    - State: data.state_value
+      type: text
+      labels:
+        - OK: "OK"
+        - ALARM: "ALARM"
+        - INSUFFICIENT_DATA: "INSUFFICIENT_DATA"
+    - Actions Enabled: data.actions_enabled
+      type: text
+      labels:
+        - "true": "Actions enabled"
+        - "false": "No actions"
+    - Namespace: data.namespace
+    - Metric Name: data.metric_name
+    - Statistic: data.statistic
+      type: text
+      labels:
+        - SampleCount: "SampleCount"
+        - Average: "Average"
+        - Sum: "Sum"
+        - Minimum: "Minimum"
+        - Maximum: "Maximum"
+    - Period: data.period
+    - Conditions: data.conditions
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.name
+    desc: true
+  fields:
+    - Alarm Name: data.name
+    - State: data.state_value
+      type: enum
+      enums:
+        - OK: green.500
+          type: state
+        - ALARM: red.500
+          type: state
+        - INSUFFICIENT_DATA: yellow.500
+          type: state
+    - Actions Enabled: data.actions_enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Namespace: data.namespace
+    - Metric Name: data.metric_name
+    - Statistic: data.statistic
+    - Period: data.period
+    - Last State Update: data.state_updated_timestamp
+      type: datetime
+    - Alarm ARN: data.alarm_arn
+      is_optional: true
+    - Conditions: data.conditions
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Alarm
+  type: item
+  fields:
+    - Alarm Name: data.name
+    - Alarm ARN: data.alarm_arn
+    - State: data.state_value
+      type: enum
+      enums:
+        - OK: green.500
+          type: state
+        - ALARM: red.500
+          type: state
+        - INSUFFICIENT_DATA: yellow.500
+          type: state
+    - Actions Enabled: data.actions_enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Namespace: data.namespace
+    - Metric Name: data.metric_name
+    - Statistic: data.statistic
+    - Period: data.period
+    - Conditions: data.conditions
+    - Last State Update: data.state_updated_timestamp
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: Actions
+  type: table
+  root_path: data.actions
+  fields:
+    - Type: type
+    - ARN: arn
+
+tabs.2:
+  name: History
+  type: table
+  root_path: data.history
+  fields:
+    - Date: date
+      type: datetime
+      source_type: iso8601
+    - Type: type
+      type: enum
+      enums:
+        - ConfigurationUpdate: blue.400
+        - StateUpdate: green.500
+        - Action: coral.600
+    - Description: description

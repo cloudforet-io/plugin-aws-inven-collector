@@ -4,5 +4,5 @@ name: ELB/LoadBalancer
 category: ASSET
 resource_type: inventory.CloudService:aws.ELB.LoadBalancer
 group: aws
-icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Elastic-Load-Balancing.svg'
+icon: 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-elb.svg'
 version: '1.1'

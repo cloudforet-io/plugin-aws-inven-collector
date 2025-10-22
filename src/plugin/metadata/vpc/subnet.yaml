@@ -1,0 +1,94 @@
+search:
+  fields:
+    - Subnet ID: data.subnet_id
+    - VPC ID: data.vpc_id
+    - State: data.state
+      type: text
+      labels:
+        - available: "Available"
+        - pending: "Pending"
+    - CIDR Block: data.cidr_block
+    - Availability Zone: data.availability_zone
+    - Availability Zone ID: data.availability_zone_id
+    - Available IP Address Count: data.available_ip_address_count
+      data_type: "integer"
+    - Default For AZ: data.default_for_az
+      data_type: "boolean"
+    - Map Public IP On Launch: data.map_public_ip_on_launch
+      data_type: "boolean"
+    - Owner ID: data.owner_id
+    - Assign IPv6 Address On Creation: data.assign_ipv6_address_on_creation
+      data_type: "boolean"
+    - IPv6 CIDR Block Association Set: data.ipv6_cidr_block_association_set
+    - Subnet ARN: data.subnet_arn
+    - Outpost ARN: data.outpost_arn
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.subnet_id
+    desc: true
+  fields:
+    - Subnet ID: data.subnet_id
+    - VPC ID: data.vpc_id
+    - State: data.state
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+    - CIDR Block: data.cidr_block
+    - Availability Zone: data.availability_zone
+    - Available IP Address Count: data.available_ip_address_count
+    - Default For AZ: data.default_for_az
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Map Public IP On Launch: data.map_public_ip_on_launch
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Subnet ARN: data.subnet_arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Subnet
+  type: item
+  fields:
+    - Subnet ID: data.subnet_id
+    - VPC ID: data.vpc_id
+    - State: data.state
+      type: enum
+      enums:
+        - available: green.500
+          type: state
+        - pending: yellow.500
+          type: state
+    - CIDR Block: data.cidr_block
+    - Availability Zone: data.availability_zone
+    - Availability Zone ID: data.availability_zone_id
+    - Available IP Address Count: data.available_ip_address_count
+    - Default For AZ: data.default_for_az
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Map Public IP On Launch: data.map_public_ip_on_launch
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Owner ID: data.owner_id
+    - Assign IPv6 Address On Creation: data.assign_ipv6_address_on_creation
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - IPv6 CIDR Block Association Set: data.ipv6_cidr_block_association_set
+    - Subnet ARN: data.subnet_arn
+    - Outpost ARN: data.outpost_arn

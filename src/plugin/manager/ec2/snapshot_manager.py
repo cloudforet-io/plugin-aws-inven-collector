@@ -33,7 +33,9 @@ class SnapshotManager(ResourceManager):
         return result
 
     def create_cloud_service(self, region, options, secret_data, schema):
-        cloudtrail_resource_type = "AWS::EC2::Snapshot"
+        yield from self._collect_snapshots(options, region)
+
+    def _collect_snapshots(self, options, region):
         account_id = options.get("account_id", "")
         self.connector.load_account_id(account_id)
         results = self.connector.get_snapshots()
@@ -46,7 +48,7 @@ class SnapshotManager(ResourceManager):
                     raw.update(
                         {
                             "cloudtrail": self.set_cloudtrail(
-                                region, cloudtrail_resource_type, raw["SnapshotId"]
+                                self.cloud_service_group, raw["SnapshotId"], region
                             ),
                             "arn": self.generate_arn(
                                 service="ec2",
@@ -81,7 +83,7 @@ class SnapshotManager(ResourceManager):
                         instance_size=float(snapshot_vo.get("VolumeSize", 0)),
                         provider=self.provider,
                         data=snapshot_vo,
-                        account=account_id,
+                        account=options.get("account_id"),
                         tags=self.convert_tags_to_dict_type(raw.get("Tags", [])),
                         region_code=region,
                         reference=reference,
@@ -130,6 +132,8 @@ class SnapshotManager(ResourceManager):
         snapshot_info.update(
             {
                 "StartTime": self.datetime_to_iso8601(snapshot_info.get("StartTime")),
-                "CompletionTime": self.datetime_to_iso8601(snapshot_info.get("CompletionTime")),
+                "CompletionTime": self.datetime_to_iso8601(
+                    snapshot_info.get("CompletionTime")
+                ),
             }
         )

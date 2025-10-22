@@ -1,0 +1,135 @@
+search:
+  fields:
+    - Delivery Stream Name: data.delivery_stream_name
+    - Delivery Stream ARN: data.delivery_stream_arn
+    - Stream Status: data.delivery_stream_status
+      type: text
+      labels:
+        - ACTIVE: "ACTIVE"
+        - CREATING: "CREATING"
+        - DELETING: "DELETING"
+        - DELETING_FAILED: "DELETING_FAILED"
+        - CREATING_FAILED: "CREATING_FAILED"
+        - SUSPENDED: "SUSPENDED"
+    - Source Name: data.source.source_name
+    - Destination: data.destinations.destination_id
+    - Creation Time: data.create_timestamp
+      data_type: "datetime"
+    - Type: data.delivery_stream_type
+    - Version ID: data.version_id
+    - Encryption Configuration Status: data.delivery_stream_encryption_configuration.status
+    - Failure Description: data.failure_description
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.delivery_stream_name
+    desc: true
+  fields:
+    - Delivery Stream Name: data.delivery_stream_name
+    - Status: data.delivery_stream_status
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - CREATING: yellow.500
+          type: state
+        - DELETING: yellow.500
+          type: state
+        - DELETING_FAILED: red.500
+          type: state
+        - CREATING_FAILED: red.500
+          type: state
+        - SUSPENDED: red.500
+          type: state
+    - Source: data.source.source_name
+    - Destination: data.destinations.destination_id
+      type: badge
+      outline_color: violet.500
+    - Creation Time: data.create_timestamp
+      type: datetime
+    - Delivery Stream ARN: data.delivery_stream_arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Stream Details
+  type: item
+  fields:
+    - Delivery Stream Name: data.delivery_stream_name
+    - Delivery Stream ARN: data.delivery_stream_arn
+    - Status: data.delivery_stream_status
+      type: enum
+      enums:
+        - ACTIVE: green.500
+          type: state
+        - CREATING: yellow.500
+          type: state
+        - DELETING: yellow.500
+          type: state
+        - DELETING_FAILED: red.500
+          type: state
+        - CREATING_FAILED: red.500
+          type: state
+        - SUSPENDED: red.500
+          type: state
+    - Creation Time: data.create_timestamp
+      type: datetime
+      source_type: iso8601
+    - Source: data.source.source_name
+    - Destination: data.destinations.destination_id
+      type: badge
+      outline_color: violet.500
+    - Type: data.delivery_stream_type
+    - Version ID: data.version_id
+    - Encryption Configuration Status: data.delivery_stream_encryption_configuration.status
+    - Failure Description: data.failure_description
+
+tabs.1:
+  name: Source
+  type: item
+  fields:
+    - Source Name: data.source.source_name
+    - Source Details: data.source.source_details
+    - Server-side Encryption for Source Records: data.delivery_stream_encryption_configuration.status
+    - Encryption Type: data.delivery_stream_encryption_configuration.key_type
+
+tabs.2:
+  name: S3 Destination Details
+  type: table
+  root_path: data.destinations.s3_destination_description
+  fields:
+    - S3 Bucket ARN: bucket_arn
+    - Prefix: prefix
+    - Error Prefix: error_output_prefix
+    - Buffer Size: buffering_hints.size_in_mbs
+    - Buffer Interval: buffering_hints.interval_in_seconds
+    - Compression: compression_format
+    - Encryption: encryption_configuration.kms_encryption_config.aws_kms_key_arn
+    - Cloud Watch Logging: cloud_watch_logging_optinos.enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+
+tabs.3:
+  name: Extended S3 Destination Details
+  type: table
+  root_path: data.destinations.extended_s3_destination_description
+  fields:
+    - S3 Backup Mode: s3_backup_mode
+    - S3 Backup Bucket ARN: s3_backup_description.bucket_arn
+    - Processing Configuration: processing_configuration.enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Processing Type: processing_configuration.processors.type
+      type: badge
+      outline_color: violet.500
+    - Dynamic Partition Enabled: dynamic_partitioning_configuration.enabled
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600

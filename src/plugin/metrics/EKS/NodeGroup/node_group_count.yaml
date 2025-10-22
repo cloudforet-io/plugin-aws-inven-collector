@@ -1,6 +1,6 @@
 ---
 metric_id: metric-aws-eks-nodegroup-count
-name: NodeGroup Count
+name: Node Group Count
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.EKS.NodeGroup
 query_options:
@@ -12,12 +12,41 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.cluster_name
-      name: Cluster
     - key: data.status
       name: Status
-    - key: data.version
-      name: Version
+      default: true
+    - key: data.nodegroup_name
+      name: Node Group Name
+    - key: data.nodegroup_arn
+      name: Node Group ARN
+    - key: data.cluster_name
+      name: Cluster Name
+    - key: data.node_role
+      name: Node Role
+    - key: data.ami_type
+      name: AMI Type
+    - key: data.capacity_type
+      name: Capacity Type
+    - key: data.instance_types
+      name: Instance Types
+    - key: data.scaling_config.desired_size
+      name: Desired Size
+    - key: data.scaling_config.min_size
+      name: Min Size
+    - key: data.scaling_config.max_size
+      name: Max Size
+    - key: data.disk_size
+      name: Disk Size
+    - key: data.subnets
+      name: Subnets
+    - key: data.remote_access.ec2_ssh_key
+      name: EC2 SSH Key
+    - key: data.remote_access.source_security_groups
+      name: Source Security Groups
+    - key: data.launch_template
+      name: Launch Template
+    - key: data.tags
+      name: Tags
   fields:
     value:
       operator: count

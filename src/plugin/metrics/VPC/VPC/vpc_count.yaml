@@ -1,0 +1,24 @@
+---
+metric_id: metric-aws-vpc-vpc-count
+name: VPC Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.VPC.VPC
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.state
+      name: State
+    - key: data.is_default
+      name: Default VPC
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-vpc-vpc
+version: '1.0'

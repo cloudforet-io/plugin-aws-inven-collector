@@ -2,6 +2,8 @@ from spaceone.inventory.plugin.collector.lib import *
 from ..base import ResourceManager
 from ...conf.cloud_service_conf import *
 
+from ...model.direct_connect import Connection
+
 
 class ConnectManager(ResourceManager):
     cloud_service_group = "DirectConnect"
@@ -27,10 +29,10 @@ class ConnectManager(ResourceManager):
         )
 
     def create_cloud_service(self, region, options, secret_data, schema):
-        cloudwatch_namespace = "AWS/DX"
-        cloudwatch_dimension_name = "ConnectionId"
+        yield from self._collect_connections(options, region)
+
+    def _collect_connections(self, options, region):
         results = self.connector.get_connections()
-        account_id = self.connector.get_account_id()
         for raw in results.get("connections", []):
             try:
                 bandwidth_size = self.convert_bandwidth_gbps(raw.get("bandwidth", ""))
@@ -41,20 +43,19 @@ class ConnectManager(ResourceManager):
                 raw.update(
                     {
                         "cloudtrail": self.set_cloudtrail(
-                            region, None, raw["connectionId"]
+                            self.cloud_service_group, raw["connectionId"], region
                         ),
                         "cloudwatch": self.set_cloudwatch(
-                            cloudwatch_namespace,
-                            cloudwatch_dimension_name,
+                            self.cloud_service_group,
                             raw["connectionId"],
                             region,
                         ),
                     }
                 )
                 self._update_times(raw)
-                connection_vo = raw
-                connection_id = connection_vo.get("connectionId", "")
-                owner_account = connection_vo.get("ownerAccount", "")
+                connection_vo = Connection(raw, strict=False)
+                connection_id = connection_vo.connection_id
+                owner_account = connection_vo.owner_account
                 link = f"https://console.aws.amazon.com/directconnect/v2/home?region={region}#/connections/arn:aws:directconnect:{region}:{owner_account}:{connection_id}"
                 reference = self.get_reference(connection_id, link)
 
@@ -63,8 +64,8 @@ class ConnectManager(ResourceManager):
                     cloud_service_type=self.cloud_service_type,
                     cloud_service_group=self.cloud_service_group,
                     provider=self.provider,
-                    data=connection_vo,
-                    account=account_id,
+                    data=connection_vo.to_primitive(),
+                    account=options.get("account_id"),
                     reference=reference,
                     instance_size=bandwidth_size,
                     instance_type=connection_vo.get("location", ""),
@@ -74,17 +75,8 @@ class ConnectManager(ResourceManager):
                     region_code=region,
                 )
                 yield cloud_service
-                # yield {
-                #     'data': connection_vo,
-                #     'instance_size': bandwidth_size,
-                #     'name': connection_vo.connection_name,
-                #     'instance_type': connection_vo.location,
-                #     'account': self.account_id,
-                #     'tags': self.convert_tags_to_dict_type(raw.get('tags', []), key='key', value='value')
-                # }
 
             except Exception as e:
-                # resource_id = raw.get('connectionId', '')
                 yield make_error_response(
                     error=e,
                     provider=self.provider,

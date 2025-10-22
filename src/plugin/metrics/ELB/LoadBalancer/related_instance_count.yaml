@@ -1,5 +1,5 @@
 ---
-metric_id: metric-aws-elb-loadbalancer-instance-count
+metric_id: metric-aws-elb-loadbalancer-related-instance-count
 name: Related Instance Count
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.ELB.LoadBalancer
@@ -12,16 +12,24 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.state.code
-      name: State
-    - key: data.type
-      name: Type
-    - key: data.scheme
-      name: Scheme
+    - key: data.instances.instance_id
+      name: Instance ID
+    - key: data.instances.port
+      name: Instance Port
+    - key: data.instances.availability_zone
+      name: Instance Availability Zone
+    - key: data.instances.health_status
+      name: Instance Health Status
+    - key: data.instances.target_health_description
+      name: Instance Health Description
+    - key: data.instances.target_health_reason
+      name: Instance Health Reason
+    - key: data.instances.target_health_state
+      name: Instance Health State
   fields:
     value:
-      operator: sum
-      key: data.stats.instances_size
+      operator: count
+      key: data.instances
 unit: Count
 namespace_id: ns-aws-elb-loadbalancer
 version: '1.0'

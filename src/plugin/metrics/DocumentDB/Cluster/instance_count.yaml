@@ -1,6 +1,6 @@
 ---
-metric_id: metric-aws-documentdb-instance-count
-name: Instance Count
+metric_id: metric-aws-documentdb-cluster-instance-count
+name: DocumentDB Instance Count
 metric_type: GAUGE
 resource_type: inventory.CloudService:aws.DocumentDB.Cluster
 query_options:
@@ -12,16 +12,18 @@ query_options:
       reference:
         resource_type: inventory.Region
         reference_key: region_code
-    - key: data.status
-      name: Status
-    - key: data.engine
-      name: Engine
-    - key: data.engine_version
-      name: Version
+    - key: data.instances.db_instance_arn
+      name: Instance ARN
+    - key: data.instances.db_instance_identifier
+      name: Instance Identifier
+    - key: data.instances.availability_zone
+      name: Instance Availability Zone
+    - key: data.instances.db_instance_class
+      name: Instance Type
   fields:
     value:
-      key: instance_size
-      operator: sum
+      operator: count
+      key: data.instances
 unit: Count
 namespace_id: ns-aws-documentdb-cluster
 version: '1.0'

@@ -1,0 +1,65 @@
+search:
+  fields:
+    - ARN: data.arn
+    - DB Parameter Group Name: data.parameter_group.db_parameter_group_name
+    - DB Parameter Group Family: data.parameter_group.db_parameter_group_family
+    - Description: data.parameter_group.description
+    - DB Parameter Group Type: data.parameter_group.db_parameter_group_type
+    - Parameter Name: data.parameter_group.parameters.parameter_name
+    - Parameter Value: data.parameter_group.parameters.parameter_value
+    - Source: data.parameter_group.parameters.source
+    - Apply Type: data.parameter_group.parameters.apply_type
+    - Data Type: data.parameter_group.parameters.data_type
+    - Allowed Values: data.parameter_group.parameters.allowed_values
+    - Is Modifiable: data.parameter_group.parameters.is_modifiable
+      data_type: "boolean"
+    - Minimum Engine Version: data.parameter_group.parameters.minimum_engine_version
+    - Apply Method: data.parameter_group.parameters.apply_method
+    - Supported Engine Modes: data.parameter_group.parameters.supported_engine_modes
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.parameter_group.db_parameter_group_name
+    desc: true
+  fields:
+    - DB Parameter Group Name: data.parameter_group.db_parameter_group_name
+    - DB Parameter Group Family: data.parameter_group.db_parameter_group_family
+    - Description: data.parameter_group.description
+    - DB Parameter Group Type: data.parameter_group.db_parameter_group_type
+    - ARN: data.arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Parameter Group
+  type: item
+  fields:
+    - ARN: data.arn
+    - DB Parameter Group Name: data.parameter_group.db_parameter_group_name
+    - DB Parameter Group Family: data.parameter_group.db_parameter_group_family
+    - Description: data.parameter_group.description
+    - DB Parameter Group Type: data.parameter_group.db_parameter_group_type
+
+tabs.1:
+  name: Parameters
+  type: table
+  root_path: data.parameter_group.parameters
+  fields:
+    - Parameter Name: parameter_name
+    - Parameter Value: parameter_value
+    - Source: source
+    - Apply Type: apply_type
+    - Data Type: data_type
+    - Allowed Values: allowed_values
+    - Is Modifiable: is_modifiable
+      type: enum
+      enums:
+        - "true": indigo.500
+        - "false": coral.600
+    - Minimum Engine Version: minimum_engine_version
+    - Apply Method: apply_method
+    - Supported Engine Modes: supported_engine_modes
+      type: badge
+      outline_color: violet.500

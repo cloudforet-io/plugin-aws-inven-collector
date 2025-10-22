@@ -1,0 +1,41 @@
+---
+metric_id: metric-aws-lightsail-staticip-count
+name: Static IP Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.Lightsail.StaticIP
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.state.name
+      name: State
+      default: true
+    - key: data.ip_address
+      name: IP Address
+    - key: data.arn
+      name: ARN
+    - key: data.attached_to
+      name: Attached To
+    - key: data.is_attached
+      name: Is Attached
+    - key: data.location.availability_zone
+      name: Availability Zone
+    - key: data.location.region_name
+      name: Region
+    - key: data.name
+      name: Name
+    - key: data.resource_type
+      name: Resource Type
+    - key: data.support_code
+      name: Support Code
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-lightsail-staticip
+version: '1.0'

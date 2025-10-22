@@ -1,0 +1,59 @@
+---
+metric_id: metric-aws-msk-cluster-count
+name: Cluster Count
+metric_type: GAUGE
+resource_type: inventory.CloudService:aws.MSK.Cluster
+query_options:
+  group_by:
+    - key: account
+      name: Account ID
+    - key: region_code
+      name: Region
+      reference:
+        resource_type: inventory.Region
+        reference_key: region_code
+    - key: data.state
+      name: Status
+      default: true
+    - key: data.current_broker_software_info.kafka_version
+      name: Kafka Version
+    - key: data.broker_node_group_info.instance_type
+      name: Broker Type
+    - key: data.number_of_broker_nodes
+      name: Number Of Broker Nodes
+    - key: data.cluster_arn
+      name: ARN
+    - key: data.active_operation_arn
+      name: Active Operation ARN
+    - key: data.zookeeper_connect_string_tls
+      name: Zookeeper Connect String TLS
+    - key: data.zookeeper_connect_string
+      name: Zookeeper Connect String
+    - key: data.node_info_list.node_arn
+      name: Nodes ARN
+    - key: data.client_authentication.sasl
+      name: Client Auth SASL
+    - key: data.client_authentication.tls
+      name: Client Auth TLS
+    - key: data.encryption_info.encryption_at_rest.data_volume_kms_key_id
+      name: Encryption At Rest
+    - key: data.encryption_info.encryption_in_transit.client_broker
+      name: Encryption In Transit
+    - key: data.enhanced_monitoring
+      name: Enhance Monitoring
+    - key: data.open_monitoring.prometheus.jmx_exporter
+      name: Prometheus JMX Exporter
+    - key: data.open_monitoring.prometheus.node_exporter
+      name: Prometheus Node Exporter
+    - key: data.logging_info.s3.bucket
+      name: Logging S3 Bucket
+    - key: data.logging_info.firehose.delivery_stream
+      name: Logging Firehose
+    - key: data.logging_info.broker_logs.cloud_watch_logs
+      name: Logging Cloudwatch
+  fields:
+    value:
+      operator: count
+unit: Count
+namespace_id: ns-aws-msk-cluster
+version: '1.0'

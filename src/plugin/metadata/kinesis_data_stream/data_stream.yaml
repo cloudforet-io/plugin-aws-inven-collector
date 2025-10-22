@@ -1,0 +1,107 @@
+search:
+  fields:
+    - Stream Name: data.stream_name
+    - Stream ARN: data.stream_arn
+    - Stream Status: data.stream_status
+      type: text
+      labels:
+        - CREATING: "Creating"
+        - DELETING: "Deleting"
+        - ACTIVE: "Active"
+        - UPDATING: "Updating"
+    - Consumer Name: data.consumers_vo.consumer_name
+    - Consumer ARN: data.consumers_vo.consumer_arn
+    - Shard ID: data.shards.shard_id
+    - Parent Shard ID: data.shards.parent_shard_id
+    - Retention Hours: data.retention_period_hours
+      data_type: "integer"
+    - Retention Days: data.retention_period_days
+      data_type: "integer"
+    - Number of Open Shards: instance_size
+      data_type: "integer"
+    - Number of Closed Shards: data.closed_shards_num
+      data_type: "integer"
+    - Encryption Type: data.encryption_type
+    - Encryption Key ID: data.key_id
+    - AWS Account ID: account
+
+table:
+  sort:
+    key: data.stream_name
+    desc: true
+  fields:
+    - Stream Name: data.stream_name
+    - Status: data.stream_status_display
+      type: enum
+      enums:
+        - Active: green.500
+          type: state
+        - Creating: yellow.500
+          type: state
+        - Deleting: yellow.500
+          type: state
+        - Updating: yellow.500
+          type: state
+    - Open Shards: instance_size
+    - Data Retention Period: data.retention_period_display
+    - Encryption: data.encryption_display
+    - Consumers with Enhanced Fan-out: data.consumers_vo.num_of_consumers
+    - Stream ARN: data.stream_arn
+      is_optional: true
+    - AWS Account ID: account
+      is_optional: true
+
+tabs.0:
+  name: Stream Details
+  type: item
+  fields:
+    - Stream Name: data.stream_name
+    - Status: data.stream_status_display
+      type: enum
+      enums:
+        - Active: green.500
+          type: state
+        - Creating: yellow.500
+          type: state
+        - Deleting: yellow.500
+          type: state
+        - Updating: yellow.500
+          type: state
+    - Stream ARN: data.stream_arn
+    - Data Retention Period: data.retention_period_display
+    - Stream Creation Timestamp: data.stream_creation_timestamp
+      type: datetime
+      source_type: iso8601
+
+tabs.1:
+  name: Configuration
+  type: item
+  fields:
+    - Number of Open Shards: data.open_shards_num
+    - Number of Closed Shards: data.closed_shards_num
+    - Server-side Encryption: data.encryption_display
+    - Data Retention Period: data.retention_period_display_hours
+    - Enhanced (shard-level) Metrics: data.shard_level_metrics_display
+      type: badge
+      outline_color: violet.500
+    - Encryption Type: data.encryption_type
+    - Encryption Key ID: data.key_id
+
+tabs.2:
+  name: Consumers using Enhanced Fan-out
+  type: table
+  root_path: data.consumers_vo.consumers
+  fields:
+    - Consumer Name: consumer_name
+    - Registration Status: consumer_status_display
+      type: enum
+      enums:
+        - Active: green.500
+          type: state
+        - Creating: yellow.500
+          type: state
+        - Deleting: yellow.500
+          type: state
+    - Registration Date: consumer_creation_timestamp
+      type: datetime
+      source_type: iso8601
