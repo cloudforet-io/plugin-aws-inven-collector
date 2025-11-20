@@ -270,6 +270,7 @@ class SecurityGroupManager(ResourceManager):
         )
 
         raw_rule = self._custom_security_group_rule_info(raw_rule, remote, remote_type)
+        raw_rule.update({"rule_id": rule_id})
 
         protocol_display = raw_rule.get("protocol_display")
 
@@ -280,7 +281,6 @@ class SecurityGroupManager(ResourceManager):
 
             raw_rule.update(
                 {
-                    "rule_id": rule_id,
                     "vulnerable_ports": ports,
                     "detected_vulnerable_ports": True if ports else False,
                 }
