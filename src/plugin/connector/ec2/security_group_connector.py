@@ -23,6 +23,16 @@ class SecurityGroupConnector(ResourceConnector):
         )
         return response_iterator
 
+    def get_security_group_rules(self):
+        paginator = self.client.get_paginator("describe_security_group_rules")
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                "MaxItems": 10000,
+                "PageSize": 50,
+            }
+        )
+        return response_iterator
+
     def get_filtered_instances(self, filters):
         paginator = self.client.get_paginator("describe_instances")
         response_iterator = paginator.paginate(

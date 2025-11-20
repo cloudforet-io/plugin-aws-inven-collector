@@ -198,6 +198,7 @@ tabs.1:
   type: table
   root_path: data.ip_permissions
   fields:
+    - Rule ID: rule_id
     - Protocol: protocol_display
       type: enum
       enums:
@@ -215,6 +216,7 @@ tabs.2:
   type: table
   root_path: data.ip_permissions_egress
   fields:
+    - Rule ID: rule_id
     - Protocol: protocol_display
       type: enum
       enums:
