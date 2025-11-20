@@ -1,7 +1,11 @@
 import copy
 from spaceone.inventory.plugin.collector.lib import *
 from ..base import ResourceManager
-from ...conf.cloud_service_conf import ASSET_URL, INSTANCE_FILTERS, DEFAULT_VULNERABLE_PORTS
+from ...conf.cloud_service_conf import (
+    ASSET_URL,
+    INSTANCE_FILTERS,
+    DEFAULT_VULNERABLE_PORTS,
+)
 from plugin.error.custom import ERROR_VULNERABLE_PORTS
 
 
@@ -16,6 +20,7 @@ class SecurityGroupManager(ResourceManager):
         self.cloud_service_type = "SecurityGroup"
         self.metadata_path = "metadata/ec2/sg.yaml"
         self.include_vpc_default = False
+        self.sg_rules_for_this_group = []
 
     def create_cloud_service_type(self):
         result = []
@@ -50,9 +55,23 @@ class SecurityGroupManager(ResourceManager):
         account_id = options.get("account_id", "")
         self.connector.load_account_id(account_id)
 
+        # Get Security Group Rules Detail
+        sg_rules_detail = self.connector.get_security_group_rules()
+
+        sg_rules_map = {}
+        for data in sg_rules_detail:
+            for rule in data.get("SecurityGroupRules", []):
+                group_id = rule.get("GroupId")
+                if group_id not in sg_rules_map:
+                    sg_rules_map[group_id] = []
+                sg_rules_map[group_id].append(rule)
+
         for data in results:
             for raw in data.get("SecurityGroups", []):
                 try:
+                    group_id = raw.get("GroupId", "")
+                    self.sg_rules_for_this_group = sg_rules_map.get(group_id, [])
+
                     if (
                         self.include_vpc_default is False
                         and raw.get("VpcId") in default_vpcs
@@ -62,75 +81,94 @@ class SecurityGroupManager(ResourceManager):
                     # Inbound Rules
                     inbound_rules = []
                     for in_rule in raw.get("IpPermissions", []):
+                        in_rule_copy = copy.deepcopy(in_rule)
+
                         for _ip_range in in_rule.get("IpRanges", []):
-                            in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
-                                self.custom_security_group_inbound_rule_info(
-                                    in_rule_copy, _ip_range, "ip_ranges",vulnerable_ports
+                                self._custom_security_group_inbound_rule_info(
+                                    raw_rule=in_rule_copy,
+                                    remote=_ip_range,
+                                    remote_type="ip_ranges",
+                                    is_egress=False,
+                                    vulnerable_ports=vulnerable_ports,
                                 )
                             )
 
                         for _user_group_pair in in_rule.get("UserIdGroupPairs", []):
-                            in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
-                                self.custom_security_group_inbound_rule_info(
-                                    in_rule_copy,
-                                    _user_group_pair,
-                                    "user_id_group_pairs",
-                                    vulnerable_ports,
+                                self._custom_security_group_inbound_rule_info(
+                                    raw_rule=in_rule_copy,
+                                    remote=_user_group_pair,
+                                    remote_type="user_id_group_pairs",
+                                    is_egress=False,
+                                    vulnerable_ports=vulnerable_ports,
                                 )
                             )
 
                         for _ip_v6_range in in_rule.get("Ipv6Ranges", []):
-                            in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
-                                self.custom_security_group_inbound_rule_info(
-                                    in_rule_copy, _ip_v6_range, "ipv6_ranges",vulnerable_ports
+                                self._custom_security_group_inbound_rule_info(
+                                    raw_rule=in_rule_copy,
+                                    remote=_ip_v6_range,
+                                    remote_type="ipv6_ranges",
+                                    is_egress=False,
+                                    vulnerable_ports=vulnerable_ports,
                                 )
                             )
 
                         for prefix_list_id in in_rule.get("PrefixListIds", []):
-                            in_rule_copy = copy.deepcopy(in_rule)
                             inbound_rules.append(
-                                self.custom_security_group_inbound_rule_info(
-                                    in_rule_copy, prefix_list_id, "prefix_list_ids",vulnerable_ports
+                                self._custom_security_group_inbound_rule_info(
+                                    raw_rule=in_rule_copy,
+                                    remote=prefix_list_id,
+                                    remote_type="prefix_list_ids",
+                                    is_egress=False,
+                                    vulnerable_ports=vulnerable_ports,
                                 )
                             )
 
                     # Outbound Rules
                     outbound_rules = []
                     for out_rule in raw.get("IpPermissionsEgress", []):
+                        out_rule_copy = copy.deepcopy(out_rule)
+
                         for _ip_range in out_rule.get("IpRanges", []):
-                            out_rule_copy = copy.deepcopy(out_rule)
                             outbound_rules.append(
-                                self.custom_security_group_rule_info(
-                                    out_rule_copy, _ip_range, "ip_ranges"
+                                self._custom_security_group_inbound_rule_info(
+                                    raw_rule=out_rule_copy,
+                                    remote=_ip_range,
+                                    remote_type="ip_ranges",
+                                    is_egress=True,
                                 )
                             )
 
                         for _user_group_pairs in out_rule.get("UserIdGroupPairs", []):
-                            out_rule_copy = copy.deepcopy(out_rule)
                             outbound_rules.append(
-                                self.custom_security_group_rule_info(
-                                    out_rule_copy,
-                                    _user_group_pairs,
-                                    "user_id_group_pairs",
+                                self._custom_security_group_inbound_rule_info(
+                                    raw_rule=out_rule_copy,
+                                    remote=_user_group_pairs,
+                                    remote_type="user_id_group_pairs",
+                                    is_egress=True,
                                 )
                             )
 
                         for _ip_v6_range in out_rule.get("Ipv6Ranges", []):
-                            out_rule_copy = copy.deepcopy(out_rule)
                             outbound_rules.append(
-                                self.custom_security_group_rule_info(
-                                    out_rule_copy, _ip_v6_range, "ipv6_ranges"
+                                self._custom_security_group_inbound_rule_info(
+                                    raw_rule=out_rule_copy,
+                                    remote=_ip_v6_range,
+                                    remote_type="ipv6_ranges",
+                                    is_egress=True,
                                 )
                             )
 
                         for prefix_list_id in out_rule.get("PrefixListIds", []):
-                            out_rule_copy = copy.deepcopy(out_rule)
                             outbound_rules.append(
-                                self.custom_security_group_rule_info(
-                                    out_rule_copy, prefix_list_id, "prefix_list_ids"
+                                self._custom_security_group_inbound_rule_info(
+                                    raw_rule=out_rule_copy,
+                                    remote=prefix_list_id,
+                                    remote_type="prefix_list_ids",
+                                    is_egress=True,
                                 )
                             )
 
@@ -151,7 +189,6 @@ class SecurityGroupManager(ResourceManager):
                     )
                     sg_vo = raw
 
-                    group_id = sg_vo.get("GroupId", "")
                     link = f"https://console.aws.amazon.com/ec2/v2/home?region={region}#SecurityGroups:group-id={group_id}"
                     reference = self.get_reference(group_id, link)
 
@@ -167,15 +204,7 @@ class SecurityGroupManager(ResourceManager):
                         reference=reference,
                     )
                     yield cloud_service
-                    # yield {
-                    #     "data": sg_vo,
-                    #     "name": sg_vo.group_name,
-                    #     "account": self.account_id,
-                    #     "tags": self.convert_tags_to_dict_type(raw.get("Tags", [])),
-                    # }
-
                 except Exception as e:
-                    # resource_id = raw.get("GroupId", "")
                     yield make_error_response(
                         error=e,
                         provider=self.provider,
@@ -184,24 +213,82 @@ class SecurityGroupManager(ResourceManager):
                         region_name=region,
                     )
 
-    def custom_security_group_inbound_rule_info(self, raw_rule, remote, remote_type, vulnerable_ports):
-        raw_rule = self.custom_security_group_rule_info(raw_rule, remote, remote_type)
+    @staticmethod
+    def _get_matched_security_group_rule_id(
+        raw_rule, sg_rules_detail, remote, remote_type, is_egress
+    ):
+        raw_protocol = raw_rule.get("IpProtocol")
+        raw_from_port = raw_rule.get("FromPort")
+        raw_to_port = raw_rule.get("ToPort")
+
+        for sg_rule in sg_rules_detail:
+            if sg_rule.get("IsEgress") != is_egress:
+                continue
+
+            if sg_rule.get("IpProtocol") != raw_protocol:
+                continue
+
+            if raw_from_port:
+                sg_from_port = sg_rule.get("FromPort")
+                if raw_from_port is not None and sg_from_port is not None:
+                    if raw_from_port != sg_from_port:
+                        continue
+
+            if raw_to_port:
+                sg_to_port = sg_rule.get("ToPort")
+                if raw_to_port is not None and sg_to_port is not None:
+                    if raw_to_port != sg_to_port:
+                        continue
+
+            if remote_type == "ip_ranges":
+                if sg_rule.get("CidrIpv4") != remote.get("CidrIp"):
+                    continue
+            elif remote_type == "ipv6_ranges":
+                if sg_rule.get("CidrIpv6") != remote.get("CidrIpv6"):
+                    continue
+            elif remote_type == "prefix_list_ids":
+                if sg_rule.get("PrefixListId") != remote.get("PrefixListId"):
+                    continue
+            elif remote_type == "user_id_group_pairs":
+                referenced_group = sg_rule.get("ReferencedGroupInfo", {})
+                if referenced_group.get("GroupId") != remote.get("GroupId"):
+                    continue
+
+            return sg_rule.get("SecurityGroupRuleId")
+
+        return None
+
+    def _custom_security_group_inbound_rule_info(
+        self, raw_rule, remote, remote_type, is_egress, vulnerable_ports=None
+    ):
+        rule_id = self._get_matched_security_group_rule_id(
+            raw_rule=raw_rule,
+            sg_rules_detail=self.sg_rules_for_this_group,
+            remote=remote,
+            remote_type=remote_type,
+            is_egress=is_egress,
+        )
+
+        raw_rule = self._custom_security_group_rule_info(raw_rule, remote, remote_type)
 
         protocol_display = raw_rule.get("protocol_display")
 
         if vulnerable_ports:
-            ports = self._get_vulnerable_ports(protocol_display, raw_rule, vulnerable_ports)
+            ports = self._get_vulnerable_ports(
+                protocol_display, raw_rule, vulnerable_ports
+            )
 
             raw_rule.update(
                 {
+                    "rule_id": rule_id,
                     "vulnerable_ports": ports,
-                    "detected_vulnerable_ports": True if ports else False
+                    "detected_vulnerable_ports": True if ports else False,
                 }
             )
 
         return raw_rule
 
-    def custom_security_group_rule_info(self, raw_rule, remote, remote_type):
+    def _custom_security_group_rule_info(self, raw_rule, remote, remote_type):
         protocol_display = self._get_protocol_display(raw_rule.get("IpProtocol"))
         raw_rule.update(
             {
@@ -331,7 +418,9 @@ class SecurityGroupManager(ResourceManager):
         return ""
 
     @staticmethod
-    def _get_vulnerable_ports(protocol_display: str, raw_rule: dict, vulnerable_ports: str):
+    def _get_vulnerable_ports(
+        protocol_display: str, raw_rule: dict, vulnerable_ports: str
+    ):
         try:
             ports = []
 
